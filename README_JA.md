@@ -3,9 +3,12 @@
 > **産業用 AI モーションコミック & 動画生成ワークベンチ**
 > *Industrial AI Motion Comic & Video Workbench*
 
-[![中文](https://img.shields.io/badge/Language-中文-gray.svg)](./README.md)
-[![English](https://img.shields.io/badge/Language-English-gray.svg)](./README_EN.md)
-[![日本語](https://img.shields.io/badge/Language-日本語-blue.svg)](./README_JA.md)
+The inspiration comes from the one-stop comic production platform [AniKuku AI Comic Production Platform](https://anikuku.com/?github).
+
+> For business inquiries, questions, and communication, please contact me.
+
+> cinegen@ullrai.com
+
 
 **CineGen AI Director** は、**AI モーションコミック**、**縦読みマンガ動画**、および**映像絵コンテ (Animatic)** 制作のために設計されたプロフェッショナルツールです。
 

@@ -2,8 +2,6 @@
 
 灵感来自于 一站式的漫剧制作平台 [AniKuku AI 漫剧制作平台](https://anikuku.com/?github) 。
 
-> 商用、问题和沟通可联系我
-> cinegen@ullrai.com
 
 
 [中文](./README.md) ｜ [English](./README_EN.md) ｜  [日本語](./README_JA.md) ｜  [한국인](./README_KO.md)

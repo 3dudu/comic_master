@@ -1,71 +1,93 @@
-# CineGen AI Director (AI 漫剧工场)
-
-灵感来自于 一站式的漫剧制作平台 [AniKuku AI 漫剧制作平台](https://anikuku.com/?github) 。
+# ManDirector-AI
 
 
 
-[中文](./README.md) ｜ [English](./README_EN.md) ｜  [日本語](./README_JA.md) ｜  [한국인](./README_KO.md)
+## Getting started
 
-**CineGen AI Director** 是一个专为 **AI 漫剧 (Motion Comics)**、**动态漫画**及**影视分镜 (Animatic)** 设计的专业生产力工具。
+To make it easy for you to get started with GitLab, here's a list of recommended next steps.
 
-它摒弃了传统的“抽卡式”生成，采用 **"Script-to-Asset-to-Keyframe"** 的工业化工作流。通过深度集成 Google Gemini 2.5 Flash 和 Veo 模型，实现了对角色一致性、场景连续性以及镜头运动的精准控制。
+Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-> **工业级 AI 漫剧与视频生成工作台**
-> *Industrial AI Motion Comic & Video Workbench*
+## Add your files
 
-![UI Preview](./UI.png)
+- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
+- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
 
-## 核心理念：关键帧驱动 (Keyframe-Driven)
+```
+cd existing_repo
+git remote add origin http://gitlab.good365.net:6080/ai/mandirector-ai.git
+git branch -M main
+git push -uf origin main
+```
 
-传统的 Text-to-Video 往往难以控制具体的运镜和起止画面。CineGen 引入了动画制作中的 **关键帧 (Keyframe)** 概念：
-1.  **先画后动**：先生成精准的起始帧 (Start) 和结束帧 (End)。
-2.  **插值生成**：利用 Veo 模型在两帧之间生成平滑的视频过渡。
-3.  **资产约束**：所有画面生成均受到“角色定妆照”和“场景概念图”的强约束，杜绝人物变形。
+## Integrate with your tools
 
-## 核心功能模块
+- [ ] [Set up project integrations](http://gitlab.good365.net:6080/ai/mandirector-ai/-/settings/integrations)
 
-### Phase 01: 剧本与分镜 (Script & Storyboard)
-*   **智能剧本拆解**：输入小说或故事大纲，AI 自动拆解为包含场次、时间、气氛的标准剧本结构。
-*   **视觉化翻译**：自动将文字描述转化为专业的 Midjourney/Stable Diffusion 提示词。
-*   **节奏控制**：支持设定目标时长（如 30s 预告片、3min 短剧），AI 自动规划镜头密度。
+## Collaborate with your team
 
-### Phase 02: 资产与选角 (Assets & Casting)
-*   **一致性定妆 (Character Consistency)**：
-    *   为每个角色生成标准参考图 (Reference Image)。
-    *   **衣橱系统 (Wardrobe System)**：支持多套造型 (如：日常、战斗、受伤)，基于 Base Look 保持面部特征一致。
-*   **场景概念 (Set Design)**：生成环境参考图，确保同一场景下的不同镜头光影统一。
+- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
+- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
+- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
+- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
+- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
 
-### Phase 03: 导演工作台 (Director Workbench)
-*   **网格化分镜表**：全景式管理所有镜头 (Shots)。
-*   **精准控制**：
-    *   **Start Frame**: 生成镜头的起始画面（强一致性）。
-    *   **End Frame**: (可选) 定义镜头结束时的状态（如：人物回头、光线变化）。
-*   **上下文感知**：AI 生成镜头时，会自动读取 Context（当前场景图 + 当前角色特定服装图），彻底解决“不连戏”问题。
-*   **Veo 视频生成**：支持 Image-to-Video 和 Keyframe Interpolation 两种模式。
+## Test and Deploy
 
-### Phase 04: 成片与导出 (Export)
-*   **实时预览**：时间轴形式预览生成的漫剧片段。
-*   **渲染追踪**：实时监控 API 渲染进度。
-*   **资产导出**：支持导出所有高清关键帧和 MP4 片段，方便导入 Premiere/After Effects 进行后期剪辑。
+Use the built-in continuous integration in GitLab.
 
-## 技术架构
+- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
+- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
+- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
+- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
+- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
 
-*   **Frontend**: React 19, Tailwind CSS (Sony Industrial Design Style)
-*   **AI Models**:
-    *   **Logic/Text**: `gemini-2.5-flash` (高智商剧本分析)
-    *   **Vision**: `gemini-2.5-flash-image` (Nano Banana - 高速绘图)
-    *   **Video**: `veo-3.1-fast-generate-preview` (首尾帧视频插值)
-*   **Storage**: IndexedDB (本地浏览器数据库，数据隐私安全，无后端依赖)
+***
 
-## 快速开始
+# Editing this README
 
-1.  **配置密钥**: 启动应用，输入 Google Gemini API Key (需开通 GCP 结算以使用 Veo)。
-2.  **故事输入**: 在 Phase 01 输入你的故事创意，点击“生成分镜脚本”。
-3.  **美术设定**: 进入 Phase 02，生成主角定妆照和核心场景图。
-4.  **分镜制作**: 进入 Phase 03，逐个生成镜头的关键帧。
-5.  **动效生成**: 确认关键帧无误后，批量生成视频片段。
+When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
 
----
-*Built for Creators, by CineGen.*
+## Suggestions for a good README
 
-[阿尼酷酷](https://anikuku.com/?github-cn)
+Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+
+## Name
+Choose a self-explaining name for your project.
+
+## Description
+Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+
+## Badges
+On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+
+## Visuals
+Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+
+## Installation
+Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+## Usage
+Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+
+## Support
+Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+
+## Roadmap
+If you have ideas for releases in the future, it is a good idea to list them in the README.
+
+## Contributing
+State if you are open to contributions and what your requirements are for accepting them.
+
+For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+
+You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+
+## Authors and acknowledgment
+Show your appreciation to those who have contributed to the project.
+
+## License
+For open source projects, say how it is licensed.
+
+## Project status
+If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

@@ -100,7 +100,7 @@ function App() {
       case 'director':
         return <StageDirector project={project} updateProject={updateProject} />;
       case 'export':
-        return <StageExport project={project} />;
+        return <StageExport project={project} updateProject={updateProject} />;
       default:
         return <div className="text-white">未知阶段</div>;
     }

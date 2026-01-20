@@ -11,7 +11,8 @@ const DOUBAO_CONFIG = {
   IMAGE_MODEL: "doubao-seedream-4-5-251128", // 火山引擎的图片生成模型
   
   // 视频生成模型（替代 veo-3.1-fast-generate-preview）
-  VIDEO_MODEL: "doubao-seedance-1-5-pro-251215", // 火山引擎的视频生成模型
+  //VIDEO_MODEL: "doubao-seedance-1-5-pro-251215", // 火山引擎的视频生成模型
+  VIDEO_MODEL: "doubao-seedance-1-0-pro-250528", // 火山引擎的视频生成模型
   
   // API 端点
   API_ENDPOINT: "https://ark.cn-beijing.volces.com/api/v3",
@@ -410,7 +411,7 @@ export const generateVideo = async (
 
   const requestBody: any = {
     model: DOUBAO_CONFIG.VIDEO_MODEL,
-    generate_audio:true,
+    //generate_audio:true,
     duration: duration,
     content: [{
       type: "text",

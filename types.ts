@@ -78,9 +78,12 @@ export interface ProjectState {
   rawScript: string;
   targetDuration: string;
   language: string;
-  visualStyle: string; 
-  
+  visualStyle: string;
+
   scriptData: ScriptData | null;
   shots: Shot[];
   isParsingScript: boolean;
+
+  // Export Phase Data
+  mergedVideoUrl?: string;
 }

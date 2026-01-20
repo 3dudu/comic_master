@@ -1,18 +1,65 @@
-import { BarChart3, CheckCircle, Clock, Download, FileVideo, Film, Layers, Share2 } from 'lucide-react';
-import React from 'react';
+import { BarChart3, CheckCircle, Clock, Download, Film, Layers, Share2, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { mergeVideos } from '../services/cozeService';
 import { ProjectState } from '../types';
 
 interface Props {
   project: ProjectState;
+  updateProject: (updates: Partial<ProjectState>) => void;
 }
 
-const StageExport: React.FC<Props> = ({ project }) => {
+const StageExport: React.FC<Props> = ({ project, updateProject }) => {
+  const [isMerging, setIsMerging] = useState(false);
+  const [mergeError, setMergeError] = useState<string | null>(null);
+
   const completedShots = project.shots.filter(s => s.interval?.videoUrl);
   const totalShots = project.shots.length;
   const progress = totalShots > 0 ? Math.round((completedShots.length / totalShots) * 100) : 0;
-  
+
   // Calculate total duration roughly
   const estimatedDuration = project.shots.reduce((acc, s) => acc + (s.interval?.duration || 3), 0);
+
+  const handleMerge = async () => {
+    if (completedShots.length === 0) return;
+
+    setIsMerging(true);
+    setMergeError(null);
+
+    try {
+      // 收集所有已完成视频的 URL
+      const videoUrls = completedShots
+        .map(shot => shot.interval?.videoUrl)
+        .filter((url): url is string => !!url);
+
+      console.log("开始合并视频...", videoUrls.length, "个视频片段");
+
+      // 调用 Coze API 合并视频
+      const mergedUrl = await mergeVideos(videoUrls);
+
+      console.log("视频合并完成:", mergedUrl);
+
+      // 保存合并后的视频 URL 到 project
+      updateProject({ mergedVideoUrl: mergedUrl });
+
+    } catch (error: any) {
+      console.error("合并视频失败:", error);
+      setMergeError(error.message || "视频合并失败，请稍后重试");
+    } finally {
+      setIsMerging(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!project.mergedVideoUrl) return;
+
+    // 创建下载链接
+    const link = document.createElement('a');
+    link.href = project.mergedVideoUrl;
+    link.download = `${project.scriptData?.title || 'merged-video'}.mp4`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#121212] overflow-hidden">
@@ -121,22 +168,69 @@ const StageExport: React.FC<Props> = ({ project }) => {
 
              {/* Action Buttons */}
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-               <button 
-                  disabled={progress < 100} 
+               <button
+                  onClick={handleMerge}
+                  disabled={progress < 100 || isMerging || !!project.mergedVideoUrl}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
-                 progress === 100 
-                   ? 'bg-white text-black hover:bg-zinc-200 border-white shadow-lg shadow-white/5' 
+                 progress === 100 && !isMerging && !project.mergedVideoUrl
+                   ? 'bg-white text-black hover:bg-zinc-200 border-white shadow-lg shadow-white/5'
                    : 'bg-zinc-900 text-zinc-600 border-zinc-800 cursor-not-allowed'
                }`}>
+                 {isMerging ? (
+                   <>
+                     <Loader2 className="w-4 h-4 animate-spin" />
+                     合并中...
+                   </>
+                 ) : project.mergedVideoUrl ? (
+                   <>
+                     <CheckCircle className="w-4 h-4 text-green-500" />
+                     已合并
+                   </>
+                 ) : (
+                   <>
+                     <Download className="w-4 h-4" />
+                     合并视频
+                   </>
+                 )}
+               </button>
+
+               <button
+                  onClick={handleDownload}
+                  disabled={!project.mergedVideoUrl}
+                  className={`h-12 bg-[#1A1A1A] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 hover:border-zinc-500 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                    !project.mergedVideoUrl ? 'cursor-not-allowed opacity-50' : ''
+                  }`}>
                  <Download className="w-4 h-4" />
                  Download Master (.mp4)
                </button>
-               
-               <button className="h-12 bg-[#1A1A1A] hover:bg-zinc-800 text-zinc-300 border border-zinc-700 hover:border-zinc-500 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all">
-                 <FileVideo className="w-4 h-4" />
-                 Export EDL / XML
-               </button>
              </div>
+
+             {/* Video Preview */}
+             {project.mergedVideoUrl && (
+               <div className="mt-8">
+                 <div className="flex justify-between items-center mb-2 px-1">
+                   <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Video Preview</span>
+                   <span className="text-[10px] text-zinc-500 font-mono">Ready to download</span>
+                 </div>
+                 <div className="w-full bg-black rounded-lg overflow-hidden border border-zinc-800">
+                   <video
+                     controls
+                     className="w-full"
+                     src={project.mergedVideoUrl}
+                   >
+                     您的浏览器不支持视频播放。
+                   </video>
+                 </div>
+               </div>
+             )}
+
+             {/* Merge Error Message */}
+             {mergeError && (
+               <div className="bg-red-900/10 border border-red-900/50 text-red-500 text-xs rounded p-3 flex items-center gap-2">
+                 <BarChart3 className="w-4 h-4" />
+                 {mergeError}
+               </div>
+             )}
           </div>
 
           {/* Secondary Options */}

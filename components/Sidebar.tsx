@@ -1,5 +1,6 @@
-import { Aperture, ChevronLeft, Clapperboard, FileText, Film, Settings, Users } from 'lucide-react';
-import React from 'react';
+import { Aperture, ChevronLeft, Clapperboard, FileText, Film, Settings, Users, Key } from 'lucide-react';
+import React, { useState } from 'react';
+import ModalSettings from './ModalSettings';
 
 interface SidebarProps {
   currentStage: string;
@@ -10,6 +11,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpenSettings, projectName }) => {
+  const [showModelSettings, setShowModelSettings] = useState(false);
   const navItems = [
     { id: 'script', label: '剧本与故事', icon: FileText, sub: 'Phase 01' },
     { id: 'assets', label: '角色与场景', icon: Users, sub: 'Phase 02' },
@@ -71,15 +73,25 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
       </nav>
 
       {/* Footer */}
-      <div className="p-6 border-t border-zinc-900">
-        <button 
+      <div className="p-6 border-t border-zinc-900 space-y-2">
+        <button
+          onClick={() => setShowModelSettings(true)}
+          className="flex items-center justify-between text-zinc-600 hover:text-white cursor-pointer transition-colors w-full px-3 py-2 hover:bg-zinc-900/30 rounded-lg"
+        >
+          <span className="font-mono text-[12px] uppercase tracking-widest">大模型配置</span>
+          <Key className="w-4 h-4" />
+        </button>
+        <button
           onClick={onOpenSettings}
-          className="flex items-center justify-between text-zinc-600 hover:text-white cursor-pointer transition-colors w-full"
+          className="flex items-center justify-between text-zinc-600 hover:text-white cursor-pointer transition-colors w-full px-3 py-2 hover:bg-zinc-900/30 rounded-lg"
         >
           <span className="font-mono text-[12px] uppercase tracking-widest">系统设置</span>
           <Settings className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Model Settings Modal */}
+      <ModalSettings isOpen={showModelSettings} onClose={() => setShowModelSettings(false)} />
 
     </aside>
   );

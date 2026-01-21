@@ -1,6 +1,6 @@
 import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, List, MapPin, Plus, Settings, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { generateScript, generateShotList, parseScriptToData } from '../services/doubaoService';
+import { ModelService } from '../services/modelService';
 import { Character, ProjectState, Scene } from '../types';
 
 interface Props {
@@ -27,12 +27,14 @@ const LANGUAGE_OPTIONS = [
 ];
 
 const STYLE_OPTIONS = [
-  { label: '水墨画', value: '水墨画' },
+  { label: '仙侠古装', value: '仙侠古装' },
+  { label: '可爱卡通', value: '可爱卡通' },
+  { label: '古典水墨', value: '古典水墨' },
   { label: '赛博朋克', value: '赛博朋克' },
-  { label: '机甲风', value: '机甲风' },
+  { label: '未来机甲', value: '未来机甲' },
   { label: '二次元', value: '二次元' },
   { label: '写实', value: '写实' },
-  { label: '蜡笔风格', value: '蜡笔风格' },
+  { label: '蜡笔画风格', value: '蜡笔画风格' },
   { label: '现代城市风', value: '现代城市风' }
 ];
 
@@ -81,6 +83,9 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     setLocalLanguage(project.language || '中文');
     setLocalStyle(project.visualStyle || '写实');
     setLocalImageSize(project.imageSize || '1440x2560');
+
+    // 初始化模型服务
+    ModelService.initialize();
   }, [project.id]);
 
   const handleDurationSelect = (val: string) => {
@@ -246,7 +251,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     setIsGeneratingScript(true);
     setError(null);
     try {
-      const generatedScript = await generateScript(
+      const generatedScript = await ModelService.generateScript(
         scriptPrompt,
         project.scriptData?.genre || '剧情片',
         getFinalDuration(),
@@ -286,8 +291,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         isParsingScript: true
       });
 
-      const scriptData = await parseScriptToData(localScript, localLanguage);
-      
+      const scriptData = await ModelService.parseScriptToData(localScript, localLanguage);
+
       scriptData.targetDuration = finalDuration;
       scriptData.language = localLanguage;
 
@@ -295,15 +300,15 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         scriptData.title = localTitle;
       }
 
-      const shots = await generateShotList(scriptData);
+      const shots = await ModelService.generateShotList(scriptData);
 
-      updateProject({ 
-        scriptData, 
-        shots, 
+      updateProject({
+        scriptData,
+        shots,
         isParsingScript: false,
-        title: scriptData.title 
+        title: scriptData.title
       });
-      
+
       setActiveTab('script');
 
     } catch (err: any) {

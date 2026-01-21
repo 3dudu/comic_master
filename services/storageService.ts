@@ -1,7 +1,7 @@
 import { ProjectState } from '../types';
 
 const DB_NAME = 'CineGenDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE_NAME = 'projects';
 
 const openDB = (): Promise<IDBDatabase> => {

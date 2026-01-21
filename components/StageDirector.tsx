@@ -1,6 +1,6 @@
 import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Film, Image as ImageIcon, LayoutGrid, Loader2, MapPin, MessageSquare, Sparkles, Video, X } from 'lucide-react';
 import React, { useState } from 'react';
-import { generateImage, generateVideo } from '../services/doubaoService';
+import { ModelService } from '../services/modelService';
 import { Keyframe, ProjectState, Shot } from '../types';
 
 interface Props {
@@ -76,7 +76,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     
     try {
       const referenceImages = getRefImagesForShot(shot);
-      const url = await generateImage(prompt, referenceImages,false,localStyle,imageSize);
+      const url = await ModelService.generateImage(prompt, referenceImages, false, localStyle, imageSize);
 
       updateProject({ 
         shots: project.shots.map(s => {
@@ -125,9 +125,9 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     setProcessingState({ id: shot.interval.id, type: 'video' });
     
     try {
-      const videoUrl = await generateVideo(
-          shot.actionSummary + shot.dialogue?'对白：'+shot.dialogue:"", 
-          sKf.imageUrl, 
+      const videoUrl = await ModelService.generateVideo(
+          shot.actionSummary + shot.dialogue?'对白：'+shot.dialogue:"",
+          sKf.imageUrl,
           endImageUrl, // Only pass if it exists
           shot.interval.duration
       );
@@ -183,7 +183,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
              const kfId = existingKf?.id || `kf-${shot.id}-start-${Date.now()}`;
 
              const referenceImages = getRefImagesForShot(shot);
-             const url = await generateImage(prompt, referenceImages,false,localStyle,imageSize);
+             const url = await ModelService.generateImage(prompt, referenceImages, false, localStyle, imageSize);
 
              currentShots = currentShots.map(s => {
                 if (s.id !== shot.id) return s;

@@ -1,39 +1,40 @@
-// services/doubaoService.ts
+// services/deepseekService.ts
 
 import { Character, Scene, ScriptData, Shot } from "../types";
+import { getEnabledConfigByType } from "./modelConfigService";
 
-// 火山引擎配置
-const DOUBAO_CONFIG = {
-  // 文本生成模型（替代 gemini-2.5-flash）
-  TEXT_MODEL: "doubao-1-5-pro-32k-250115", // 或 "doubao-pro-128k"
-  
-  // 图片生成模型（替代 gemini-2.5-flash-image）
-  IMAGE_MODEL: "doubao-seedream-4-5-251128", // 火山引擎的图片生成模型
-  
-  // 视频生成模型（替代 veo-3.1-fast-generate-preview）
-  //VIDEO_MODEL: "doubao-seedance-1-5-pro-251215", // 火山引擎的视频生成模型
-  //VIDEO_MODEL: "doubao-seedance-1-0-pro-250528", // 火山引擎的视频生成模型
-  VIDEO_MODEL: "doubao-seedance-1-0-lite-i2v-250428", // 火山引擎的视频生成模型
-  
-  // API 端点
-  API_ENDPOINT: "https://ark.cn-beijing.volces.com/api/v3",
+// DeepSeek 配置
+const DEEPSEEK_CONFIG = {
+  // 文本生成模型
+  TEXT_MODEL: "deepseek-chat",
+  // API 端点（默认使用官方 API）
+  API_ENDPOINT: "https://api.deepseek.com/v1",
 };
 
-// Module-level variable to store the key at runtime
-let runtimeApiKey: string = process.env.VOLCENGINE_API_KEY || "";
-let runtimeApiUrl: string = DOUBAO_CONFIG.API_ENDPOINT;
-let region: string = process.env.VOLCENGINE_REGION || "cn-beijing";
+// Module-level variable to store key at runtime
+let runtimeApiKey: string = "";
+let runtimeApiUrl: string = DEEPSEEK_CONFIG.API_ENDPOINT;
 
-export const setGlobalApiKey = (key: string) => {
-  runtimeApiKey = key?key : process.env.VOLCENGINE_API_KEY;
+export const setDeepseekApiKey = (key: string) => {
+  runtimeApiKey = key;
 };
 
-export const setRegion = (r: string) => {
-  region = r;
+export const setDeepseekApiUrl = (url: string) => {
+  runtimeApiUrl = url || DEEPSEEK_CONFIG.API_ENDPOINT;
 };
 
-export const setDoubaoApiUrl = (url: string) => {
-  runtimeApiUrl = url || DOUBAO_CONFIG.API_ENDPOINT;
+// 从配置服务加载启用的配置
+export const initializeDeepseekConfig = async () => {
+  try {
+    const enabledConfig = await getEnabledConfigByType('llm');
+    if (enabledConfig && enabledConfig.provider === 'deepseek') {
+      runtimeApiKey = enabledConfig.apiKey;
+      runtimeApiUrl = enabledConfig.apiUrl || DEEPSEEK_CONFIG.API_ENDPOINT;
+      console.log('DeepSeek 配置已加载');
+    }
+  } catch (error) {
+    console.error('加载 DeepSeek 配置失败:', error);
+  }
 };
 
 // Helper for authentication headers
@@ -76,10 +77,10 @@ const retryOperation = async <T>(
       throw e;
     }
   }
-  throw lastError;
+  throw lastError || new Error("Operation failed");
 };
 
-// Helper to make HTTP requests to Volcengine API
+// Helper to make HTTP requests to DeepSeek API
 const fetchWithRetry = async (
   endpoint: string,
   options: RequestInit,
@@ -114,10 +115,10 @@ const cleanJsonString = (str: string): string => {
 };
 
 /**
- * Agent 1 & 2: Script Structuring & Breakdown
- * Uses Doubao for fast, structured text generation.
+ * DeepSeek: Script Structuring & Breakdown
+ * 分析剧本并结构化数据
  */
-export const parseScriptToData = async (
+export const parseScriptToDataDeepseek = async (
   rawText: string,
   language: string = "中文"
 ): Promise<ScriptData> => {
@@ -138,7 +139,7 @@ export const parseScriptToData = async (
     return await fetchWithRetry(endpoint, {
       method: "POST",
       body: JSON.stringify({
-        model: DOUBAO_CONFIG.TEXT_MODEL,
+        model: DEEPSEEK_CONFIG.TEXT_MODEL,
         messages: [
           {
             role: "system",
@@ -152,7 +153,7 @@ export const parseScriptToData = async (
         ],
         temperature: 0.7,
         max_tokens: 8192,
-        response_format: { type: "json_object" }, // 结构化输出
+        response_format: { type: "json_object" },
       }),
     });
   });
@@ -198,7 +199,11 @@ export const parseScriptToData = async (
   };
 };
 
-export const generateShotList = async (
+/**
+ * DeepSeek: Shot List Generation
+ * 为剧本生成镜头清单
+ */
+export const generateShotListDeepseek = async (
   scriptData: ScriptData
 ): Promise<Shot[]> => {
   if (!scriptData.scenes || scriptData.scenes.length === 0) {
@@ -222,19 +227,19 @@ export const generateShotList = async (
     const prompt = `
       担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
       文本输出语言: ${lang}.
-      
+
       场景细节:
       地点: ${scene.location}
       时间: ${scene.time}
       氛围: ${scene.atmosphere}
-      
+
       场景动作:
       "${paragraphs.slice(0, 5000)}"
-      
+
       创作背景:
       题材类型: ${scriptData.genre}
       剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
-      
+
       人物:
       ${JSON.stringify(
         scriptData.characters.map((c) => ({
@@ -253,7 +258,7 @@ export const generateShotList = async (
       6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
       7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
       8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
-      
+
       输出格式：JSON 数组，数组内对象包含以下字段：
       - id（字符串类型）
       - sceneId（字符串类型）
@@ -271,7 +276,7 @@ export const generateShotList = async (
       const response = await fetchWithRetry(endpoint, {
         method: "POST",
         body: JSON.stringify({
-          model: DOUBAO_CONFIG.TEXT_MODEL,
+          model: DEEPSEEK_CONFIG.TEXT_MODEL,
           messages: [
             {
               role: "system",
@@ -332,10 +337,10 @@ export const generateShotList = async (
 };
 
 /**
- * Agent 0: Script Generation from simple prompt
+ * DeepSeek: Script Generation from simple prompt
  * 根据简单提示词生成完整剧本
  */
-export const generateScript = async (
+export const generateScriptDeepseek = async (
   prompt: string,
   genre: string = "剧情片",
   targetDuration: string = "60s",
@@ -363,7 +368,7 @@ export const generateScript = async (
   const response = await fetchWithRetry(endpoint, {
     method: "POST",
     body: JSON.stringify({
-      model: DOUBAO_CONFIG.TEXT_MODEL,
+      model: DEEPSEEK_CONFIG.TEXT_MODEL,
       messages: [
         {
           role: "system",
@@ -384,22 +389,23 @@ export const generateScript = async (
 };
 
 /**
- * Agent 3: Visual Design (Prompt Generation)
+ * DeepSeek: Visual Design (Prompt Generation)
+ * 生成视觉提示词
  */
-export const generateVisualPrompts = async (
+export const generateVisualPromptsDeepseek = async (
   type: "character" | "scene",
   data: Character | Scene,
   genre: string
 ): Promise<string> => {
-  const prompt = `为电影${genre}的${type}生成高还原度视觉提示词。 
-  内容: ${JSON.stringify(data)}. 
+  const prompt = `为电影${genre}的${type}生成高还原度视觉提示词。
+  内容: ${JSON.stringify(data)}.
   中文输出提示词，以逗号分隔，聚焦视觉细节（光线、质感、外观）。`;
 
   const endpoint = `${runtimeApiUrl}/chat/completions`;
   const response = await fetchWithRetry(endpoint, {
     method: "POST",
     body: JSON.stringify({
-      model: DOUBAO_CONFIG.TEXT_MODEL,
+      model: DEEPSEEK_CONFIG.TEXT_MODEL,
       messages: [
         {
           role: "user",
@@ -412,135 +418,4 @@ export const generateVisualPrompts = async (
   });
 
   return response.choices?.[0]?.message?.content || "";
-};
-
-/**
- * Agent 4 & 6: Image Generation
- * 使用火山引擎的 Seedream 模型
- */
-export const generateImage = async (
-  prompt: string,
-  referenceImages: string[] = [],
-  ischaracter: boolean = false,
-  localStyle: string = "写实",
-  imageSize: string = "2560x1440"
-): Promise<string> => {
-  const endpoint = `${runtimeApiUrl}/images/generations`;
-
-  const requestBody: any = {
-    model: DOUBAO_CONFIG.IMAGE_MODEL,
-    prompt:  "绘画风格"+localStyle+"：" + prompt,
-    size: ischaracter?"1440x2560":imageSize,
-    sequential_image_generation: ischaracter?"disabled":"auto",
-  };
-
-  // 如果有参考图片，火山引擎可能需要不同的处理方式
-  // 具体实现需要参考火山引擎的图片生成 API 文档
-  if (referenceImages.length > 0) {
-    // 这里需要根据实际 API 调整
-    // 可能需要使用 image_url 参数或其他方式
-    requestBody.image = referenceImages;
-  }
-
-  const response = await fetchWithRetry(endpoint, {
-    method: "POST",
-    body: JSON.stringify(requestBody),
-  });
-
-  // 提取图片 URL 或 base64 数据
-  const imageUrl = response.data?.[0]?.url;
-  if (!imageUrl) {
-    throw new Error("图片生成失败");
-  }
-
-  // 如果返回的是 URL，可以转换为 base64 或者直接返回 URL
-  return imageUrl;
-};
-
-/**
- * Agent 8: Video Generation
- * 使用火山引擎的 Seedream 视频生成模型
- */
-export const generateVideo = async (
-  prompt: string,
-  startImageBase64?: string,
-  endImageBase64?: string,
-  duration: number = 5
-): Promise<string> => {
-  const endpoint = `${runtimeApiUrl}/contents/generations/tasks`;
-
-  const requestBody: any = {
-    model: DOUBAO_CONFIG.VIDEO_MODEL,
-    //generate_audio:true,
-    duration: duration,
-    content: [{
-      type: "text",
-      text: prompt
-    }]
-  };
-
-  // 处理起始图片
-  if (startImageBase64) {
-    requestBody.content.push({
-            "type": "image_url",
-            "image_url": {
-                "url": startImageBase64
-            },
-            "role": "first_frame"
-    });
-  }
-
-  // 处理结束图片（如果火山引擎支持）
-  
-  if (endImageBase64) {
-    requestBody.content.push({
-            "type": "image_url",
-            "image_url": {
-                "url": endImageBase64
-            },
-            "role": "last_frame"
-    });
-  }
-  
-  const response = await fetchWithRetry(endpoint, {
-    method: "POST",
-    body: JSON.stringify(requestBody),
-  });
-
-  // 火山引擎可能返回异步任务 ID，需要轮询获取结果
-  const taskId = response.id;
-  if (!taskId) {
-    throw new Error("视频生成失败");
-  }
-
-  // 轮询任务状态
-  const videoUrl = await pollVideoTask(taskId);
-  return videoUrl;
-};
-
-// 轮询视频生成任务
-const pollVideoTask = async (taskId: string): Promise<string> => {
-  const endpoint = `${runtimeApiUrl}/contents/generations/tasks/${taskId}`;
-
-  let attempts = 0;
-  const maxAttempts = 60; // 最多轮询 5 分钟
-
-  while (attempts < maxAttempts) {
-    const response = await fetchWithRetry(endpoint, {
-      method: "GET",
-    });
-
-    const status = response.status;
-    if (status === "completed" || status === "succeeded") {
-      return response.video_url || response.content?.video_url;
-    } else if (status === "failed") {
-      throw new Error(`视频生成失败: ${response.error}`);
-    }
-
-    // 等待 5 秒后继续轮询
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    attempts++;
-  }
-
-  throw new Error("视频生成超时");
 };

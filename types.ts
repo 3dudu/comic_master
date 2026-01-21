@@ -73,7 +73,7 @@ export interface ProjectState {
   createdAt: number;
   lastModified: number;
   stage: 'script' | 'assets' | 'director' | 'export';
-  
+
   // Script Phase Data
   rawScript: string;
   targetDuration: string;
@@ -87,4 +87,13 @@ export interface ProjectState {
 
   // Export Phase Data
   mergedVideoUrl?: string;
+}
+
+export interface AIModelConfig {
+  id: string;
+  provider: 'doubao' | 'deepseek' | 'openai' | 'gemini';
+  modelType: 'llm' | 'text2image' | 'image2video' | 'tts' | 'stt';
+  apiKey: string;
+  apiUrl: string;
+  enabled: boolean;
 }

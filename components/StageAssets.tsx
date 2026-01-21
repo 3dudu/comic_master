@@ -1,6 +1,6 @@
 import { Check, Loader2, MapPin, Plus, RefreshCw, Shirt, Sparkles, User, Users, X } from 'lucide-react';
 import React, { useState } from 'react';
-import { generateImage, generateVisualPrompts } from '../services/doubaoService';
+import { ModelService } from '../services/modelService';
 import { CharacterVariation, ProjectState } from '../types';
   
 
@@ -27,14 +27,14 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       let prompt = "";
       if (type === 'character') {
         const char = project.scriptData?.characters.find(c => String(c.id) === String(id));
-        if (char) prompt = char.visualPrompt || await generateVisualPrompts('character', char, project.scriptData?.genre || 'Cinematic');
+        if (char) prompt = char.visualPrompt || await ModelService.generateVisualPrompts('character', char, project.scriptData?.genre || 'Cinematic');
       } else {
         const scene = project.scriptData?.scenes.find(s => String(s.id) === String(id));
-        if (scene) prompt = scene.visualPrompt || await generateVisualPrompts('scene', scene, project.scriptData?.genre || 'Cinematic');
+        if (scene) prompt = scene.visualPrompt || await ModelService.generateVisualPrompts('scene', scene, project.scriptData?.genre || 'Cinematic');
       }
 
       // Real API Call
-      const imageUrl = await generateImage(prompt,[],type === 'character',localStyle,imageSize);
+      const imageUrl = await ModelService.generateImage(prompt, [], type === 'character', localStyle, imageSize);
 
       // Update state
       if (project.scriptData) {
@@ -119,7 +119,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
           // Enhance prompt to emphasize character consistency
           const enhancedPrompt = `Character: ${char.name}. ${variation.visualPrompt}. Keep facial features consistent with reference.`;
 
-          const imageUrl = await generateImage(enhancedPrompt, refImages,false,localStyle,imageSize);
+          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, false, localStyle, imageSize);
 
           const newData = { ...project.scriptData! };
           const c = newData.characters.find(c => c.id === charId);

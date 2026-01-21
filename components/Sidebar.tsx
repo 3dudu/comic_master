@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
           </div>
           <div className="overflow-hidden">
             <h1 className="text-sm font-bold text-white tracking-wider uppercase">CineGen AI</h1>
-            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Studio Pro</p>
+            <p className="text-[12px] text-zinc-500 uppercase tracking-widest">Studio Pro</p>
           </div>
         </div>
 
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
 
       {/* Project Status */}
       <div className="px-6 py-4 border-b border-zinc-900">
-         <div className="text-[10px] text-zinc-600 uppercase tracking-widest mb-1">当前项目</div>
+         <div className="text-[12px] text-zinc-600 uppercase tracking-widest mb-1">当前项目</div>
          <div className="text-sm font-medium text-zinc-200 truncate font-mono">{projectName || '未命名项目'}</div>
       </div>
 
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
                 <item.icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-zinc-600 group-hover:text-zinc-400'}`} />
                 <span className="font-medium text-xs tracking-wider uppercase">{item.label}</span>
               </div>
-              <span className={`text-[10px] font-mono ${isActive ? 'text-zinc-400' : 'text-zinc-700'}`}>{item.sub}</span>
+              <span className={`text-[12px] font-mono ${isActive ? 'text-zinc-400' : 'text-zinc-700'}`}>{item.sub}</span>
             </button>
           );
         })}
@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
           onClick={onOpenSettings}
           className="flex items-center justify-between text-zinc-600 hover:text-white cursor-pointer transition-colors w-full"
         >
-          <span className="font-mono text-[10px] uppercase tracking-widest">系统设置</span>
+          <span className="font-mono text-[12px] uppercase tracking-widest">系统设置</span>
           <Settings className="w-4 h-4" />
         </button>
       </div>

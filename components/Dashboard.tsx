@@ -1,7 +1,7 @@
+import { AlertTriangle, Calendar, Check, ChevronRight, Download, Edit, Loader2, Plus, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, Loader2, Folder, ChevronRight, Calendar, AlertTriangle, Download, Upload, Edit, Check } from 'lucide-react';
+import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 import { ProjectState } from '../types';
-import { getAllProjectsMetadata, createNewProjectState, deleteProjectFromDB, exportProjectToFile, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 
 interface Props {
   onOpenProject: (project: ProjectState) => void;
@@ -175,7 +175,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
               <div className="w-12 h-12 border border-zinc-700 flex items-center justify-center mb-6 group-hover:bg-zinc-800 transition-colors">
                 <Plus className="w-5 h-5 text-zinc-500 group-hover:text-white" />
               </div>
-              <span className="text-zinc-600 font-mono text-[10px] uppercase tracking-widest group-hover:text-zinc-300">Create New Project</span>
+              <span className="text-zinc-600 font-mono text-[12px] uppercase tracking-widest group-hover:text-zinc-300">Create New Project</span>
             </div>
 
             {/* Project List */}
@@ -196,18 +196,18 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                         </div>
                         <div className="text-center">
                             <p className="text-white font-bold text-xs uppercase tracking-widest">确认删除？</p>
-                            <p className="text-zinc-500 text-[10px] mt-1 font-mono">此操作无法撤销。</p>
+                            <p className="text-zinc-500 text-[12px] mt-1 font-mono">此操作无法撤销。</p>
                         </div>
                         <div className="flex gap-2 w-full pt-2">
                             <button 
                                 onClick={cancelDelete}
-                                className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-[10px] font-bold uppercase tracking-wider transition-colors border border-zinc-800"
+                                className="flex-1 py-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white text-[12px] font-bold uppercase tracking-wider transition-colors border border-zinc-800"
                             >
                                 取消
                             </button>
                             <button 
                                 onClick={(e) => confirmDelete(e, proj.id)}
-                                className="flex-1 py-3 bg-red-900/20 hover:bg-red-900/40 text-red-400 hover:text-red-200 text-[10px] font-bold uppercase tracking-wider transition-colors border border-red-900/30"
+                                className="flex-1 py-3 bg-red-900/20 hover:bg-red-900/40 text-red-400 hover:text-red-200 text-[12px] font-bold uppercase tracking-wider transition-colors border border-red-900/30"
                             >
                                 删除
                             </button>
@@ -247,7 +247,6 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                      </button>
 
                      <div className="flex-1">
-                        <Folder className="w-8 h-8 text-zinc-800 mb-6 group-hover:text-zinc-500 transition-colors" />
                         {editingProjectId === proj.id ? (
                           <div className="mb-2 flex items-center gap-2">
                             <input
@@ -271,14 +270,31 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                           <h3 className="text-sm font-bold text-white mb-2 line-clamp-1 tracking-wide">{proj.title}</h3>
                         )}
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="text-[9px] font-mono text-zinc-500 border border-zinc-800 px-1.5 py-0.5 uppercase tracking-wider">
+                            <span className="text-[11px] font-mono text-zinc-500 border border-zinc-800 px-1.5 py-0.5 uppercase tracking-wider">
                               {proj.stage === 'script' ? '剧本阶段' :
                                proj.stage === 'assets' ? '资产生成' :
                                proj.stage === 'director' ? '导演工作台' : '导出阶段'}
                             </span>
                         </div>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {proj.visualStyle && (
+                              <span className="text-[11px] text-zinc-600 bg-zinc-900/50 border border-zinc-800/50 px-1.5 py-0.5 rounded-full">
+                                {proj.visualStyle}
+                              </span>
+                            )}
+                            {proj.imageSize && (
+                              <span className="text-[11px] text-zinc-600 bg-zinc-900/50 border border-zinc-800/50 px-1.5 py-0.5 rounded-full font-mono">
+                                {proj.imageSize}
+                              </span>
+                            )}
+                            {proj.targetDuration && (
+                              <span className="text-[11px] text-zinc-600 bg-zinc-900/50 border border-zinc-800/50 px-1.5 py-0.5 rounded-full font-mono">
+                                {proj.targetDuration}
+                              </span>
+                            )}
+                        </div>
                         {proj.scriptData?.logline && (
-                            <p className="text-[10px] text-zinc-600 line-clamp-2 leading-relaxed font-mono border-l border-zinc-800 pl-2">
+                            <p className="text-[12px] text-zinc-600 line-clamp-2 leading-relaxed font-mono border-l border-zinc-800 pl-2">
                             {proj.scriptData.logline}
                             </p>
                         )}
@@ -286,7 +302,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                   </div>
 
                   <div className="px-6 py-3 border-t border-zinc-900 flex items-center justify-between bg-[#080808]">
-                    <div className="flex items-center gap-2 text-[9px] text-zinc-600 font-mono uppercase tracking-widest">
+                    <div className="flex items-center gap-2 text-[11px] text-zinc-600 font-mono uppercase tracking-widest">
                         <Calendar className="w-3 h-3" />
                         {formatDate(proj.lastModified)}
                     </div>

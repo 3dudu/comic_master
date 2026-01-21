@@ -205,7 +205,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                                       ) : (
                                           <div className="flex items-center justify-center h-full text-zinc-700">No Image</div>
                                       )}
-                                      <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-[10px] text-white font-bold uppercase border border-white/10">Default</div>
+                                      <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-[12px] text-white font-bold uppercase border border-white/10">Default</div>
                                   </div>
                                   <p className="text-xs text-zinc-500 leading-relaxed font-mono">{selectedChar.visualPrompt}</p>
                               </div>
@@ -242,11 +242,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                                                   <h5 className="font-bold text-zinc-200 text-sm">{variation.name}</h5>
                                                   <button onClick={() => handleDeleteVariation(selectedChar.id, variation.id)} className="text-zinc-600 hover:text-red-500"><X className="w-3 h-3"/></button>
                                               </div>
-                                              <p className="text-[10px] text-zinc-500 line-clamp-2 mb-3 font-mono">{variation.visualPrompt}</p>
+                                              <p className="text-[12px] text-zinc-500 line-clamp-2 mb-3 font-mono">{variation.visualPrompt}</p>
                                               <button
                                                   onClick={() => handleGenerateVariation(selectedChar.id, variation.id)}
                                                   disabled={!!processingState || !!batchProgress}
-                                                  className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 hover:text-white flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                  className="text-[12px] font-bold uppercase tracking-wider text-indigo-400 hover:text-white flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                               >
                                                   <RefreshCw className={`w-3 h-3 ${processingState?.type === 'character' && processingState?.id === variation.id ? 'animate-spin' : ''}`} />
                                                   {processingState?.type === 'character' && processingState?.id === variation.id ? '生成中...' : variation.referenceImage ? '重新生成' : '生成造型'}
@@ -299,10 +299,10 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
           </div>
           <div className="flex items-center gap-3">
              <div className="flex gap-2">
-                 <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-zinc-400 font-mono uppercase">
+                 <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[12px] text-zinc-400 font-mono uppercase">
                     {project.scriptData.characters.length} CHARS
                  </span>
-                 <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[10px] text-zinc-400 font-mono uppercase">
+                 <span className="px-2 py-1 bg-zinc-900 border border-zinc-800 rounded text-[12px] text-zinc-400 font-mono uppercase">
                     {project.scriptData.scenes.length} SCENES
                  </span>
              </div>
@@ -350,7 +350,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <button
                             onClick={() => handleGenerateAsset('character', char.id)}
                             disabled={!!batchProgress || !!processingState}
-                            className="px-3 py-1.5 bg-black/50 text-white text-[10px] font-bold uppercase tracking-wider rounded border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1.5 bg-black/50 text-white text-[12px] font-bold uppercase tracking-wider rounded border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             重新生成
                           </button>
@@ -385,9 +385,9 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                 <div className="p-3 border-t border-zinc-800 bg-[#111]">
                   <h3 className="font-bold text-zinc-200 truncate text-sm">{char.name}</h3>
                   <div className="flex items-center justify-between mt-1">
-                     <span className="text-[10px] text-zinc-500 font-mono uppercase bg-zinc-900 px-1.5 py-0.5 rounded">{char.gender}</span>
+                     <span className="text-[12px] text-zinc-500 font-mono uppercase bg-zinc-900 px-1.5 py-0.5 rounded">{char.gender}</span>
                      {char.variations && char.variations.length > 0 && (
-                         <span className="text-[9px] text-zinc-400 font-mono flex items-center gap-1">
+                         <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1">
                              <Shirt className="w-2.5 h-2.5" /> +{char.variations.length}
                          </span>
                      )}
@@ -438,7 +438,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <button
                             onClick={() => handleGenerateAsset('scene', scene.id)}
                             disabled={!!batchProgress || !!processingState}
-                            className="px-3 py-1.5 bg-black/50 text-white text-[10px] font-bold uppercase tracking-wider rounded border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1.5 bg-black/50 text-white text-[12px] font-bold uppercase tracking-wider rounded border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             重新生成
                           </button>
@@ -465,9 +465,9 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                 <div className="p-3 border-t border-zinc-800 bg-[#111]">
                   <div className="flex justify-between items-center mb-1">
                      <h3 className="font-bold text-zinc-200 text-sm truncate">{scene.location}</h3>
-                     <span className="px-1.5 py-0.5 bg-zinc-900 text-zinc-500 text-[9px] rounded border border-zinc-800 uppercase font-mono">{scene.time}</span>
+                     <span className="px-1.5 py-0.5 bg-zinc-900 text-zinc-500 text-[11px] rounded border border-zinc-800 uppercase font-mono">{scene.time}</span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 line-clamp-1">{scene.atmosphere}</p>
+                  <p className="text-[12px] text-zinc-500 line-clamp-1">{scene.atmosphere}</p>
                 </div>
               </div>
             ))}

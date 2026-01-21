@@ -122,13 +122,13 @@ function App() {
              </div>
              <div>
                 <h1 className="text-xl font-bold text-white tracking-wide">API 配置</h1>
-                <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-mono">Authentication</p>
+                <p className="text-[12px] text-zinc-500 uppercase tracking-widest font-mono">Authentication</p>
              </div>
           </div>
 
           <div className="space-y-6">
              <div>
-               <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
+               <label className="block text-[12px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
                  火山引擎 / 豆包 API Key
                </label>
                <input
@@ -138,7 +138,7 @@ function App() {
                  placeholder="Enter your API Key..."
                  className="w-full bg-[#141414] border border-zinc-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-zinc-700"
                />
-               <p className="mt-3 text-[10px] text-zinc-600 leading-relaxed">
+               <p className="mt-3 text-[12px] text-zinc-600 leading-relaxed">
                  本应用需要火山引擎的 API 访问权限。请确保您的 API Key 已开通相应的服务权限。
                  <a href="https://www.volcengine.com/docs/82379" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline ml-1">查看文档</a>
                </p>
@@ -152,7 +152,7 @@ function App() {
                保存配置 <ArrowRight className="w-3 h-3" />
              </button>
 
-             <div className="flex items-center justify-center gap-2 text-[10px] text-zinc-700 font-mono">
+             <div className="flex items-center justify-center gap-2 text-[12px] text-zinc-700 font-mono">
                <ShieldCheck className="w-3 h-3" />
                Key is stored locally in your browser
              </div>
@@ -166,7 +166,7 @@ function App() {
   if (!project) {
     return (
        <>
-         <button onClick={handleClearKey} className="fixed top-4 right-4 z-50 text-[10px] text-zinc-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
+         <button onClick={handleClearKey} className="fixed top-4 right-4 z-50 text-[12px] text-zinc-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
             Sign Out
          </button>
          <Dashboard onOpenProject={handleOpenProject} />

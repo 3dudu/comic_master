@@ -286,7 +286,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                          <select 
                                             value={activeShot.characterVariations?.[char.id] || ""}
                                             onChange={(e) => handleVariationChange(activeShot.id, char.id, e.target.value)}
-                                            className="bg-black text-[10px] text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
+                                            className="bg-black text-[12px] text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
                                          >
                                              <option value="">默认造型</option>
                                              {char.variations.map(v => (
@@ -378,8 +378,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                           >
                               {/* Header */}
                               <div className="px-3 py-2 bg-[#151515] border-b border-zinc-800 flex justify-between items-center">
-                                  <span className={`font-mono text-[10px] font-bold ${isActive ? 'text-indigo-400' : 'text-zinc-500'}`}>SHOT {String(idx + 1).padStart(2, '0')}</span>
-                                  <span className="text-[9px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded uppercase">{shot.cameraMovement}</span>
+                                  <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-zinc-500'}`}>SHOT {String(idx + 1).padStart(2, '0')}</span>
+                                  <span className="text-[11px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded uppercase">{shot.cameraMovement}</span>
                               </div>
 
                               {/* Thumbnail */}
@@ -399,7 +399,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                                   {!activeShotId && !hasImage && (
                                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                          <span className="text-[10px] text-white font-bold uppercase tracking-wider bg-zinc-900/90 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur">点击生成</span>
+                                          <span className="text-[12px] text-white font-bold uppercase tracking-wider bg-zinc-900/90 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur">点击生成</span>
                                       </div>
                                   )}
                               </div>
@@ -428,7 +428,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </span>
                            <div>
                                <h3 className="text-white font-bold text-sm">镜头详情</h3>
-                               <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
+                               <p className="text-[12px] text-zinc-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
                            </div>
                        </div>
                        
@@ -487,11 +487,11 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                {/* Start Frame */}
                                <div className="space-y-2">
                                    <div className="flex justify-between items-center">
-                                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">起始帧 (Start)</span>
+                                       <span className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">起始帧 (Start)</span>
                                        <button
                                            onClick={() => handleGenerateKeyframe(activeShot, 'start')}
                                            disabled={!!processingState || !!batchProgress}
-                                           className="text-[10px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                           className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                        >
                                            {processingState?.type === 'kf_start' && (processingState?.id === startKf?.id || (!startKf && processingState?.type === 'kf_start')) ? '生成中...' : startKf?.imageUrl ? '重新生成' : '生成'}
                                        </button>
@@ -520,11 +520,11 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                {/* End Frame */}
                                <div className="space-y-2">
                                    <div className="flex justify-between items-center">
-                                       <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">结束帧 (End)</span>
+                                       <span className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">结束帧 (End)</span>
                                        <button
                                            onClick={() => handleGenerateKeyframe(activeShot, 'end')}
                                            disabled={!!processingState || !!batchProgress}
-                                           className="text-[10px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                           className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                        >
                                            {processingState?.type === 'kf_end' && (processingState?.id === endKf?.id || (!endKf && processingState?.type === 'kf_end')) ? '生成中...' : endKf?.imageUrl ? '重新生成' : '生成'}
                                        </button>
@@ -538,7 +538,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
-                                               <span className="text-[9px] text-zinc-700 uppercase">Optional</span>
+                                               <span className="text-[11px] text-zinc-700 uppercase">Optional</span>
                                            </div>
                                        )}
                                        {/* Loading State matching ID */}
@@ -559,7 +559,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                   <Video className="w-3 h-3 text-indigo-500" />
                                   视频生成 (Veo)
                                </h4>
-                               {activeShot.interval?.status === 'completed' && <span className="text-[10px] text-green-500 font-mono flex items-center gap-1">● READY</span>}
+                               {activeShot.interval?.status === 'completed' && <span className="text-[12px] text-green-500 font-mono flex items-center gap-1">● READY</span>}
                            </div>
                            
                            {activeShot.interval?.videoUrl ? (
@@ -594,7 +594,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </button>
                            
                            {!endKf?.imageUrl && (
-                               <div className="text-[9px] text-zinc-500 text-center font-mono">
+                               <div className="text-[11px] text-zinc-500 text-center font-mono">
                                   * 未检测到结束帧，将使用单图生成模式 (Image-to-Video)
                                </div>
                            )}

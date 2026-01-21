@@ -74,7 +74,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
               </h2>
           </div>
           <div className="flex items-center gap-2">
-             <span className="text-[10px] text-zinc-500 font-mono uppercase bg-zinc-900 border border-zinc-800 px-2 py-1 rounded">
+             <span className="text-[12px] text-zinc-500 font-mono uppercase bg-zinc-900 border border-zinc-800 px-2 py-1 rounded">
                Status: {progress === 100 ? 'READY' : 'IN PROGRESS'}
              </span>
           </div>
@@ -93,21 +93,21 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                <div>
                  <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{project?.title || '未命名项目'}</h3>
-                    <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-400 text-[10px] rounded uppercase font-mono tracking-wider">Master Sequence</span>
+                    <span className="px-2 py-0.5 bg-zinc-900 border border-zinc-700 text-zinc-400 text-[12px] rounded uppercase font-mono tracking-wider">Master Sequence</span>
                  </div>
                  <div className="flex items-center gap-6 mt-3">
                     <div className="flex flex-col">
-                        <span className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Shots</span>
+                        <span className="text-[11px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Shots</span>
                         <span className="text-sm font-mono text-zinc-300">{project.shots.length}</span>
                     </div>
                     <div className="w-px h-6 bg-zinc-800"></div>
                     <div className="flex flex-col">
-                        <span className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Est. Duration</span>
+                        <span className="text-[11px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Est. Duration</span>
                         <span className="text-sm font-mono text-zinc-300">~{estimatedDuration}s</span>
                     </div>
                     <div className="w-px h-6 bg-zinc-800"></div>
                     <div className="flex flex-col">
-                        <span className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Target</span>
+                        <span className="text-[11px] text-zinc-600 uppercase tracking-widest font-bold mb-0.5">Target</span>
                         <span className="text-sm font-mono text-zinc-300">{project.targetDuration}</span>
                     </div>
                  </div>
@@ -118,7 +118,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                      <span className="text-3xl font-mono font-bold text-indigo-400">{progress}</span>
                      <span className="text-sm text-zinc-500">%</span>
                  </div>
-                 <div className="text-[10px] text-zinc-500 uppercase tracking-widest flex items-center justify-end gap-2">
+                 <div className="text-[12px] text-zinc-500 uppercase tracking-widest flex items-center justify-end gap-2">
                     {progress === 100 ? <CheckCircle className="w-3 h-3 text-green-500" /> : <BarChart3 className="w-3 h-3" />}
                     Render Status
                  </div>
@@ -127,7 +127,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
 
              {/* Timeline Visualizer Strip */}
              <div className="mb-10">
-                <div className="flex justify-between text-[10px] text-zinc-600 font-mono uppercase tracking-widest mb-2 px-1">
+                <div className="flex justify-between text-[12px] text-zinc-600 font-mono uppercase tracking-widest mb-2 px-1">
                     <span>Sequence Map</span>
                     <span>TC 00:00:00:00</span>
                 </div>
@@ -155,7 +155,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                              
                              {/* Hover Tooltip */}
                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-20 whitespace-nowrap">
-                                <div className="bg-black text-white text-[10px] px-2 py-1 rounded border border-zinc-700 shadow-xl">
+                                <div className="bg-black text-white text-[12px] px-2 py-1 rounded border border-zinc-700 shadow-xl">
                                     Shot {idx + 1}
                                 </div>
                              </div>
@@ -209,8 +209,8 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              {project.mergedVideoUrl && (
                <div className="mt-8">
                  <div className="flex justify-between items-center mb-2 px-1">
-                   <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Video Preview</span>
-                   <span className="text-[10px] text-zinc-500 font-mono">Ready to download</span>
+                   <span className="text-[12px] text-zinc-600 font-bold uppercase tracking-widest">Video Preview</span>
+                   <span className="text-[12px] text-zinc-500 font-mono">Ready to download</span>
                  </div>
                  <div className="w-full bg-black rounded-lg overflow-hidden border border-zinc-800">
                    <video
@@ -239,21 +239,21 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                   <Layers className="w-5 h-5 text-zinc-600 group-hover:text-indigo-400 mb-4 transition-colors" />
                   <div>
                     <h4 className="text-sm font-bold text-white mb-1">Source Assets</h4>
-                    <p className="text-[10px] text-zinc-500">Download all generated images and raw video clips.</p>
+                    <p className="text-[12px] text-zinc-500">Download all generated images and raw video clips.</p>
                   </div>
               </div>
               <div className="p-5 bg-[#141414] border border-zinc-800 rounded-xl hover:border-zinc-600 transition-colors group cursor-pointer flex flex-col justify-between h-32">
                   <Share2 className="w-5 h-5 text-zinc-600 group-hover:text-indigo-400 mb-4 transition-colors" />
                   <div>
                     <h4 className="text-sm font-bold text-white mb-1">Share Project</h4>
-                    <p className="text-[10px] text-zinc-500">Create a view-only link for client review.</p>
+                    <p className="text-[12px] text-zinc-500">Create a view-only link for client review.</p>
                   </div>
               </div>
               <div className="p-5 bg-[#141414] border border-zinc-800 rounded-xl hover:border-zinc-600 transition-colors group cursor-pointer flex flex-col justify-between h-32">
                   <Clock className="w-5 h-5 text-zinc-600 group-hover:text-indigo-400 mb-4 transition-colors" />
                   <div>
                     <h4 className="text-sm font-bold text-white mb-1">Render Logs</h4>
-                    <p className="text-[10px] text-zinc-500">View generation history and token usage.</p>
+                    <p className="text-[12px] text-zinc-500">View generation history and token usage.</p>
                   </div>
               </div>
           </div>

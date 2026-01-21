@@ -331,7 +331,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
             {/* Title Input */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">项目标题</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">项目标题</label>
               <input 
                 type="text"
                 value={localTitle}
@@ -343,7 +343,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Language Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                 输出语言
               </label>
               <div className="relative">
@@ -364,7 +364,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Visual Style Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                 画面风格
               </label>
               <div className="relative">
@@ -385,7 +385,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Image Size Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                 图片尺寸
               </label>
               <div className="relative">
@@ -406,7 +406,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Duration Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                 目标时长
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -477,7 +477,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <div className="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
               <span className="text-xs font-bold text-zinc-400">剧本编辑器</span>
            </div>
-           <span className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest">MARKDOWN SUPPORTED</span>
+           <span className="text-[12px] font-mono text-zinc-600 uppercase tracking-widest">MARKDOWN SUPPORTED</span>
         </div>
 
         {/* AI Script Generation Input */}
@@ -526,7 +526,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         </div>
 
         {/* Editor Status Footer */}
-        <div className="h-8 border-t border-zinc-900 bg-[#050505] px-4 flex items-center justify-end gap-4 text-[10px] text-zinc-600 font-mono select-none">
+        <div className="h-8 border-t border-zinc-900 bg-[#050505] px-4 flex items-center justify-end gap-4 text-[12px] text-zinc-600 font-mono select-none">
            <span>{localScript.length} 字符</span>
            <span>{localScript.split('\n').length} 行</span>
            <div className="flex items-center gap-1.5">
@@ -564,11 +564,11 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               
               <div className="flex items-center gap-4">
                   <div className="flex flex-col">
-                      <span className="text-[10px] text-zinc-600 uppercase tracking-widest">项目</span>
+                      <span className="text-[12px] text-zinc-600 uppercase tracking-widest">项目</span>
                       <span className="text-sm text-zinc-200 font-medium">{project.scriptData?.title}</span>
                   </div>
                   <div className="flex flex-col">
-                      <span className="text-[10px] text-zinc-600 uppercase tracking-widest">时长</span>
+                      <span className="text-[12px] text-zinc-600 uppercase tracking-widest">时长</span>
                       <span className="text-sm font-mono text-zinc-400">{project.targetDuration}</span>
                   </div>
               </div>
@@ -599,7 +599,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
            <div className="w-72 border-r border-zinc-800 bg-[#0A0A0A] flex flex-col hidden lg:flex">
               <div className="p-6 border-b border-zinc-900">
                  <div className="flex items-center justify-between mb-4">
-                   <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                   <h3 className="text-[12px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
                      <TextQuote className="w-3 h-3" /> 故事梗概
                    </h3>
                    {!editingLogline && (
@@ -617,8 +617,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                        rows={3}
                      />
                      <div className="flex gap-2">
-                       <button onClick={saveLogline} className="flex-1 py-1.5 bg-zinc-800 text-zinc-300 text-[10px] font-bold rounded hover:bg-zinc-700 transition-colors">保存</button>
-                       <button onClick={() => setEditingLogline(false)} className="flex-1 py-1.5 bg-zinc-900 text-zinc-500 text-[10px] font-bold rounded hover:text-zinc-300 transition-colors">取消</button>
+                       <button onClick={saveLogline} className="flex-1 py-1.5 bg-zinc-800 text-zinc-300 text-[12px] font-bold rounded hover:bg-zinc-700 transition-colors">保存</button>
+                       <button onClick={() => setEditingLogline(false)} className="flex-1 py-1.5 bg-zinc-900 text-zinc-500 text-[12px] font-bold rounded hover:text-zinc-300 transition-colors">取消</button>
                      </div>
                    </div>
                  ) : (
@@ -630,7 +630,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   {/* Characters */}
                   <section>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                      <h3 className="text-[12px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
                          <Users className="w-3 h-3" /> 演员表
                       </h3>
                       <button onClick={() => setShowAddCharacter(true)} className="text-zinc-600 hover:text-white transition-colors">
@@ -666,15 +666,15 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                   placeholder="年龄"
                                 />
                                 <div className="flex gap-1">
-                                  <button onClick={saveCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">保存</button>
-                                  <button onClick={() => { setEditingCharacterId(null); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                                  <button onClick={saveCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[11px] rounded hover:bg-zinc-700">保存</button>
+                                  <button onClick={() => { setEditingCharacterId(null); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[11px] rounded hover:text-zinc-300">取消</button>
                                 </div>
                               </div>
                             ) : (
                               <>
                                 <span className="text-sm text-zinc-300 font-medium group-hover:text-white">{c.name}</span>
                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <span className="text-[10px] text-zinc-600 font-mono">{c.gender}</span>
+                                  <span className="text-[12px] text-zinc-600 font-mono">{c.gender}</span>
                                   <button onClick={() => startEditCharacter(c)} className="text-zinc-600 hover:text-white"><Edit className="w-3 h-3" /></button>
                                   <button onClick={() => deleteCharacter(c.id)} className="text-zinc-600 hover:text-red-400"><Trash className="w-3 h-3" /></button>
                                 </div>
@@ -708,8 +708,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                              placeholder="年龄"
                            />
                            <div className="flex gap-1">
-                             <button onClick={addCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">添加</button>
-                             <button onClick={() => { setShowAddCharacter(false); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                             <button onClick={addCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[11px] rounded hover:bg-zinc-700">添加</button>
+                             <button onClick={() => { setShowAddCharacter(false); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[11px] rounded hover:text-zinc-300">取消</button>
                            </div>
                          </div>
                        )}
@@ -719,7 +719,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   {/* Scenes */}
                   <section>
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                      <h3 className="text-[12px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
                          <MapPin className="w-3 h-3" /> 场景列表
                       </h3>
                       <button onClick={() => setShowAddScene(true)} className="text-zinc-600 hover:text-white transition-colors">
@@ -753,8 +753,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                  placeholder="氛围"
                                />
                                <div className="flex gap-1">
-                                 <button onClick={saveScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">保存</button>
-                                 <button onClick={() => { setEditingSceneId(null); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                                 <button onClick={saveScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[11px] rounded hover:bg-zinc-700">保存</button>
+                                 <button onClick={() => { setEditingSceneId(null); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[11px] rounded hover:text-zinc-300">取消</button>
                                </div>
                              </div>
                            ) : (
@@ -793,8 +793,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                              placeholder="氛围"
                            />
                            <div className="flex gap-1">
-                             <button onClick={addScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">添加</button>
-                             <button onClick={() => { setShowAddScene(false); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                             <button onClick={addScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[11px] rounded hover:bg-zinc-700">添加</button>
+                             <button onClick={() => { setShowAddScene(false); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[11px] rounded hover:text-zinc-300">取消</button>
                            </div>
                          </div>
                        )}
@@ -820,7 +820,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                  {scene.location}
                               </h3>
                            </div>
-                           <div className="flex gap-4 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+                           <div className="flex gap-4 text-[12px] font-mono uppercase tracking-widest text-zinc-500">
                               <span className="flex items-center gap-1.5"><Clock className="w-3 h-3"/> {scene.time}</span>
                               <span className="text-zinc-700">|</span>
                               <span>{scene.atmosphere}</span>
@@ -839,10 +839,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                    </div>
                                    
                                    <div className="flex flex-col gap-2">
-                                     <div className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase text-center rounded">
+                                     <div className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[12px] font-mono text-zinc-400 uppercase text-center rounded">
                                        {shot.shotSize || 'MED'}
                                      </div>
-                                     <div className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[10px] font-mono text-zinc-400 uppercase text-center rounded">
+                                     <div className="px-2 py-1 bg-zinc-900 border border-zinc-800 text-[12px] font-mono text-zinc-400 uppercase text-center rounded">
                                        {shot.cameraMovement}
                                      </div>
                                    </div>
@@ -865,7 +865,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                       {shot.characters.map(cid => {
                                          const char = project.scriptData?.characters.find(c => c.id === cid);
                                          return char ? (
-                                           <span key={cid} className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded-full bg-zinc-900">
+                                           <span key={cid} className="text-[12px] uppercase font-bold tracking-wider text-zinc-500 border border-zinc-800 px-2 py-0.5 rounded-full bg-zinc-900">
                                               {char.name}
                                            </span>
                                          ) : null;
@@ -875,10 +875,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
                                 {/* Prompt Preview */}
                                 <div className="w-64 hidden xl:block pl-6 border-l border-zinc-900">
-                                   <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                   <div className="text-[12px] font-bold text-zinc-700 uppercase tracking-widest mb-2 flex items-center gap-2">
                                       <Aperture className="w-3 h-3" /> 画面提示词 (AI Prompt)
                                    </div>
-                                   <p className="text-[10px] text-zinc-600 font-mono leading-relaxed line-clamp-4 hover:line-clamp-none hover:text-zinc-400 transition-all cursor-text bg-zinc-900/30 p-2 rounded">
+                                   <p className="text-[12px] text-zinc-600 font-mono leading-relaxed line-clamp-4 hover:line-clamp-none hover:text-zinc-400 transition-all cursor-text bg-zinc-900/30 p-2 rounded">
                                      {shot.keyframes[0]?.visualPrompt}
                                    </p>
                                 </div>
@@ -921,7 +921,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
           <div className="p-6 space-y-5">
             {/* Title Input */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">项目标题</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">项目标题</label>
               <input
                 type="text"
                 value={settingTitle}
@@ -933,7 +933,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Language Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">输出语言</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">输出语言</label>
               <div className="relative">
                 <select
                   value={settingLanguage}
@@ -952,7 +952,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Visual Style Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">画面风格</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">画面风格</label>
               <div className="relative">
                 <select
                   value={settingStyle}
@@ -971,7 +971,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Image Size Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">图片尺寸</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">图片尺寸</label>
               <div className="relative">
                 <select
                   value={settingImageSize}
@@ -990,7 +990,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
             {/* Duration Selection */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">目标时长</label>
+              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">目标时长</label>
               <div className="grid grid-cols-2 gap-2">
                 {DURATION_OPTIONS.map((opt) => (
                   <button

@@ -1,5 +1,5 @@
 import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, List, MapPin, Plus, Settings, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ModelService } from '../services/modelService';
 import { Character, ProjectState, Scene } from '../types';
 
@@ -74,6 +74,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [scriptPrompt, setScriptPrompt] = useState('');
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
+  const [processingStep, setProcessingStep] = useState<string>('');
 
   // Editing states
   const [editingLogline, setEditingLogline] = useState(false);
@@ -84,6 +85,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [editingSceneId, setEditingSceneId] = useState<string | null>(null);
   const [tempScene, setTempScene] = useState<Partial<Scene>>({});
   const [showAddScene, setShowAddScene] = useState(false);
+
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setLocalScript(project.rawScript);
@@ -97,6 +100,34 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     // 初始化模型服务
     ModelService.initialize();
   }, [project.id]);
+
+  // 自动保存 localScript
+  useEffect(() => {
+    // 清除之前的定时器
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    // 如果 localScript 为空或与项目中的值相同，则不保存
+    if (!localScript || localScript === project.rawScript) {
+      return;
+    }
+
+    // 设置新的定时器，延迟 2 秒后保存
+    autoSaveTimerRef.current = setTimeout(() => {
+      updateProject({
+        rawScript: localScript,
+        lastModified: Date.now()
+      });
+    }, 2000);
+
+    // 清理函数：组件卸载时清除定时器
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [localScript, project.rawScript, updateProject]);
 
   const handleDurationSelect = (val: string) => {
     setLocalDuration(val);
@@ -292,6 +323,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
     setIsProcessing(true);
     setError(null);
+    setProcessingStep('正在分析剧本结构...');
     try {
       updateProject({
         title: localTitle,
@@ -313,8 +345,37 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         scriptData.title = localTitle;
       }
 
-      const shots = await ModelService.generateShotList(scriptData);
+      // 逐场景生成分镜
+      const allShots: any[] = [];
+      const totalScenes = scriptData.scenes.length;
 
+      for (let i = 0; i < totalScenes; i++) {
+        const scene = scriptData.scenes[i];
+        setProcessingStep(`正在生成第 ${i + 1}/${totalScenes} 场的分镜...`);
+
+        const sceneShots = await ModelService.generateShotListForScene(scriptData, scene, i);
+        allShots.push(...sceneShots);
+
+        // 短暂延迟，避免请求过快
+        if (i < totalScenes - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+      }
+
+      // 重新索引 shots
+      const shots = allShots.map((s, idx) => ({
+        ...s,
+        id: `shot-${idx + 1}`,
+        keyframes: Array.isArray(s.keyframes)
+          ? s.keyframes.map((k: any) => ({
+              ...k,
+              id: `kf-${idx + 1}-${k.type}`,
+              status: "pending",
+            }))
+          : [],
+      }));
+
+      setProcessingStep('正在保存分镜数据...');
       updateProject({
         scriptData,
         shots,
@@ -323,11 +384,13 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
       });
 
       setActiveTab('script');
+      setProcessingStep('');
 
     } catch (err: any) {
       console.error(err);
       setError(`错误: ${err.message || "AI 连接失败"}`);
       updateProject({ isParsingScript: false });
+      setProcessingStep('');
     } finally {
       setIsProcessing(false);
     }
@@ -483,7 +546,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               onClick={handleAnalyze}
               disabled={isProcessing}
               className={`w-full py-3.5 font-bold text-xs tracking-widest uppercase rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg ${
-                isProcessing 
+                isProcessing
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
                   : 'bg-white text-black hover:bg-slate-200 shadow-white/5'
               }`}
@@ -491,7 +554,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               {isProcessing ? (
                 <>
                   <BrainCircuit className="w-4 h-4 animate-spin" />
-                  智能分析中...
+                  {processingStep || '智能分析中...'}
                 </>
               ) : (
                 <>

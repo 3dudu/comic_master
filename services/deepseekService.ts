@@ -203,110 +203,113 @@ export const parseScriptToDataDeepseek = async (
  * DeepSeek: Shot List Generation
  * 为剧本生成镜头清单
  */
+/**
+ * DeepSeek: 为单个场景生成镜头清单
+ */
+export const generateShotListDeepseekForScene = async (
+  scriptData: ScriptData,
+  scene: any,
+  index: number
+): Promise<Shot[]> => {
+  const lang = scriptData.language || "中文";
+
+  const paragraphs = scriptData.storyParagraphs
+    .filter((p) => String(p.sceneRefId) === String(scene.id))
+    .map((p) => p.text)
+    .join("\n");
+
+  if (!paragraphs.trim()) return [];
+
+  const prompt = `
+    担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
+    文本输出语言: ${lang}.
+
+    场景细节:
+    地点: ${scene.location}
+    时间: ${scene.time}
+    氛围: ${scene.atmosphere}
+
+    场景动作:
+    "${paragraphs.slice(0, 5000)}"
+
+    创作背景:
+    题材类型: ${scriptData.genre}
+    剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
+
+    人物:
+    ${JSON.stringify(
+      scriptData.characters.map((c) => ({
+        id: c.id,
+        name: c.name,
+        desc: c.visualPrompt || c.personality,
+      }))
+    )}
+
+    说明：
+    1. 设计一组覆盖全部情节动作的镜头序列。
+    2. 重要提示：每场戏镜头数量上限为 6-8 个，避免出现 JSON 截断错误。
+    3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
+    4. 景别：明确取景范围（如：大特写、中景、全景）。
+    5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
+    6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
+    7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
+    8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
+
+    输出格式：JSON 数组，数组内对象包含以下字段：
+    - id（字符串类型）
+    - sceneId（字符串类型）
+    - actionSummary（字符串类型）
+    - dialogue（字符串类型，可选）
+    - cameraMovement（字符串类型）
+    - shotSize（字符串类型）
+    - characters（字符串数组类型）
+    - keyframes（对象数组类型，对象包含 id、type（取值为 ["start", "end"]）、visualPrompt（使用 ${lang} 指定语言） 字段）
+    - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration、motionStrength、status（取值为 ["pending", "completed"]） 字段）
+  `;
+
+  try {
+    const endpoint = `${runtimeApiUrl}/chat/completions`;
+    const response = await fetchWithRetry(endpoint, {
+      method: "POST",
+      body: JSON.stringify({
+        model: DEEPSEEK_CONFIG.TEXT_MODEL,
+        messages: [
+          {
+            role: "system",
+            content:
+              "你是一名专业的摄影师，请始终以有效的 JSON 数组格式进行回复。",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 8192,
+        response_format: { type: "json_object" },
+      }),
+    });
+
+    const content = response.choices?.[0]?.message?.content || "[]";
+    const shots = JSON.parse(cleanJsonString(content));
+
+    const validShots = Array.isArray(shots) ? shots : [];
+    return validShots.map((s: any) => ({
+      ...s,
+      sceneId: String(scene.id),
+    }));
+  } catch (e) {
+    console.error(`Failed to generate shots for scene ${scene.id}`, e);
+    return [];
+  }
+};
+
 export const generateShotListDeepseek = async (
   scriptData: ScriptData
 ): Promise<Shot[]> => {
   if (!scriptData.scenes || scriptData.scenes.length === 0) {
     return [];
   }
-
-  const lang = scriptData.language || "中文";
-
-  // Helper to process a single scene
-  const processScene = async (
-    scene: Scene,
-    index: number
-  ): Promise<Shot[]> => {
-    const paragraphs = scriptData.storyParagraphs
-      .filter((p) => String(p.sceneRefId) === String(scene.id))
-      .map((p) => p.text)
-      .join("\n");
-
-    if (!paragraphs.trim()) return [];
-
-    const prompt = `
-      担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
-      文本输出语言: ${lang}.
-
-      场景细节:
-      地点: ${scene.location}
-      时间: ${scene.time}
-      氛围: ${scene.atmosphere}
-
-      场景动作:
-      "${paragraphs.slice(0, 5000)}"
-
-      创作背景:
-      题材类型: ${scriptData.genre}
-      剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
-
-      人物:
-      ${JSON.stringify(
-        scriptData.characters.map((c) => ({
-          id: c.id,
-          name: c.name,
-          desc: c.visualPrompt || c.personality,
-        }))
-      )}
-
-      说明：
-      1. 设计一组覆盖全部情节动作的镜头序列。
-      2. 重要提示：每场戏镜头数量上限为 6-8 个，避免出现 JSON 截断错误。
-      3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
-      4. 景别：明确取景范围（如：大特写、中景、全景）。
-      5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
-      6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
-      7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
-      8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
-
-      输出格式：JSON 数组，数组内对象包含以下字段：
-      - id（字符串类型）
-      - sceneId（字符串类型）
-      - actionSummary（字符串类型）
-      - dialogue（字符串类型，可选）
-      - cameraMovement（字符串类型）
-      - shotSize（字符串类型）
-      - characters（字符串数组类型）
-      - keyframes（对象数组类型，对象包含 id、type（取值为 ["start", "end"]）、visualPrompt（使用 ${lang} 指定语言） 字段）
-      - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration、motionStrength、status（取值为 ["pending", "completed"]） 字段）
-    `;
-
-    try {
-      const endpoint = `${runtimeApiUrl}/chat/completions`;
-      const response = await fetchWithRetry(endpoint, {
-        method: "POST",
-        body: JSON.stringify({
-          model: DEEPSEEK_CONFIG.TEXT_MODEL,
-          messages: [
-            {
-              role: "system",
-              content:
-                "你是一名专业的摄影师，请始终以有效的 JSON 数组格式进行回复。",
-            },
-            {
-              role: "user",
-              content: prompt,
-            },
-          ],
-          temperature: 0.7,
-          max_tokens: 8192,
-          response_format: { type: "json_object" },
-        }),
-      });
-
-      const content = response.choices?.[0]?.message?.content || "[]";
-      const shots = JSON.parse(cleanJsonString(content));
-
-      const validShots = Array.isArray(shots) ? shots : [];
-      return validShots.map((s: any) => ({
-        ...s,
-        sceneId: String(scene.id),
-      }));
-    } catch (e) {
-      console.error(`Failed to generate shots for scene ${scene.id}`, e);
-      return [];
-    }
-  };
 
   // Process scenes sequentially
   const BATCH_SIZE = 1;
@@ -317,7 +320,7 @@ export const generateShotListDeepseek = async (
 
     const batch = scriptData.scenes.slice(i, i + BATCH_SIZE);
     const batchResults = await Promise.all(
-      batch.map((scene, idx) => processScene(scene, i + idx))
+      batch.map((scene, idx) => generateShotListDeepseekForScene(scriptData, scene, i + idx))
     );
     batchResults.forEach((shots) => allShots.push(...shots));
   }

@@ -8,6 +8,7 @@ import { getAllModelConfigs, getEnabledConfigByType } from "./modelConfigService
 import {
   generateScriptDeepseek,
   generateShotListDeepseek,
+  generateShotListDeepseekForScene,
   generateVisualPromptsDeepseek,
   parseScriptToDataDeepseek,
   setDeepseekApiKey,
@@ -25,6 +26,7 @@ import {
   generateImage as generateImageDoubao,
   generateScript as generateScriptDoubao,
   generateShotList as generateShotListDoubao,
+  generateShotListDoubaoForScene,
   generateVideo as generateVideoDoubao,
   generateVisualPrompts as generateVisualPromptsDoubao,
   parseScriptToData as parseScriptToDataDoubao,
@@ -183,6 +185,33 @@ export class ModelService {
       case 'doubao':
       default:
         return await generateShotListDoubao(scriptData);
+      case 'openai':
+      case 'gemini':
+        // TODO: 实现其他提供商
+        throw new Error(`暂不支持 ${provider} 提供商的镜头生成`);
+    }
+  }
+
+  /**
+   * 为单个场景生成镜头清单
+   * @param scriptData - 剧本数据
+   * @param scene - 场景数据
+   * @param sceneIndex - 场景索引
+   */
+  static async generateShotListForScene(
+    scriptData: ScriptData,
+    scene: any,
+    sceneIndex: number
+  ): Promise<Shot[]> {
+    const provider = await this.getEnabledLLMProvider();
+    console.log(`使用 ${provider} 生成场景 ${sceneIndex + 1} 的镜头清单`);
+
+    switch (provider) {
+      case 'deepseek':
+        return await generateShotListDeepseekForScene(scriptData, scene, sceneIndex);
+      case 'doubao':
+      default:
+        return await generateShotListDoubaoForScene(scriptData, scene, sceneIndex);
       case 'openai':
       case 'gemini':
         // TODO: 实现其他提供商

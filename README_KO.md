@@ -1,4 +1,4 @@
-# CineGen AI Director (AI 만화·모션 코믹 제작 공장)
+# AI漫剧工场 (AI 만화·모션 코믹 제작 공장)
 
 영감 출처: 원스톱 만화·모션 코믹 제작 플랫폼  
 [AniKuku AI 만화 제작 플랫폼](https://anikuku.com/?github)
@@ -10,7 +10,7 @@
 
 ---
 
-**CineGen AI Director**는 **AI 만화(Motion Comics)**, **동적 웹툰**, **영상 스토리보드(Animatic)** 제작을 위해 설계된 **전문급 AI 콘텐츠 제작 툴**입니다.  
+**AI漫剧工场**는 **AI 만화(Motion Comics)**, **동적 웹툰**, **영상 스토리보드(Animatic)** 제작을 위해 설계된 **전문급 AI 콘텐츠 제작 툴**입니다.  
 AI 만화 제작, 모션 코믹 생성, 영상 프리비주얼라이제이션(Pre-visualization)에 최적화된 차세대 워크벤치입니다.
 
 기존의 무작위적인 “카드 뽑기식(Text-to-Video)” 생성 방식을 버리고,  

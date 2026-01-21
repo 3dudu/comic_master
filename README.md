@@ -1,4 +1,4 @@
-# CineGen AI Director (AI 漫剧工场)
+# AI漫剧工场 (AI 漫剧工场)
 
 灵感来自于 一站式的漫剧制作平台 [AniKuku AI 漫剧制作平台](https://anikuku.com/?github) 。
 
@@ -6,7 +6,7 @@
 
 [中文](./README.md) ｜ [English](./README_EN.md) ｜  [日本語](./README_JA.md) ｜  [한국인](./README_KO.md)
 
-**CineGen AI Director** 是一个专为 **AI 漫剧 (Motion Comics)**、**动态漫画**及**影视分镜 (Animatic)** 设计的专业生产力工具。
+**AI漫剧工场** 是一个专为 **AI 漫剧 (Motion Comics)**、**动态漫画**及**影视分镜 (Animatic)** 设计的专业生产力工具。
 
 它摒弃了传统的“抽卡式”生成，采用 **"Script-to-Asset-to-Keyframe"** 的工业化工作流。通过深度集成 Google Gemini 2.5 Flash 和 Veo 模型，实现了对角色一致性、场景连续性以及镜头运动的精准控制。
 

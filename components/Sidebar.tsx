@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
             <Aperture className="w-5 h-5" />
           </div>
           <div className="overflow-hidden">
-            <h1 className="text-sm font-bold text-white tracking-wider uppercase">CineGen AI</h1>
+            <h1 className="text-sm font-bold text-white tracking-wider uppercase">AI漫剧工场</h1>
             <p className="text-[12px] text-zinc-500 uppercase tracking-widest">Studio Pro</p>
           </div>
         </div>

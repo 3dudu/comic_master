@@ -1,4 +1,4 @@
-# CineGen AI Director (AI 漫劇工場)
+# AI漫剧工场 (AI 漫劇工場)
 
 > **産業用 AI モーションコミック & 動画生成ワークベンチ**
 > *Industrial AI Motion Comic & Video Workbench*
@@ -10,7 +10,7 @@ The inspiration comes from the one-stop comic production platform [AniKuku AI Co
 > cinegen@ullrai.com
 
 
-**CineGen AI Director** は、**AI モーションコミック**、**縦読みマンガ動画**、および**映像絵コンテ (Animatic)** 制作のために設計されたプロフェッショナルツールです。
+**AI漫剧工场** は、**AI モーションコミック**、**縦読みマンガ動画**、および**映像絵コンテ (Animatic)** 制作のために設計されたプロフェッショナルツールです。
 
 従来の「ガチャ」的な生成手法を捨て、**「脚本 -> アセット -> キーフレーム」** という産業用ワークフローを採用しています。Google Gemini 2.5 Flash と Veo モデルを深く統合することで、キャラクターの一貫性、シーンの連続性、そしてカメラワークの精密な制御を実現しました。
 

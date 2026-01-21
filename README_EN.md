@@ -1,4 +1,4 @@
-# CineGen AI Director
+# AI漫剧工场
 
 
 
@@ -9,7 +9,7 @@ The inspiration comes from the one-stop comic production platform [AniKuku AI Co
 > cinegen@ullrai.com
 
 
-**CineGen AI Director** is a professional productivity tool designed for **AI Motion Comics**, **Webtoons**, and **Video Animatics**.
+**AI漫剧工场** is a professional productivity tool designed for **AI Motion Comics**, **Webtoons**, and **Video Animatics**.
 
 Moving away from the traditional "slot machine" style of random generation, CineGen adopts an industrial **"Script-to-Asset-to-Keyframe"** workflow. By deeply integrating Google's Gemini 2.5 Flash and Veo models, it achieves precise control over character consistency, scene continuity, and camera movement.
 

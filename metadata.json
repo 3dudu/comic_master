@@ -1,5 +1,5 @@
 {
-  "name": "CineGen AI Director",
+  "name": "AI漫剧工场",
   "description": "A professional AI-assisted video production workbench utilizing Gemini models for script-to-video workflow with precise keyframe control.",
   "requestFramePermissions": []
 }

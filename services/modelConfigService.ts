@@ -79,7 +79,8 @@ export const createDefaultModelConfigs = async (): Promise<void> => {
       modelType: 'llm',
       apiKey: '',
       apiUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-      enabled: true
+      enabled: true,
+      description: 'Doubao LLM'
     },
     {
       id: 'doubao-image',
@@ -87,7 +88,8 @@ export const createDefaultModelConfigs = async (): Promise<void> => {
       modelType: 'text2image',
       apiKey: '',
       apiUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-      enabled: true
+      enabled: true,
+      description: 'Doubao Image'
     },
     {
       id: 'doubao-video',
@@ -95,7 +97,8 @@ export const createDefaultModelConfigs = async (): Promise<void> => {
       modelType: 'image2video',
       apiKey: '',
       apiUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-      enabled: true
+      enabled: true,
+      description: 'Doubao Video'
     }
   ];
 
@@ -140,4 +143,22 @@ export const toggleConfigEnabled = async (id: string): Promise<void> => {
 
   // 切换当前配置的启用状态
   await saveModelConfig({ ...config, enabled: !config.enabled });
+};
+
+// 保存配置时确保同类型只有一个启用
+export const saveModelConfigWithExclusiveEnabled = async (config: AIModelConfig): Promise<void> => {
+  const allConfigs = await getAllModelConfigs();
+
+  // 如果启用了该配置，需要禁用同类型的其他配置
+  if (config.enabled) {
+    const updates = allConfigs
+      .filter(c => c.modelType === config.modelType && c.id !== config.id)
+      .map(c => ({ ...c, enabled: false }));
+
+    for (const update of updates) {
+      await saveModelConfig(update);
+    }
+  }
+
+  await saveModelConfig(config);
 };

@@ -1,6 +1,6 @@
 import { Check, ChevronRight, Globe, Key, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { createDefaultModelConfigs, deleteModelConfig, getAllModelConfigs, saveModelConfig, toggleConfigEnabled } from '../services/modelConfigService';
+import { createDefaultModelConfigs, deleteModelConfig, getAllModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
 import { AIModelConfig } from '../types';
 
 interface Props {
@@ -69,7 +69,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
     };
 
     try {
-      await saveModelConfig(newConfig);
+      await saveModelConfigWithExclusiveEnabled(newConfig);
       await loadConfigs();
       setShowAddModal(false);
       resetForm();
@@ -110,7 +110,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
     };
 
     try {
-      await saveModelConfig(updatedConfig);
+      await saveModelConfigWithExclusiveEnabled(updatedConfig);
       await loadConfigs();
       setShowAddModal(false);
       setEditingConfig(null);

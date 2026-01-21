@@ -44,7 +44,9 @@ const IMAGE_SIZE_OPTIONS = [
 ];
 
 const IMAGE_COUNT_OPTIONS = [
-  { label: '1 张', value: 1 },
+  { label: '1 张', value: 1 }
+];
+/*
   { label: '2 张', value: 2 },
   { label: '3 张', value: 3 },
   { label: '4 张', value: 4 },
@@ -53,7 +55,7 @@ const IMAGE_COUNT_OPTIONS = [
   { label: '7 张', value: 7 },
   { label: '8 张', value: 8 },
   { label: '9 张', value: 9 }
-];
+  */
 
 const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [activeTab, setActiveTab] = useState<TabMode>(project.scriptData ? 'script' : 'story');
@@ -72,13 +74,6 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [scriptPrompt, setScriptPrompt] = useState('');
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
-  const [settingTitle, setSettingTitle] = useState('');
-  const [settingDuration, setSettingDuration] = useState('');
-  const [settingLanguage, setSettingLanguage] = useState('');
-  const [settingStyle, setSettingStyle] = useState('');
-  const [settingImageSize, setSettingImageSize] = useState('');
-  const [settingImageCount, setSettingImageCount] = useState(1);
-  const [settingCustomDuration, setSettingCustomDuration] = useState('');
 
   // Editing states
   const [editingLogline, setEditingLogline] = useState(false);
@@ -115,25 +110,25 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   };
 
   const openSettings = () => {
-    setSettingTitle(project.title);
-    setSettingDuration(project.targetDuration || '60s');
-    setSettingLanguage(project.language || '中文');
-    setSettingStyle(project.visualStyle || '写实');
-    setSettingImageSize(project.imageSize || '1440x2560');
-    setSettingImageCount(project.imageCount || 1);
-    setSettingCustomDuration(project.targetDuration === 'custom' ? project.targetDuration : '');
+    setLocalTitle(project.title);
+    setLocalDuration(project.targetDuration || '60s');
+    setLocalLanguage(project.language || '中文');
+    setLocalStyle(project.visualStyle || '写实');
+    setLocalImageSize(project.imageSize || '1440x2560');
+    setLocalImageCount(project.imageCount || 1);
+    setCustomDurationInput(project.targetDuration === 'custom' ? project.targetDuration : '');
     setShowSettings(true);
   };
 
   const saveSettings = () => {
-    const finalDuration = settingDuration === 'custom' ? settingCustomDuration : settingDuration;
+    const finalDuration = localDuration === 'custom' ? customDurationInput : localDuration;
     updateProject({
-      title: settingTitle,
+      title: localTitle,
       targetDuration: finalDuration,
-      language: settingLanguage,
-      visualStyle: settingStyle,
-      imageSize: settingImageSize,
-      imageCount: settingImageCount
+      language: localLanguage,
+      visualStyle: localStyle,
+      imageSize: localImageSize,
+      imageCount: localImageCount
     });
     setShowSettings(false);
   };
@@ -968,8 +963,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">项目标题</label>
               <input
                 type="text"
-                value={settingTitle}
-                onChange={(e) => setSettingTitle(e.target.value)}
+                value={localTitle}
+                onChange={(e) => setLocalTitle(e.target.value)}
                 className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-zinc-600 focus:outline-none transition-all"
                 placeholder="输入项目名称..."
               />
@@ -980,8 +975,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">输出语言</label>
               <div className="relative">
                 <select
-                  value={settingLanguage}
-                  onChange={(e) => setSettingLanguage(e.target.value)}
+                  value={localLanguage}
+                  onChange={(e) => setLocalLanguage(e.target.value)}
                   className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {LANGUAGE_OPTIONS.map(opt => (
@@ -999,8 +994,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">画面风格</label>
               <div className="relative">
                 <select
-                  value={settingStyle}
-                  onChange={(e) => setSettingStyle(e.target.value)}
+                  value={localStyle}
+                  onChange={(e) => setLocalStyle(e.target.value)}
                   className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {STYLE_OPTIONS.map(opt => (
@@ -1018,8 +1013,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">图片尺寸</label>
               <div className="relative">
                 <select
-                  value={settingImageSize}
-                  onChange={(e) => setSettingImageSize(e.target.value)}
+                  value={localImageSize}
+                  onChange={(e) => setLocalImageSize(e.target.value)}
                   className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {IMAGE_SIZE_OPTIONS.map(opt => (
@@ -1037,8 +1032,8 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">组图数量</label>
               <div className="relative">
                 <select
-                  value={settingImageCount}
-                  onChange={(e) => setSettingImageCount(Number(e.target.value))}
+                  value={localImageCount}
+                  onChange={(e) => setLocalImageCount(Number(e.target.value))}
                   className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {IMAGE_COUNT_OPTIONS.map(opt => (
@@ -1052,27 +1047,6 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <p className="text-[10px] text-zinc-600">文生图模型一次生成的画面数</p>
             </div>
 
-            {/* Image Count Selection */}
-            <div className="space-y-2">
-              <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                组图数量
-              </label>
-              <div className="relative">
-                <select
-                  value={localImageCount}
-                  onChange={(e) => setLocalImageCount(Number(e.target.value))}
-                  className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
-                >
-                  {IMAGE_COUNT_OPTIONS.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-                <div className="absolute right-3 top-3 pointer-events-none">
-                   <ChevronRight className="w-4 h-4 text-zinc-600 rotate-90" />
-                </div>
-              </div>
-            </div>
-
             {/* Duration Selection */}
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">目标时长</label>
@@ -1080,9 +1054,9 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                 {DURATION_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
-                    onClick={() => setSettingDuration(opt.value)}
+                    onClick={() => setLocalDuration(opt.value)}
                     className={`px-2 py-2.5 text-[11px] font-medium rounded-md transition-all text-center border ${
-                      settingDuration === opt.value
+                      localDuration === opt.value
                         ? 'bg-zinc-100 text-black border-zinc-100 shadow-sm'
                         : 'bg-transparent border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
                     }`}
@@ -1091,12 +1065,12 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   </button>
                 ))}
               </div>
-              {settingDuration === 'custom' && (
+              {localDuration === 'custom' && (
                 <div className="pt-1">
                   <input
                     type="text"
-                    value={settingCustomDuration}
-                    onChange={(e) => setSettingCustomDuration(e.target.value)}
+                    value={customDurationInput}
+                    onChange={(e) => setCustomDurationInput(e.target.value)}
                     className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-zinc-600 focus:outline-none font-mono placeholder:text-zinc-700"
                     placeholder="输入时长 (如: 90s, 3m)"
                   />

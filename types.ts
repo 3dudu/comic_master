@@ -97,4 +97,5 @@ export interface AIModelConfig {
   apiKey: string;
   apiUrl: string;
   enabled: boolean;
+  description: string;
 }

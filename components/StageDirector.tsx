@@ -15,6 +15,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
   const [imageCount, setImageCount] = useState(project.imageCount || 0);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   
 
   const activeShotIndex = project.shots.findIndex(s => s.id === activeShotId);
@@ -379,7 +380,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                           >
                               {/* Header */}
                               <div className="px-3 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
-                                  <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>SHOT {String(idx + 1).padStart(2, '0')}</span>
+                                  <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>镜头 {String(idx + 1).padStart(2, '0')}</span>
                                   <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement}</span>
                               </div>
 
@@ -502,7 +503,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            <img
                                              src={startKf.imageUrl}
                                              className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id ? 'cursor-pointer' : ''}`}
-                                             onClick={() => (!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id) && window.open(startKf.imageUrl, '_blank')}
+                                             onClick={() => (!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id) && setPreviewImageUrl(startKf.imageUrl!)}
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
@@ -535,7 +536,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            <img
                                              src={endKf.imageUrl}
                                              className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id ? 'cursor-pointer' : ''}`}
-                                             onClick={() => (!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id) && window.open(endKf.imageUrl, '_blank')}
+                                             onClick={() => (!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id) && setPreviewImageUrl(endKf.imageUrl!)}
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
@@ -602,6 +603,27 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                        </div>
                   </div>
               </div>
+          )}
+
+          {/* Fullscreen Image Preview Modal */}
+          {previewImageUrl && (
+            <div
+              className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center"
+              onClick={() => setPreviewImageUrl(null)}
+            >
+              <img
+                src={previewImageUrl}
+                alt="Full screen preview"
+                className="max-w-[95vw] max-h-[95vh] object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <button
+                onClick={() => setPreviewImageUrl(null)}
+                className="absolute top-6 right-6 p-3 bg-slate-900/80 hover:bg-slate-800 text-white rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           )}
       </div>
     </div>

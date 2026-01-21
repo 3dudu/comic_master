@@ -1,0 +1,282 @@
+import { Aperture, ChevronRight, Plus, Trash, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Character } from '../types';
+
+interface Keyframe {
+  id?: string;
+  type: 'start' | 'end';
+  visualPrompt: string;
+  status?: 'pending' | 'generating' | 'completed' | 'failed';
+}
+
+interface Shot {
+  id: string;
+  sceneId: string;
+  actionSummary: string;
+  dialogue?: string;
+  cameraMovement: string;
+  shotSize?: string;
+  duration?: number;
+  characters: string[];
+  keyframes: Keyframe[];
+}
+
+interface Props {
+  shot: Shot;
+  characters: Character[];
+  onSave: (updatedShot: Partial<Shot>) => void;
+  onClose: () => void;
+}
+
+const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) => {
+  const [tempShot, setTempShot] = useState<Partial<Shot>>({ ...shot });
+  const isNewShot = !shot.id;
+
+  const toggleCharacter = (charId: string) => {
+    const currentChars = tempShot.characters || [];
+    const updatedChars = currentChars.includes(charId)
+      ? currentChars.filter((c: string) => c !== charId)
+      : [...currentChars, charId];
+    setTempShot({ ...tempShot, characters: updatedChars });
+  };
+
+  const addKeyframe = () => {
+    const newKeyframe: Keyframe = {
+      id: `kf-${Date.now()}`,
+      type: 'start',
+      visualPrompt: '',
+      status: 'pending'
+    };
+    setTempShot({
+      ...tempShot,
+      keyframes: [...(tempShot.keyframes || []), newKeyframe]
+    });
+  };
+
+  const updateKeyframe = (kfIndex: number, field: string, value: any) => {
+    const updatedKeyframes = [...(tempShot.keyframes || [])];
+    updatedKeyframes[kfIndex] = { ...updatedKeyframes[kfIndex], [field]: value };
+    setTempShot({ ...tempShot, keyframes: updatedKeyframes });
+  };
+
+  const deleteKeyframe = (kfIndex: number) => {
+    const updatedKeyframes = (tempShot.keyframes || []).filter((_: any, i: number) => i !== kfIndex);
+    setTempShot({ ...tempShot, keyframes: updatedKeyframes });
+  };
+
+  const handleSave = () => {
+    onSave(tempShot);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="bg-[#0e0e28] border border-slate-800 rounded-lg w-[600px] max-w-[90vw] max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+          <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
+            <Aperture className="w-4 h-4 text-slate-400" />
+            {isNewShot ? '添加分镜' : '编辑分镜'}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-slate-500 hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          {/* Action Summary */}
+          <div className="space-y-2">
+            <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">动作描述</label>
+            <textarea
+              value={tempShot.actionSummary || ''}
+              onChange={(e) => setTempShot({ ...tempShot, actionSummary: e.target.value })}
+              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              rows={3}
+              placeholder="描述镜头中的动作..."
+            />
+          </div>
+
+          {/* Dialogue */}
+          <div className="space-y-2">
+            <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">对白 (可选)</label>
+            <textarea
+              value={tempShot.dialogue || ''}
+              onChange={(e) => setTempShot({ ...tempShot, dialogue: e.target.value })}
+              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              rows={2}
+              placeholder="镜头中的对白..."
+            />
+          </div>
+
+          {/* Shot Size & Camera Movement & Duration */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">景别</label>
+              <div className="relative">
+                <select
+                  value={tempShot.shotSize || 'MED'}
+                  onChange={(e) => setTempShot({ ...tempShot, shotSize: e.target.value })}
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                >
+                  <option value="特写">特写</option>
+                  <option value="大特写">大特写</option>
+                  <option value="中近景">中近景</option>
+                  <option value="中景">中景</option>
+                  <option value="中远景">中远景</option>
+                  <option value="远景">远景</option>
+                  <option value="全景">全景</option>
+                </select>
+                <div className="absolute right-3 top-3 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">镜头运动</label>
+              <div className="relative">
+                <select
+                  value={tempShot.cameraMovement || '固定'}
+                  onChange={(e) => setTempShot({ ...tempShot, cameraMovement: e.target.value })}
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                >
+                  <option value="固定">固定</option>
+                  <option value="前推">前推</option>
+                  <option value="后拉">后拉</option>
+                  <option value="左摇">左摇</option>
+                  <option value="右摇">右摇</option>
+                  <option value="上移">上移</option>
+                  <option value="下移">下移</option>
+                  <option value="跟随">跟随</option>
+                  <option value="手持">手持</option>
+                </select>
+                <div className="absolute right-3 top-3 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">时长 (秒)</label>
+              <div className="relative">
+                <select
+                  value={tempShot.duration || 5}
+                  onChange={(e) => setTempShot({ ...tempShot, duration: Number(e.target.value) })}
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                >
+                  {Array.from({ length: 30 }, (_, i) => i + 1).map(sec => (
+                    <option key={sec} value={sec}>{sec} 秒</option>
+                  ))}
+                </select>
+                <div className="absolute right-3 top-3 pointer-events-none">
+                  <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Characters */}
+          <div className="space-y-2">
+            <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">角色</label>
+            <div className="flex flex-wrap gap-2">
+              {characters.map(char => (
+                <button
+                  key={char.id}
+                  onClick={() => toggleCharacter(char.id)}
+                  className={`px-3 py-2 text-xs font-medium rounded-lg transition-all border ${
+                    (tempShot.characters || []).includes(char.id)
+                      ? 'bg-indigo-600 text-white border-indigo-500'
+                      : 'bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-600'
+                  }`}
+                >
+                  {char.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Keyframes */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">关键帧</label>
+              <button
+                onClick={addKeyframe}
+                className="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-1 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded hover:border-slate-600 transition-all"
+              >
+                <Plus className="w-3 h-3" />
+                添加关键帧
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(tempShot.keyframes || []).map((kf: Keyframe, kfIdx: number) => (
+                <div key={kf.id || kfIdx} className="bg-[#0c0c2d] border border-slate-800 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
+                      <select
+                        value={kf.type || 'start'}
+                        onChange={(e) => updateKeyframe(kfIdx, 'type', e.target.value)}
+                        className="bg-[#0e0e28] border border-slate-800 text-white text-xs px-2 py-1 rounded focus:border-slate-600 focus:outline-none"
+                      >
+                        <option value="start">起始帧</option>
+                        <option value="end">结束帧</option>
+                      </select>
+                    </div>
+                    <button
+                      onClick={() => deleteKeyframe(kfIdx)}
+                      className="p-1.5 hover:bg-red-900/20 text-slate-600 hover:text-red-400 rounded transition-colors"
+                      title="删除关键帧"
+                    >
+                      <Trash className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 block">画面提示词</label>
+                    <textarea
+                      value={kf.visualPrompt || ''}
+                      onChange={(e) => updateKeyframe(kfIdx, 'visualPrompt', e.target.value)}
+                      className="w-full bg-[#0e0e28] border border-slate-800 text-white px-3 py-2 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none font-mono"
+                      rows={3}
+                      placeholder="输入视觉提示词，用于 AI 生成图像..."
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {(tempShot.keyframes || []).length === 0 && (
+              <div className="text-center py-8 border border-dashed border-slate-800 rounded-lg">
+                <Aperture className="w-8 h-8 text-slate-700 mx-auto mb-2" />
+                <p className="text-xs text-slate-500">暂无关键帧，点击上方按钮添加</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-6 border-t border-slate-800 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 bg-slate-900 text-slate-400 hover:text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
+          >
+            取消
+          </button>
+          <button
+            onClick={handleSave}
+            className="flex-1 py-3 bg-white text-black hover:bg-slate-200 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
+          >
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ShotEditModal;

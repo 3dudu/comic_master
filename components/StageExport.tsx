@@ -257,7 +257,6 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                   </div>
               </div>
           </div>
-
         </div>
       </div>
     </div>

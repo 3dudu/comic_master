@@ -2,6 +2,8 @@ import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight,
 import React, { useEffect, useRef, useState } from 'react';
 import { ModelService } from '../services/modelService';
 import { Character, ProjectState, Scene } from '../types';
+import SceneEditModal from './SceneEditModal';
+import ShotEditModal from './ShotEditModal';
 
 interface Props {
   project: ProjectState;
@@ -85,6 +87,9 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [editingSceneId, setEditingSceneId] = useState<string | null>(null);
   const [tempScene, setTempScene] = useState<Partial<Scene>>({});
   const [showAddScene, setShowAddScene] = useState(false);
+  const [editingShotId, setEditingShotId] = useState<string | null>(null);
+  const [editingSceneInMain, setEditingSceneInMain] = useState<Scene | null>(null);
+  const [addingShotForSceneId, setAddingShotForSceneId] = useState<string | null>(null);
 
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -255,6 +260,21 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     setTempScene({});
   };
 
+  const saveSceneFromModal = (updatedScene: Partial<Scene>, updatedStoryParagraphs: any[]) => {
+    if (!project.scriptData || !editingSceneInMain) return;
+    const updatedScenes = project.scriptData.scenes.map(s =>
+      s.id === editingSceneInMain.id ? { ...s, ...updatedScene } as Scene : s
+    );
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        scenes: updatedScenes,
+        storyParagraphs: updatedStoryParagraphs
+      }
+    });
+    setEditingSceneInMain(null);
+  };
+
   const addScene = () => {
     if (!project.scriptData || !tempScene.location) return;
     const newScene: Scene = {
@@ -283,6 +303,47 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         scenes: updatedScenes
       }
     });
+  };
+
+  // Shot editing
+  const startEditShot = (shot: any) => {
+    setEditingShotId(shot.id);
+  };
+
+  const startAddShot = (sceneId: string) => {
+    setAddingShotForSceneId(sceneId);
+  };
+
+  const saveShot = (updatedShot: Partial<any>) => {
+    if (editingShotId) {
+      // 编辑现有 shot
+      const updatedShots = project.shots.map(s =>
+        s.id === editingShotId ? { ...s, ...updatedShot } : s
+      );
+      updateProject({ shots: updatedShots });
+      setEditingShotId(null);
+    } else if (addingShotForSceneId) {
+      // 添加新 shot
+      const newShot: any = {
+        id: `shot-${Date.now()}`,
+        sceneId: addingShotForSceneId,
+        actionSummary: updatedShot.actionSummary || '',
+        dialogue: updatedShot.dialogue || '',
+        cameraMovement: updatedShot.cameraMovement || '固定',
+        shotSize: updatedShot.shotSize || 'MED',
+        duration: updatedShot.duration || 5,
+        characters: updatedShot.characters || [],
+        keyframes: updatedShot.keyframes || []
+      };
+      updateProject({ shots: [...project.shots, newShot] });
+      setAddingShotForSceneId(null);
+    }
+  };
+
+  const deleteShot = (shotId: string) => {
+    if (!window.confirm('确定要删除这个分镜吗？')) return;
+    const updatedShots = project.shots.filter(s => s.id !== shotId);
+    updateProject({ shots: updatedShots });
   };
 
   const handleGenerateScript = async () => {
@@ -632,7 +693,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
            <span>{localScript.length} 字符</span>
            <span>{localScript.split('\n').length} 行</span>
            <div className="flex items-center gap-1.5">
-             <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+             <div className="w-1.5 h-1.5 rounded-full bg-green-800"></div>
              {project.lastModified ? '已自动保存' : '准备就绪'}
            </div>
         </div>
@@ -910,36 +971,88 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <div className="max-w-5xl mx-auto pb-20">
                  {project.scriptData?.scenes.map((scene, index) => {
                    const sceneShots = project.shots.filter(s => s.sceneId === scene.id);
-                   if (sceneShots.length === 0) return null;
+                   //if (sceneShots.length === 0) return null;
 
                    return (
                      <div key={scene.id} className="border-b border-slate-800">
                         {/* Scene Header strip */}
-                        <div className="sticky top-0 z-10 bg-[#090923]/95 backdrop-blur border-y border-slate-800 px-8 py-5 flex items-center justify-between shadow-lg shadow-black/20">
-                           <div className="flex items-baseline gap-4">
-                              <span className="text-3xl font-bold text-white/10 font-mono">{(index + 1).toString().padStart(2, '0')}</span>
-                              <h3 className="text-lg font-bold text-white uppercase tracking-wider">
-                                 {scene.location}
-                              </h3>
+                        <div className="sticky top-0 z-10 bg-[#090923]/95 backdrop-blur border-y border-slate-800 shadow-lg shadow-black/20">
+                           <div className="px-8 py-5 flex items-center justify-between">
+                              <div className="flex items-center gap-6">
+                                 <div className="flex items-baseline gap-4">
+                                    <span className="text-3xl font-bold text-white/10 font-mono">{(index + 1).toString().padStart(2, '0')}</span>
+                                    <h3 className="text-lg font-bold text-white uppercase tracking-wider">
+                                       {scene.location}
+                                    </h3>
+                                 </div>
+                              </div>
+                              <div className="flex gap-4 text-[12px] font-mono uppercase tracking-widest text-slate-500">
+                                 <span className="flex items-center gap-1.5"><Clock className="w-3 h-3"/> {scene.time}</span>
+                                 <span className="text-slate-700">|</span>
+                                 <span>{scene.atmosphere}</span>
+                              </div>
                            </div>
-                           <div className="flex gap-4 text-[12px] font-mono uppercase tracking-widest text-slate-500">
-                              <span className="flex items-center gap-1.5"><Clock className="w-3 h-3"/> {scene.time}</span>
-                              <span className="text-slate-700">|</span>
-                              <span>{scene.atmosphere}</span>
+
+                           {/* Action Buttons - Compact */}
+                           <div className="px-8 pb-4 border-b border-slate-800 bg-[#090923]">
+                              <div className="flex gap-2">
+                                 <button
+                                    onClick={() => setEditingSceneInMain(scene)}
+                                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded transition-all flex items-center justify-center gap-1.5"
+                                    title="编辑场景"
+                                 >
+                                    <Edit className="w-3 h-3" />
+                                    <span>编辑场景</span>
+                                 </button>
+                                 <button
+                                    onClick={() => deleteScene(scene.id)}
+                                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-red-400 bg-slate-900/80 border border-slate-800 hover:border-red-900/50 rounded transition-all flex items-center justify-center gap-1.5"
+                                    title="删除场景"
+                                 >
+                                    <Trash className="w-3 h-3" />
+                                    <span>删除场景</span>
+                                 </button>
+                                 <button
+                                    onClick={() => startAddShot(scene.id)}
+                                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-indigo-400 bg-slate-900/80 border border-slate-800 hover:border-indigo-600 rounded transition-all flex items-center justify-center gap-1.5"
+                                    title="添加分镜"
+                                 >
+                                    <Plus className="w-3 h-3" />
+                                    <span>添加分镜</span>
+                                 </button>
+                              </div>
                            </div>
                         </div>
   
                         {/* Shot Rows */}
                         <div className="divide-y divide-slate-800/50">
-                           {sceneShots.map((shot, sIdx) => (
+                           {sceneShots.map((shot) => (
                              <div key={shot.id} className="group bg-[#171429] hover:bg-[#0e0e28] transition-colors p-8 flex gap-8">
-                                
+
                                 {/* Shot ID & Tech Data */}
                                 <div className="w-32 flex-shrink-0 flex flex-col gap-4">
-                                   <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
-                                     SHOT {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                   <div className="flex items-center justify-between">
+                                     <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
+                                       镜头 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                     </div>
+                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                       <button
+                                         onClick={() => startEditShot(shot)}
+                                         className="p-1.5 hover:bg-slate-800 text-slate-600 hover:text-white rounded transition-colors"
+                                         title="编辑"
+                                       >
+                                         <Edit className="w-3.5 h-3.5" />
+                                       </button>
+                                       <button
+                                         onClick={() => deleteShot(shot.id)}
+                                         className="p-1.5 hover:bg-red-900/20 text-slate-600 hover:text-red-400 rounded transition-colors"
+                                         title="删除"
+                                       >
+                                         <Trash className="w-3.5 h-3.5" />
+                                       </button>
+                                     </div>
                                    </div>
-                                   
+
                                    <div className="flex flex-col gap-2">
                                      <div className="px-2 py-1 bg-slate-900 border border-slate-800 text-[12px] font-mono text-slate-400 uppercase text-center rounded">
                                        {shot.shotSize || 'MED'}
@@ -955,13 +1068,13 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                    <p className="text-slate-200 text-sm leading-7 font-medium max-w-2xl">
                                      {shot.actionSummary}
                                    </p>
-                                   
+
                                    {shot.dialogue && (
                                       <div className="pl-6 border-l-2 border-slate-800 group-hover:border-slate-600 transition-colors py-1">
                                          <p className="text-slate-400 font-serif italic text-sm">"{shot.dialogue}"</p>
                                       </div>
                                    )}
-                                   
+
                                    {/* Tags/Characters */}
                                    <div className="flex flex-wrap gap-2 pt-2 opacity-50 group-hover:opacity-100 transition-opacity">
                                       {shot.characters.map(cid => {
@@ -978,7 +1091,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                 {/* Prompt Preview */}
                                 <div className="w-64 hidden xl:block pl-6 border-l border-slate-900">
                                    <div className="text-[12px] font-bold text-slate-700 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                      <Aperture className="w-3 h-3" /> 画面提示词 (AI Prompt)
+                                      <Aperture className="w-3 h-3" /> 画面提示词
                                    </div>
                                    <p className="text-[12px] text-slate-600 font-mono leading-relaxed line-clamp-4 hover:line-clamp-none hover:text-slate-400 transition-all cursor-text bg-slate-900/30 p-2 rounded">
                                      {shot.keyframes[0]?.visualPrompt}
@@ -1161,10 +1274,74 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     )
   );
 
+  const renderEditShotModal = () => {
+    // 编辑现有 shot
+    if (editingShotId) {
+      const shot = project.shots.find(s => s.id === editingShotId);
+      if (!shot) return null;
+
+      return (
+        <ShotEditModal
+          shot={shot}
+          characters={project.scriptData?.characters || []}
+          onSave={saveShot}
+          onClose={() => {
+            setEditingShotId(null);
+          }}
+        />
+      );
+    }
+
+    // 添加新 shot
+    if (addingShotForSceneId) {
+      const newShot: any = {
+        id: '',
+        sceneId: addingShotForSceneId,
+        actionSummary: '',
+        dialogue: '',
+        cameraMovement: '固定',
+        shotSize: 'MED',
+        duration: 5,
+        characters: [],
+        keyframes: []
+      };
+
+      return (
+        <ShotEditModal
+          shot={newShot}
+          characters={project.scriptData?.characters || []}
+          onSave={saveShot}
+          onClose={() => {
+            setAddingShotForSceneId(null);
+          }}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const renderEditSceneModal = () => {
+    if (!editingSceneInMain) return null;
+
+    return (
+      <SceneEditModal
+        scene={editingSceneInMain}
+        storyParagraphs={project.scriptData?.storyParagraphs || []}
+        onSave={saveSceneFromModal}
+        onClose={() => {
+          setEditingSceneInMain(null);
+        }}
+      />
+    );
+  };
+
   return (
     <div className="h-full bg-[#0e1229]">
       {activeTab === 'story' ? renderStoryInput() : renderScriptBreakdown()}
       {renderSettingsModal()}
+      {renderEditShotModal()}
+      {renderEditSceneModal()}
     </div>
   );
 };

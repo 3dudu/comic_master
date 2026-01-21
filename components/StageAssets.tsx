@@ -182,7 +182,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           </div>
                           <div>
                               <h3 className="text-lg font-bold text-white">{selectedChar.name}</h3>
-                              <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">Wardrobe & Variations</p>
+                              <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">服装造型（Wardrobe & Variations）</p>
                           </div>
                       </div>
                       <button onClick={() => setSelectedCharId(null)} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
@@ -196,16 +196,16 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           {/* Base Look */}
                           <div>
                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                  <User className="w-4 h-4" /> Base Appearance
+                                  <User className="w-4 h-4" /> 基础形象
                               </h4>
                               <div className="bg-[#0e0e28] p-4 rounded-xl border border-slate-800">
                                   <div className="aspect-[3/4] bg-slate-900 rounded-lg overflow-hidden mb-4 relative">
                                       {selectedChar.referenceImage ? (
                                           <img src={selectedChar.referenceImage} className="w-full h-full object-cover" />
                                       ) : (
-                                          <div className="flex items-center justify-center h-full text-slate-700">No Image</div>
+                                          <div className="flex items-center justify-center h-full text-slate-700">无图像</div>
                                       )}
-                                      <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-[12px] text-white font-bold uppercase border border-white/10">Default</div>
+                                      <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-[12px] text-white font-bold uppercase border border-white/10">默认</div>
                                   </div>
                                   <p className="text-xs text-slate-500 leading-relaxed font-mono">{selectedChar.visualPrompt}</p>
                               </div>
@@ -215,7 +215,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <div>
                               <div className="flex items-center justify-between mb-4">
                                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                      <Shirt className="w-4 h-4" /> Variations / Outfits
+                                      <Shirt className="w-4 h-4" /> 服装造型
                                   </h4>
                               </div>
 
@@ -276,7 +276,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                                               disabled={!newVarName || !newVarPrompt}
                                               className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
                                           >
-                                              <Plus className="w-3 h-3" /> Add 造型
+                                              <Plus className="w-3 h-3" /> 添加造型
                                           </button>
                                       </div>
                                   </div>
@@ -294,16 +294,16 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Users className="w-5 h-5 text-indigo-500" />
                   角色与场景
-                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Assets & Casting</span>
+                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Scenes & Casting</span>
               </h2>
           </div>
           <div className="flex items-center gap-3">
              <div className="flex gap-2">
                  <span className="px-2 py-1 bg-slate-900 border border-slate-800 rounded text-[12px] text-slate-400 font-mono uppercase">
-                    {project.scriptData.characters.length} CHARS
+                    {project.scriptData.characters.length} 角色
                  </span>
                  <span className="px-2 py-1 bg-slate-900 border border-slate-800 rounded text-[12px] text-slate-400 font-mono uppercase">
-                    {project.scriptData.scenes.length} SCENES
+                    {project.scriptData.scenes.length} 场景
                  </span>
              </div>
           </div>
@@ -404,7 +404,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
             <div>
                <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                 场景概念 (Locations)
+                 场景概念 (Scenes)
                </h3>
                <p className="text-xs text-slate-500 mt-1 pl-3.5">为剧本场景生成环境参考图</p>
             </div>

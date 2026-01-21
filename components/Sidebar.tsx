@@ -13,10 +13,10 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpenSettings, projectName }) => {
   const [showModelSettings, setShowModelSettings] = useState(false);
   const navItems = [
-    { id: 'script', label: '剧本与故事', icon: FileText, sub: 'Phase 01' },
-    { id: 'assets', label: '角色与场景', icon: Users, sub: 'Phase 02' },
-    { id: 'director', label: '导演工作台', icon: Clapperboard, sub: 'Phase 03' },
-    { id: 'export', label: '成片与导出', icon: Film, sub: 'Phase 04' },
+    { id: 'script', label: '剧本与故事', icon: FileText, sub: '制作脚本' },
+    { id: 'assets', label: '角色与场景', icon: Users, sub: '角色布景' },
+    { id: 'director', label: '导演工作台', icon: Clapperboard, sub: '拍摄制作' },
+    { id: 'export', label: '成片与导出', icon: Film, sub: '剪辑合成' },
   ];
 
   return (

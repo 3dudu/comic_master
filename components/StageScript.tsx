@@ -1,7 +1,7 @@
-import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, List, MapPin, Settings, TextQuote, Users, Wand2, Sparkles } from 'lucide-react';
+import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, List, MapPin, Plus, Settings, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { generateShotList, parseScriptToData, generateScript } from '../services/doubaoService';
-import { ProjectState } from '../types';
+import { generateScript, generateShotList, parseScriptToData } from '../services/doubaoService';
+import { Character, ProjectState, Scene } from '../types';
 
 interface Props {
   project: ProjectState;
@@ -64,6 +64,16 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [settingImageSize, setSettingImageSize] = useState('');
   const [settingCustomDuration, setSettingCustomDuration] = useState('');
 
+  // Editing states
+  const [editingLogline, setEditingLogline] = useState(false);
+  const [tempLogline, setTempLogline] = useState('');
+  const [editingCharacterId, setEditingCharacterId] = useState<string | null>(null);
+  const [tempCharacter, setTempCharacter] = useState<Partial<Character>>({});
+  const [showAddCharacter, setShowAddCharacter] = useState(false);
+  const [editingSceneId, setEditingSceneId] = useState<string | null>(null);
+  const [tempScene, setTempScene] = useState<Partial<Scene>>({});
+  const [showAddScene, setShowAddScene] = useState(false);
+
   useEffect(() => {
     setLocalScript(project.rawScript);
     setLocalTitle(project.title);
@@ -104,6 +114,127 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
       imageSize: settingImageSize
     });
     setShowSettings(false);
+  };
+
+  // Logline editing
+  const startEditLogline = () => {
+    setTempLogline(project.scriptData?.logline || '');
+    setEditingLogline(true);
+  };
+
+  const saveLogline = () => {
+    if (!project.scriptData) return;
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        logline: tempLogline
+      }
+    });
+    setEditingLogline(false);
+  };
+
+  // Character editing
+  const startEditCharacter = (char: Character) => {
+    setTempCharacter({ ...char });
+    setEditingCharacterId(char.id);
+  };
+
+  const saveCharacter = () => {
+    if (!project.scriptData || !editingCharacterId || !tempCharacter.name) return;
+    const updatedCharacters = project.scriptData.characters.map(c =>
+      c.id === editingCharacterId ? { ...c, ...tempCharacter } as Character : c
+    );
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        characters: updatedCharacters
+      }
+    });
+    setEditingCharacterId(null);
+    setTempCharacter({});
+  };
+
+  const addCharacter = () => {
+    if (!project.scriptData || !tempCharacter.name) return;
+    const newCharacter: Character = {
+      id: `char-${Date.now()}`,
+      name: tempCharacter.name,
+      gender: tempCharacter.gender || '未知',
+      age: tempCharacter.age || '未知',
+      personality: tempCharacter.personality || '',
+      variations: []
+    };
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        characters: [...project.scriptData.characters, newCharacter]
+      }
+    });
+    setShowAddCharacter(false);
+    setTempCharacter({});
+  };
+
+  const deleteCharacter = (charId: string) => {
+    if (!project.scriptData) return;
+    if (!window.confirm('确定要删除这个角色吗？')) return;
+    const updatedCharacters = project.scriptData.characters.filter(c => c.id !== charId);
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        characters: updatedCharacters
+      }
+    });
+  };
+
+  // Scene editing
+  const startEditScene = (scene: Scene) => {
+    setTempScene({ ...scene });
+    setEditingSceneId(scene.id);
+  };
+
+  const saveScene = () => {
+    if (!project.scriptData || !editingSceneId || !tempScene.location) return;
+    const updatedScenes = project.scriptData.scenes.map(s =>
+      s.id === editingSceneId ? { ...s, ...tempScene } as Scene : s
+    );
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        scenes: updatedScenes
+      }
+    });
+    setEditingSceneId(null);
+    setTempScene({});
+  };
+
+  const addScene = () => {
+    if (!project.scriptData || !tempScene.location) return;
+    const newScene: Scene = {
+      id: `scene-${Date.now()}`,
+      location: tempScene.location,
+      time: tempScene.time || '日间',
+      atmosphere: tempScene.atmosphere || ''
+    };
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        scenes: [...project.scriptData.scenes, newScene]
+      }
+    });
+    setShowAddScene(false);
+    setTempScene({});
+  };
+
+  const deleteScene = (sceneId: string) => {
+    if (!project.scriptData) return;
+    if (!window.confirm('确定要删除这个场景吗？')) return;
+    const updatedScenes = project.scriptData.scenes.filter(s => s.id !== sceneId);
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        scenes: updatedScenes
+      }
+    });
   };
 
   const handleGenerateScript = async () => {
@@ -467,40 +598,206 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
            {/* Sidebar: Index */}
            <div className="w-72 border-r border-zinc-800 bg-[#0A0A0A] flex flex-col hidden lg:flex">
               <div className="p-6 border-b border-zinc-900">
-                 <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                   <TextQuote className="w-3 h-3" /> 故事梗概
-                 </h3>
-                 <p className="text-xs text-zinc-400 italic leading-relaxed font-serif">"{project.scriptData?.logline}"</p>
+                 <div className="flex items-center justify-between mb-4">
+                   <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                     <TextQuote className="w-3 h-3" /> 故事梗概
+                   </h3>
+                   {!editingLogline && (
+                     <button onClick={startEditLogline} className="text-zinc-600 hover:text-white transition-colors">
+                       <Edit className="w-3 h-3" />
+                     </button>
+                   )}
+                 </div>
+                 {editingLogline ? (
+                   <div className="space-y-2">
+                     <textarea
+                       value={tempLogline}
+                       onChange={(e) => setTempLogline(e.target.value)}
+                       className="w-full bg-[#141414] border border-zinc-800 text-zinc-300 text-xs rounded p-2 focus:border-zinc-600 focus:outline-none resize-none"
+                       rows={3}
+                     />
+                     <div className="flex gap-2">
+                       <button onClick={saveLogline} className="flex-1 py-1.5 bg-zinc-800 text-zinc-300 text-[10px] font-bold rounded hover:bg-zinc-700 transition-colors">保存</button>
+                       <button onClick={() => setEditingLogline(false)} className="flex-1 py-1.5 bg-zinc-900 text-zinc-500 text-[10px] font-bold rounded hover:text-zinc-300 transition-colors">取消</button>
+                     </div>
+                   </div>
+                 ) : (
+                   <p className="text-xs text-zinc-400 italic leading-relaxed font-serif cursor-text hover:text-zinc-300" onClick={startEditLogline}>"{project.scriptData?.logline}"</p>
+                 )}
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                   {/* Characters */}
                   <section>
-                    <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                       <Users className="w-3 h-3" /> 演员表
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                         <Users className="w-3 h-3" /> 演员表
+                      </h3>
+                      <button onClick={() => setShowAddCharacter(true)} className="text-zinc-600 hover:text-white transition-colors">
+                         <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
                     <div className="space-y-2">
                        {project.scriptData?.characters.map(c => (
                          <div key={c.id} className="flex justify-between items-center group cursor-default p-2 rounded hover:bg-zinc-900/50 transition-colors">
-                            <span className="text-sm text-zinc-300 font-medium group-hover:text-white">{c.name}</span>
-                            <span className="text-[10px] text-zinc-600 font-mono">{c.gender}</span>
+                            {editingCharacterId === c.id ? (
+                              <div className="flex-1 space-y-2">
+                                <input
+                                  type="text"
+                                  value={tempCharacter.name || ''}
+                                  onChange={(e) => setTempCharacter({ ...tempCharacter, name: e.target.value })}
+                                  className="w-full bg-[#141414] border border-zinc-800 text-white text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                  placeholder="角色名"
+                                />
+                                <select
+                                  value={tempCharacter.gender || '男'}
+                                  onChange={(e) => setTempCharacter({ ...tempCharacter, gender: e.target.value })}
+                                  className="w-full bg-[#141414] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                >
+                                  <option value="男">男</option>
+                                  <option value="女">女</option>
+                                  <option value="其他">其他</option>
+                                </select>
+                                <input
+                                  type="text"
+                                  value={tempCharacter.age || ''}
+                                  onChange={(e) => setTempCharacter({ ...tempCharacter, age: e.target.value })}
+                                  className="w-full bg-[#141414] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                  placeholder="年龄"
+                                />
+                                <div className="flex gap-1">
+                                  <button onClick={saveCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">保存</button>
+                                  <button onClick={() => { setEditingCharacterId(null); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <span className="text-sm text-zinc-300 font-medium group-hover:text-white">{c.name}</span>
+                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <span className="text-[10px] text-zinc-600 font-mono">{c.gender}</span>
+                                  <button onClick={() => startEditCharacter(c)} className="text-zinc-600 hover:text-white"><Edit className="w-3 h-3" /></button>
+                                  <button onClick={() => deleteCharacter(c.id)} className="text-zinc-600 hover:text-red-400"><Trash className="w-3 h-3" /></button>
+                                </div>
+                              </>
+                            )}
                          </div>
                        ))}
+                       {showAddCharacter && (
+                         <div className="space-y-2 p-2 bg-[#141414] rounded border border-zinc-800">
+                           <input
+                             type="text"
+                             value={tempCharacter.name || ''}
+                             onChange={(e) => setTempCharacter({ ...tempCharacter, name: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-white text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                             placeholder="角色名"
+                           />
+                           <select
+                             value={tempCharacter.gender || '男'}
+                             onChange={(e) => setTempCharacter({ ...tempCharacter, gender: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                           >
+                             <option value="男">男</option>
+                             <option value="女">女</option>
+                             <option value="其他">其他</option>
+                           </select>
+                           <input
+                             type="text"
+                             value={tempCharacter.age || ''}
+                             onChange={(e) => setTempCharacter({ ...tempCharacter, age: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                             placeholder="年龄"
+                           />
+                           <div className="flex gap-1">
+                             <button onClick={addCharacter} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">添加</button>
+                             <button onClick={() => { setShowAddCharacter(false); setTempCharacter({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                           </div>
+                         </div>
+                       )}
                     </div>
                   </section>
 
                   {/* Scenes */}
                   <section>
-                    <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                       <MapPin className="w-3 h-3" /> 场景列表
-                    </h3>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-2">
+                         <MapPin className="w-3 h-3" /> 场景列表
+                      </h3>
+                      <button onClick={() => setShowAddScene(true)} className="text-zinc-600 hover:text-white transition-colors">
+                         <Plus className="w-3 h-3" />
+                      </button>
+                    </div>
                     <div className="space-y-1">
                        {uniqueScenesList.map((s) => (
                          <div key={s!.id} className="flex items-center gap-3 text-xs text-zinc-400 group cursor-default p-2 rounded hover:bg-zinc-900/50 transition-colors">
-                            <div className="w-1.5 h-1.5 bg-zinc-700 rounded-full group-hover:bg-zinc-400 transition-colors"></div>
-                            <span className="truncate group-hover:text-zinc-200">{s!.location}</span>
+                           {editingSceneId === s!.id ? (
+                             <div className="flex-1 space-y-2">
+                               <input
+                                 type="text"
+                                 value={tempScene.location || ''}
+                                 onChange={(e) => setTempScene({ ...tempScene, location: e.target.value })}
+                                 className="w-full bg-[#141414] border border-zinc-800 text-white text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                 placeholder="场景名称"
+                               />
+                               <input
+                                 type="text"
+                                 value={tempScene.time || ''}
+                                 onChange={(e) => setTempScene({ ...tempScene, time: e.target.value })}
+                                 className="w-full bg-[#141414] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                 placeholder="时间"
+                               />
+                               <input
+                                 type="text"
+                                 value={tempScene.atmosphere || ''}
+                                 onChange={(e) => setTempScene({ ...tempScene, atmosphere: e.target.value })}
+                                 className="w-full bg-[#141414] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                                 placeholder="氛围"
+                               />
+                               <div className="flex gap-1">
+                                 <button onClick={saveScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">保存</button>
+                                 <button onClick={() => { setEditingSceneId(null); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                               </div>
+                             </div>
+                           ) : (
+                             <>
+                               <div className="w-1.5 h-1.5 bg-zinc-700 rounded-full group-hover:bg-zinc-400 transition-colors"></div>
+                               <span className="truncate group-hover:text-zinc-200 flex-1">{s!.location}</span>
+                               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                 <button onClick={() => startEditScene(s!)} className="text-zinc-600 hover:text-white"><Edit className="w-3 h-3" /></button>
+                                 <button onClick={() => deleteScene(s!.id)} className="text-zinc-600 hover:text-red-400"><Trash className="w-3 h-3" /></button>
+                               </div>
+                             </>
+                           )}
                          </div>
                        ))}
+                       {showAddScene && (
+                         <div className="space-y-2 p-2 bg-[#141414] rounded border border-zinc-800">
+                           <input
+                             type="text"
+                             value={tempScene.location || ''}
+                             onChange={(e) => setTempScene({ ...tempScene, location: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-white text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                             placeholder="场景名称"
+                           />
+                           <input
+                             type="text"
+                             value={tempScene.time || ''}
+                             onChange={(e) => setTempScene({ ...tempScene, time: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                             placeholder="时间 (如: 日间/夜间)"
+                           />
+                           <input
+                             type="text"
+                             value={tempScene.atmosphere || ''}
+                             onChange={(e) => setTempScene({ ...tempScene, atmosphere: e.target.value })}
+                             className="w-full bg-[#0A0A0A] border border-zinc-800 text-zinc-300 text-xs rounded px-2 py-1 focus:border-zinc-600 focus:outline-none"
+                             placeholder="氛围"
+                           />
+                           <div className="flex gap-1">
+                             <button onClick={addScene} className="flex-1 py-1 bg-zinc-800 text-zinc-300 text-[9px] rounded hover:bg-zinc-700">添加</button>
+                             <button onClick={() => { setShowAddScene(false); setTempScene({}); }} className="flex-1 py-1 bg-zinc-900 text-zinc-500 text-[9px] rounded hover:text-zinc-300">取消</button>
+                           </div>
+                         </div>
+                       )}
                     </div>
                   </section>
               </div>

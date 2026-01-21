@@ -244,50 +244,50 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       const activeCharacters = project.scriptData.characters.filter(c => activeShot.characters.includes(c.name));
 
       return (
-          <div className="bg-[#0c0c2d] p-5 rounded-xl border border-zinc-800 mb-6 space-y-4">
+          <div className="bg-[#0c0c2d] p-5 rounded-xl border border-slate-800 mb-6 space-y-4">
               <div className="flex items-center gap-2 mb-2">
-                 <MapPin className="w-4 h-4 text-zinc-500" />
-                 <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">场景环境 (Scene Context)</h4>
+                 <MapPin className="w-4 h-4 text-slate-500" />
+                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景环境 (Scene Context)</h4>
               </div>
               
               <div className="flex gap-4">
-                  <div className="w-28 h-20 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 border border-zinc-700 relative">
+                  <div className="w-28 h-20 bg-slate-900 rounded-lg overflow-hidden flex-shrink-0 border border-slate-700 relative">
                     {scene?.referenceImage ? (
                       <img src={scene.referenceImage} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-zinc-800">
-                          <MapPin className="w-6 h-6 text-zinc-700" />
+                      <div className="w-full h-full flex items-center justify-center bg-slate-800">
+                          <MapPin className="w-6 h-6 text-slate-700" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-bold">{scene?.location || '未知场景'}</span>
-                        <span className="text-sm px-2 py-0.5 bg-zinc-800 text-zinc-400 rounded-full flex items-center gap-1">
+                        <span className="text-sm px-2 py-0.5 bg-slate-800 text-slate-400 rounded-full flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {scene?.time}
                         </span>
                     </div>
-                    <p className="text-xs text-zinc-500 line-clamp-2">{scene?.atmosphere}</p>
+                    <p className="text-xs text-slate-500 line-clamp-2">{scene?.atmosphere}</p>
                     
                     {/* Character List with Variation Selector */}
                     <div className="flex flex-col gap-2 pt-2">
                          {activeCharacters.map(char => {
                              const hasVars = char.variations && char.variations.length > 0;
                              return (
-                                 <div key={char.id} className="flex items-center justify-between bg-zinc-900 rounded p-1.5 border border-zinc-800">
+                                 <div key={char.id} className="flex items-center justify-between bg-slate-900 rounded p-1.5 border border-slate-800">
                                      <div className="flex items-center gap-2">
-                                         <div className="w-6 h-6 rounded-full bg-zinc-700 overflow-hidden">
+                                         <div className="w-6 h-6 rounded-full bg-slate-700 overflow-hidden">
                                              {char.referenceImage && <img src={char.referenceImage} className="w-full h-full object-cover" />}
                                          </div>
-                                         <span className="text-[11px] text-zinc-300 font-medium">{char.name}</span>
+                                         <span className="text-[11px] text-slate-300 font-medium">{char.name}</span>
                                      </div>
                                      
                                      {hasVars && (
                                          <select 
                                             value={activeShot.characterVariations?.[char.id] || ""}
                                             onChange={(e) => handleVariationChange(activeShot.id, char.id, e.target.value)}
-                                            className="bg-black text-[12px] text-zinc-400 border border-zinc-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
+                                            className="bg-black text-[12px] text-slate-400 border border-slate-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
                                          >
                                              <option value="">默认造型</option>
                                              {char.variations.map(v => (
@@ -306,7 +306,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   };
 
   if (!project.shots.length) return (
-      <div className="flex flex-col items-center justify-center h-full text-zinc-500 bg-[#0e1229]">
+      <div className="flex flex-col items-center justify-center h-full text-slate-500 bg-[#0e1229]">
           <AlertCircle className="w-12 h-12 mb-4 opacity-50"/>
           <p>暂无镜头数据，请先返回阶段 1 生成分镜表。</p>
       </div>
@@ -320,25 +320,25 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
         <div className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center backdrop-blur-md animate-in fade-in">
            <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-6" />
            <h3 className="text-xl font-bold text-white mb-2">{batchProgress.message}</h3>
-           <div className="w-64 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+           <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden">
                <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}></div>
            </div>
-           <p className="text-zinc-500 mt-3 text-xs font-mono">{Math.round((batchProgress.current / batchProgress.total) * 100)}%</p>
+           <p className="text-slate-500 mt-3 text-xs font-mono">{Math.round((batchProgress.current / batchProgress.total) * 100)}%</p>
         </div>
       )}
 
       {/* Toolbar */}
-      <div className="h-16 border-b border-zinc-800 bg-[#171429] px-6 flex items-center justify-between shrink-0">
+      <div className="h-16 border-b border-slate-800 bg-[#0e1230] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <LayoutGrid className="w-5 h-5 text-indigo-500" />
                   导演工作台
-                  <span className="text-xs text-zinc-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Director Workbench</span>
+                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Director Workbench</span>
               </h2>
           </div>
 
           <div className="flex items-center gap-3">
-              <span className="text-xs text-zinc-500 mr-4 font-mono">
+              <span className="text-xs text-slate-500 mr-4 font-mono">
                   {project.shots.filter(s => s.interval?.videoUrl).length} / {project.shots.length} 完成
               </span>
               <button 
@@ -346,8 +346,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                   disabled={!!batchProgress}
                   className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                       allStartFramesGenerated
-                        ? 'bg-[#0c0c2d] text-zinc-400 border border-zinc-700 hover:text-white hover:border-zinc-500'
-                        : 'bg-white text-black hover:bg-zinc-200 shadow-lg shadow-white/5'
+                        ? 'bg-[#0c0c2d] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
+                        : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
                   }`}
               >
                   <Sparkles className="w-3 h-3" />
@@ -360,7 +360,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       <div className="flex-1 overflow-hidden flex">
           
           {/* Grid View - Responsive Logic */}
-          <div className={`flex-1 overflow-y-auto p-6 transition-all duration-500 ease-in-out ${activeShotId ? 'border-r border-zinc-800' : ''}`}>
+          <div className={`flex-1 overflow-y-auto p-6 transition-all duration-500 ease-in-out ${activeShotId ? 'border-r border-slate-800' : ''}`}>
               <div className={`grid gap-4 ${activeShotId ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
                   {project.shots.map((shot, idx) => {
                       const sKf = shot.keyframes?.find(k => k.type === 'start');
@@ -373,22 +373,22 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               key={shot.id}
                               onClick={() => setActiveShotId(shot.id)}
                               className={`
-                                  group relative flex flex-col bg-[#171429] border rounded-xl overflow-hidden cursor-pointer transition-all duration-200
-                                  ${isActive ? 'border-indigo-500 ring-1 ring-indigo-500/50 shadow-xl scale-[0.98]' : 'border-zinc-800 hover:border-zinc-600 hover:shadow-lg'}
+                                  group relative flex flex-col bg-[#0e1230] border rounded-xl overflow-hidden cursor-pointer transition-all duration-200
+                                  ${isActive ? 'border-indigo-500 ring-1 ring-indigo-500/50 shadow-xl scale-[0.98]' : 'border-slate-800 hover:border-slate-600 hover:shadow-lg'}
                               `}
                           >
                               {/* Header */}
-                              <div className="px-3 py-2 bg-[#060624] border-b border-zinc-800 flex justify-between items-center">
-                                  <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-zinc-500'}`}>SHOT {String(idx + 1).padStart(2, '0')}</span>
-                                  <span className="text-[11px] px-1.5 py-0.5 bg-zinc-800 text-zinc-400 rounded uppercase">{shot.cameraMovement}</span>
+                              <div className="px-3 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
+                                  <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>SHOT {String(idx + 1).padStart(2, '0')}</span>
+                                  <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement}</span>
                               </div>
 
                               {/* Thumbnail */}
-                              <div className="aspect-video bg-zinc-900 relative overflow-hidden">
+                              <div className="aspect-video bg-slate-900 relative overflow-hidden">
                                   {hasImage ? (
                                       <img src={sKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                   ) : (
-                                      <div className="absolute inset-0 flex items-center justify-center text-zinc-800">
+                                      <div className="absolute inset-0 flex items-center justify-center text-slate-800">
                                           <ImageIcon className="w-8 h-8 opacity-20" />
                                       </div>
                                   )}
@@ -400,14 +400,14 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                                   {!activeShotId && !hasImage && (
                                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                          <span className="text-[12px] text-white font-bold uppercase tracking-wider bg-zinc-900/90 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur">点击生成</span>
+                                          <span className="text-[12px] text-white font-bold uppercase tracking-wider bg-slate-900/90 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur">点击生成</span>
                                       </div>
                                   )}
                               </div>
 
                               {/* Footer */}
                               <div className="p-3">
-                                  <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
                                       {shot.actionSummary}
                                   </p>
                               </div>
@@ -422,26 +422,26 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
               <div className="w-[480px] bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20">
                   
                   {/* Workbench Header */}
-                  <div className="h-16 px-6 border-b border-zinc-800 flex items-center justify-between bg-[#0c0c2d] shrink-0">
+                  <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between bg-[#0c0c2d] shrink-0">
                        <div className="flex items-center gap-3">
                            <span className="w-8 h-8 bg-indigo-900/30 text-indigo-400 rounded-lg flex items-center justify-center font-bold font-mono text-sm border border-indigo-500/20">
                               {String(activeShotIndex + 1).padStart(2, '0')}
                            </span>
                            <div>
                                <h3 className="text-white font-bold text-sm">镜头详情</h3>
-                               <p className="text-[12px] text-zinc-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
+                               <p className="text-[12px] text-slate-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
                            </div>
                        </div>
                        
                        <div className="flex items-center gap-1">
-                           <button onClick={goToPrevShot} disabled={activeShotIndex === 0} className="p-2 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white disabled:opacity-20 transition-colors">
+                           <button onClick={goToPrevShot} disabled={activeShotIndex === 0} className="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white disabled:opacity-20 transition-colors">
                                <ChevronLeft className="w-4 h-4" />
                            </button>
-                           <button onClick={goToNextShot} disabled={activeShotIndex === project.shots.length - 1} className="p-2 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white disabled:opacity-20 transition-colors">
+                           <button onClick={goToNextShot} disabled={activeShotIndex === project.shots.length - 1} className="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white disabled:opacity-20 transition-colors">
                                <ChevronRight className="w-4 h-4" />
                            </button>
-                           <div className="w-px h-4 bg-zinc-700 mx-2"></div>
-                           <button onClick={() => setActiveShotId(null)} className="p-2 hover:bg-red-900/20 rounded text-zinc-400 hover:text-red-400 transition-colors">
+                           <div className="w-px h-4 bg-slate-700 mx-2"></div>
+                           <button onClick={() => setActiveShotId(null)} className="p-2 hover:bg-red-900/20 rounded text-slate-400 hover:text-red-400 transition-colors">
                                <X className="w-4 h-4" />
                            </button>
                        </div>
@@ -455,21 +455,21 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                        {/* Section 2: Narrative */}
                        <div className="space-y-4">
-                           <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-                               <Film className="w-4 h-4 text-zinc-500" />
-                               <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">叙事动作 (Action & Dialogue)</h4>
+                           <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+                               <Film className="w-4 h-4 text-slate-500" />
+                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">叙事动作 (Action & Dialogue)</h4>
                            </div>
                            
                            <div className="space-y-3">
-                               <div className="bg-[#0c0c2d] p-4 rounded-lg border border-zinc-800">
-                                   <p className="text-zinc-200 text-sm leading-relaxed">{activeShot.actionSummary}</p>
+                               <div className="bg-[#0c0c2d] p-4 rounded-lg border border-slate-800">
+                                   <p className="text-slate-200 text-sm leading-relaxed">{activeShot.actionSummary}</p>
                                </div>
                                
                                {activeShot.dialogue && (
-                                  <div className="bg-[#0c0c2d] p-4 rounded-lg border border-zinc-800 flex gap-3">
-                                      <MessageSquare className="w-4 h-4 text-zinc-600 mt-0.5" />
+                                  <div className="bg-[#0c0c2d] p-4 rounded-lg border border-slate-800 flex gap-3">
+                                      <MessageSquare className="w-4 h-4 text-slate-600 mt-0.5" />
                                       <div>
-                                          <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">对白</p>
+                                          <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">对白</p>
                                           <p className="text-indigo-200 font-serif italic text-sm">"{activeShot.dialogue}"</p>
                                       </div>
                                   </div>
@@ -479,16 +479,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                        {/* Section 3: Visual Production */}
                        <div className="space-y-4">
-                           <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
-                               <Aperture className="w-4 h-4 text-zinc-500" />
-                               <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-widest">视觉制作 (Visual Production)</h4>
+                           <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+                               <Aperture className="w-4 h-4 text-slate-500" />
+                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">视觉制作 (Visual Production)</h4>
                            </div>
 
                            <div className="grid grid-cols-2 gap-4">
                                {/* Start Frame */}
                                <div className="space-y-2">
                                    <div className="flex justify-between items-center">
-                                       <span className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">起始帧 (Start)</span>
+                                       <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">起始帧 (Start)</span>
                                        <button
                                            onClick={() => handleGenerateKeyframe(activeShot, 'start')}
                                            disabled={!!processingState || !!batchProgress}
@@ -497,7 +497,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            {processingState?.type === 'kf_start' && (processingState?.id === startKf?.id || (!startKf && processingState?.type === 'kf_start')) ? '生成中...' : startKf?.imageUrl ? '重新生成' : '生成'}
                                        </button>
                                    </div>
-                                   <div className="aspect-video bg-black rounded-lg border border-zinc-800 overflow-hidden relative group">
+                                   <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
                                        {startKf?.imageUrl ? (
                                            <img
                                              src={startKf.imageUrl}
@@ -506,7 +506,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
-                                               <div className="w-2 h-2 rounded-full bg-zinc-800"></div>
+                                               <div className="w-2 h-2 rounded-full bg-slate-800"></div>
                                            </div>
                                        )}
                                        {/* Loading State matching ID */}
@@ -521,7 +521,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                {/* End Frame */}
                                <div className="space-y-2">
                                    <div className="flex justify-between items-center">
-                                       <span className="text-[12px] font-bold text-zinc-500 uppercase tracking-widest">结束帧 (End)</span>
+                                       <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">结束帧 (End)</span>
                                        <button
                                            onClick={() => handleGenerateKeyframe(activeShot, 'end')}
                                            disabled={!!processingState || !!batchProgress}
@@ -530,7 +530,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            {processingState?.type === 'kf_end' && (processingState?.id === endKf?.id || (!endKf && processingState?.type === 'kf_end')) ? '生成中...' : endKf?.imageUrl ? '重新生成' : '生成'}
                                        </button>
                                    </div>
-                                   <div className="aspect-video bg-black rounded-lg border border-zinc-800 overflow-hidden relative group">
+                                   <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
                                        {endKf?.imageUrl ? (
                                            <img
                                              src={endKf.imageUrl}
@@ -539,7 +539,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
-                                               <span className="text-[11px] text-zinc-700 uppercase">Optional</span>
+                                               <span className="text-[11px] text-slate-700 uppercase">Optional</span>
                                            </div>
                                        )}
                                        {/* Loading State matching ID */}
@@ -554,7 +554,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                        </div>
 
                        {/* Section 4: Video Generation */}
-                       <div className="bg-[#0c0c2d] rounded-xl p-5 border border-zinc-800 space-y-4">
+                       <div className="bg-[#0c0c2d] rounded-xl p-5 border border-slate-800 space-y-4">
                            <div className="flex items-center justify-between">
                                <h4 className="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
                                   <Video className="w-3 h-3 text-indigo-500" />
@@ -564,12 +564,12 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </div>
                            
                            {activeShot.interval?.videoUrl ? (
-                               <div className="w-full aspect-video bg-black rounded-lg overflow-hidden border border-zinc-700 relative shadow-lg">
+                               <div className="w-full aspect-video bg-black rounded-lg overflow-hidden border border-slate-700 relative shadow-lg">
                                    <video src={activeShot.interval.videoUrl} controls className="w-full h-full" />
                                </div>
                            ) : (
-                               <div className="w-full aspect-video bg-zinc-900/50 rounded-lg border border-dashed border-zinc-800 flex items-center justify-center">
-                                   <span className="text-xs text-zinc-600 font-mono">PREVIEW AREA</span>
+                               <div className="w-full aspect-video bg-slate-900/50 rounded-lg border border-dashed border-slate-800 flex items-center justify-center">
+                                   <span className="text-xs text-slate-600 font-mono">PREVIEW AREA</span>
                                </div>
                            )}
 
@@ -578,7 +578,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                              disabled={!startKf?.imageUrl || !!processingState || !!batchProgress}
                              className={`w-full py-3 rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                                activeShot.interval?.videoUrl
-                                 ? 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                                  : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'
                              } ${(!startKf?.imageUrl || !!processingState || !!batchProgress) ? 'opacity-50 cursor-not-allowed' : ''}`}
                            >
@@ -595,7 +595,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </button>
                            
                            {!endKf?.imageUrl && (
-                               <div className="text-[11px] text-zinc-500 text-center font-mono">
+                               <div className="text-[11px] text-slate-500 text-center font-mono">
                                   * 未检测到结束帧，将使用单图生成模式 (Image-to-Video)
                                </div>
                            )}

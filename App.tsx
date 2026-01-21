@@ -109,26 +109,26 @@ function App() {
   // API Key Entry Screen (Industrial Design)
   if (!apiKey) {
     return (
-      <div className="h-screen bg-[#201F3E] flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      <div className="h-screen bg-[#0e1229] flex flex-col items-center justify-center p-8 relative overflow-hidden">
         {/* Background Accents */}
         <div className="absolute top-0 right-0 p-64 bg-indigo-900/5 blur-[150px] rounded-full pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 p-48 bg-zinc-900/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 p-48 bg-slate-900/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div className="w-full max-w-md bg-[#0e0e28] border border-zinc-800 p-8 rounded-xl shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
+        <div className="w-full max-w-md bg-[#0e0e28] border border-slate-800 p-8 rounded-xl shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
 
-          <div className="flex items-center gap-3 mb-8 border-b border-zinc-900 pb-6">
+          <div className="flex items-center gap-3 mb-8 border-b border-slate-900 pb-6">
              <div className="w-10 h-10 bg-white text-black flex items-center justify-center">
                 <Key className="w-5 h-5" />
              </div>
              <div>
                 <h1 className="text-xl font-bold text-white tracking-wide">API 配置</h1>
-                <p className="text-[12px] text-zinc-500 uppercase tracking-widest font-mono">Authentication</p>
+                <p className="text-[12px] text-slate-500 uppercase tracking-widest font-mono">Authentication</p>
              </div>
           </div>
 
           <div className="space-y-6">
              <div>
-               <label className="block text-[12px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
+               <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
                  火山引擎 / 豆包 API Key
                </label>
                <input
@@ -136,9 +136,9 @@ function App() {
                  value={inputKey}
                  onChange={(e) => setInputKey(e.target.value)}
                  placeholder="Enter your API Key..."
-                 className="w-full bg-[#0c0c2d] border border-zinc-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-zinc-700"
+                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
                />
-               <p className="mt-3 text-[12px] text-zinc-600 leading-relaxed">
+               <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                  本应用需要火山引擎的 API 访问权限。请确保您的 API Key 已开通相应的服务权限。
                  <a href="https://www.volcengine.com/docs/82379" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline ml-1">查看文档</a>
                </p>
@@ -147,12 +147,12 @@ function App() {
              <button
                onClick={handleSaveKeyWrapper}
                disabled={!inputKey.trim()}
-               className="w-full py-3 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+               className="w-full py-3 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
              >
                保存配置 <ArrowRight className="w-3 h-3" />
              </button>
 
-             <div className="flex items-center justify-center gap-2 text-[12px] text-zinc-700 font-mono">
+             <div className="flex items-center justify-center gap-2 text-[12px] text-slate-700 font-mono">
                <ShieldCheck className="w-3 h-3" />
                密钥仅保存在浏览器本地
              </div>
@@ -166,7 +166,7 @@ function App() {
   if (!project) {
     return (
        <>
-         <button onClick={handleClearKey} className="fixed top-4 right-4 z-50 text-[12px] text-zinc-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
+         <button onClick={handleClearKey} className="fixed top-4 right-4 z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
             Sign Out
          </button>
          <Dashboard onOpenProject={handleOpenProject} />
@@ -199,7 +199,7 @@ function App() {
   />
 )}
         {/* Save Status Indicator */}
-        <div className="relative top-4 right-6 pointer-events-none opacity-50 flex items-center gap-2 text-xs font-mono text-zinc-400 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm z-50">
+        <div className="relative top-4 right-6 pointer-events-none opacity-50 flex items-center gap-2 text-xs font-mono text-slate-400 bg-black/50 px-2 py-1 rounded-full backdrop-blur-sm z-50">
            {saveStatus === 'saving' ? (
              <>
                <Save className="w-3 h-3 animate-pulse" />
@@ -215,7 +215,7 @@ function App() {
       </main>
       
       <div className="lg:hidden fixed inset-0 bg-black z-[100] flex items-center justify-center p-8 text-center">
-        <p className="text-zinc-500">为了获得最佳体验，请使用桌面浏览器访问。</p>
+        <p className="text-slate-500">为了获得最佳体验，请使用桌面浏览器访问。</p>
       </div>
     </div>
   );

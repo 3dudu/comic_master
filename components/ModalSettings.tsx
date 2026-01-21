@@ -163,16 +163,16 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
         if (e.target === e.currentTarget && !showAddModal) onClose();
       }}
     >
-      <div className="bg-[#0A0A0A] border border-zinc-800 rounded-lg w-[800px] max-w-[90vw] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-[#0A0A0A] border border-slate-800 rounded-lg w-[800px] max-w-[90vw] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
             <Key className="w-4 h-4 text-indigo-500" />
             大模型配置管理
           </h3>
           <button
             onClick={handleCancelAdd}
-            className="text-zinc-500 hover:text-white transition-colors disabled:opacity-50"
+            className="text-slate-500 hover:text-white transition-colors disabled:opacity-50"
           >
             <X className="w-4 h-4" />
           </button>
@@ -186,50 +186,50 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                 <h4 className="text-sm font-bold text-white mb-2">
                   {editingConfig ? '编辑配置' : '添加新配置'}
                 </h4>
-                <p className="text-xs text-zinc-500">配置您的 AI 模型服务提供商和 API 凭证</p>
+                <p className="text-xs text-slate-500">配置您的 AI 模型服务提供商和 API 凭证</p>
               </div>
 
               {/* Provider Selection */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">服务提供商</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">服务提供商</label>
                 <div className="relative">
                   <select
                     value={formData.provider}
                     onChange={(e) => setFormData({ ...formData, provider: e.target.value as AIModelConfig['provider'] })}
-                    className="w-full bg-[#141414] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-[#141414] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     {PROVIDER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
                   <div className="absolute right-3 top-3 pointer-events-none">
-                    <ChevronRight className="w-4 h-4 text-zinc-600 rotate-90" />
+                    <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
                   </div>
                 </div>
               </div>
 
               {/* Model Type Selection */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">模型类型</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">模型类型</label>
                 <div className="relative">
                   <select
                     value={formData.modelType}
                     onChange={(e) => setFormData({ ...formData, modelType: e.target.value as AIModelConfig['modelType'] })}
-                    className="w-full bg-[#141414] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-zinc-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-[#141414] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     {MODEL_TYPE_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
                   <div className="absolute right-3 top-3 pointer-events-none">
-                    <ChevronRight className="w-4 h-4 text-zinc-600 rotate-90" />
+                    <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
                   </div>
                 </div>
               </div>
 
               {/* API Key */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Key className="w-3 h-3" />
                   API Key
                 </label>
@@ -237,51 +237,51 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                   type="password"
                   value={formData.apiKey}
                   onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
-                  className="w-full bg-[#141414] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-zinc-600 focus:outline-none transition-all font-mono placeholder:text-zinc-700"
+                  className="w-full bg-[#141414] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
                   placeholder="输入您的 API Key..."
                 />
               </div>
 
               {/* API URL */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Globe className="w-3 h-3" />
-                  API URL <span className="text-zinc-700 font-normal">(可选)</span>
+                  API URL <span className="text-slate-700 font-normal">(可选)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.apiUrl}
                   onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
-                  className="w-full bg-[#141414] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-zinc-600 focus:outline-none transition-all font-mono placeholder:text-zinc-700"
+                  className="w-full bg-[#141414] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
                   placeholder="输入 API 端点 URL（选填）..."
                 />
               </div>
 
               {/* description */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Globe className="w-3 h-3" />
-                  备注 <span className="text-zinc-700 font-normal">(可选)</span>
+                  备注 <span className="text-slate-700 font-normal">(可选)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-[#141414] border border-zinc-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-zinc-600 focus:outline-none transition-all font-mono placeholder:text-zinc-700"
+                  className="w-full bg-[#141414] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
                   placeholder="输入备注（选填）"
                 />
               </div>
 
               {/* Enable Toggle */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">启用状态</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">启用状态</label>
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, enabled: !formData.enabled })}
                   className={`w-full py-3 rounded-lg text-sm font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-3 ${
                     formData.enabled
                       ? 'bg-indigo-600 text-white'
-                      : 'bg-zinc-800 text-zinc-400'
+                      : 'bg-slate-800 text-slate-400'
                   }`}
                 >
                   {formData.enabled ? (
@@ -299,7 +299,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleCancelAdd}
-                  className="flex-1 py-3 bg-zinc-900 text-zinc-400 hover:text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
+                  className="flex-1 py-3 bg-slate-900 text-slate-400 hover:text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
                 >
                   取消
                 </button>
@@ -315,12 +315,12 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
         ) : (
           <div className="flex-1 overflow-y-auto">
             {/* Config List */}
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-slate-800">
               {configs.length === 0 ? (
                 <div className="p-12 text-center">
-                  <Key className="w-12 h-12 text-zinc-800 mx-auto mb-4" />
-                  <p className="text-sm text-zinc-500">暂无配置</p>
-                  <p className="text-xs text-zinc-600 mt-2">点击下方按钮添加您的第一个模型配置</p>
+                  <Key className="w-12 h-12 text-slate-800 mx-auto mb-4" />
+                  <p className="text-sm text-slate-500">暂无配置</p>
+                  <p className="text-xs text-slate-600 mt-2">点击下方按钮添加您的第一个模型配置</p>
                 </div>
               ) : (
                 configs.map((config) => {
@@ -332,16 +332,16 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                     <div key={config.id} className={`p-4 transition-colors ${config.enabled ? 'bg-[#141414]' : 'bg-transparent'}`}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${config.enabled ? 'bg-indigo-900/30 ring-1 ring-indigo-500/30' : 'bg-zinc-900'}`}>
-                            <ModelIcon className={`w-5 h-5 ${config.enabled ? 'text-indigo-400' : 'text-zinc-600'}`} />
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${config.enabled ? 'bg-indigo-900/30 ring-1 ring-indigo-500/30' : 'bg-slate-900'}`}>
+                            <ModelIcon className={`w-5 h-5 ${config.enabled ? 'text-indigo-400' : 'text-slate-600'}`} />
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-sm font-bold text-white">{providerOption?.label || config.provider}</span>
-                              <span className="text-[10px] text-zinc-600 bg-zinc-900 px-1.5 py-0.5 rounded font-mono">
+                              <span className="text-[10px] text-slate-600 bg-slate-900 px-1.5 py-0.5 rounded font-mono">
                                   {config.description}
                               </span>
-                              <span className="text-[10px] text-zinc-600 bg-zinc-900 px-1.5 py-0.5 rounded font-mono">
+                              <span className="text-[10px] text-slate-600 bg-slate-900 px-1.5 py-0.5 rounded font-mono">
                                 {modelTypeOption?.label || config.modelType}
                               </span>
                               {config.enabled && (
@@ -351,7 +351,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] text-zinc-600 font-mono flex items-center gap-2">
+                            <div className="text-[10px] text-slate-600 font-mono flex items-center gap-2">
                               {config.apiKey && (
                                 <span className="text-green-500">● 已配置</span>
                               )}
@@ -364,21 +364,21 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => toggleConfigEnabled(config.id).then(loadConfigs)}
-                            className={`p-2 transition-colors rounded-lg ${config.enabled ? 'text-indigo-400 hover:text-indigo-300 bg-indigo-900/20 hover:bg-indigo-900/30' : 'text-zinc-600 hover:text-zinc-300 hover:bg-zinc-800'}`}
+                            className={`p-2 transition-colors rounded-lg ${config.enabled ? 'text-indigo-400 hover:text-indigo-300 bg-indigo-900/20 hover:bg-indigo-900/30' : 'text-slate-600 hover:text-slate-300 hover:bg-slate-800'}`}
                             title={config.enabled ? '禁用' : '启用'}
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEdit(config)}
-                            className="p-2 hover:bg-zinc-800 text-zinc-600 hover:text-white transition-colors rounded-lg"
+                            className="p-2 hover:bg-slate-800 text-slate-600 hover:text-white transition-colors rounded-lg"
                             title="编辑"
                           >
                             <Key className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(config.id)}
-                            className="p-2 hover:bg-red-900/20 text-zinc-600 hover:text-red-400 transition-colors rounded-lg"
+                            className="p-2 hover:bg-red-900/20 text-slate-600 hover:text-red-400 transition-colors rounded-lg"
                             title="删除"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -395,10 +395,10 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
 
         {/* Footer */}
         {!showAddModal && (
-          <div className="p-6 border-t border-zinc-800">
+          <div className="p-6 border-t border-slate-800">
             <button
               onClick={() => setShowAddModal(true)}
-              className="w-full py-3 bg-white text-black hover:bg-zinc-200 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-white/5 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-white text-black hover:bg-slate-200 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-white/5 flex items-center justify-center gap-2"
             >
               <Plus className="w-4 h-4" />
               添加新配置

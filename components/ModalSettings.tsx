@@ -371,11 +371,13 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                               <span className="text-[12px] text-green-600 bg-green-900 px-1.5 py-0.5 rounded font-mono">
                                 {modelTypeOption?.label || config.modelType}
                               </span>
+                              {config.description && (
                               <span className="text-[12px] text-green-600 bg-slate-900 border border-green-500/30 px-1.5 py-0.5 rounded font-mono">
                                   {config.description}
                               </span>
+                              )}
                               {config.enabled && (
-                                <span className="text-[12px] text-green-500 bg-green-900/20 border border-green-500/30 px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex items-center gap-1">
+                                <span className="text-[12px] text-yellow-500 bg-yellow-900/20 border border-yellow-500/30 px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex items-center gap-1">
                                   <Check className="w-2.5 h-2.5" />
                                   已启用
                                 </span>

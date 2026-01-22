@@ -173,11 +173,13 @@ export const parseScriptToData = async (
 
   const prompt = `
     分析文本并以 ${language} 语言输出一个 JSON 对象。
+
     任务：
     提取title:标题、genre:类型、logline:故事梗概（以 ${language} 语言呈现）。
     提取characters:人物信息（id:编号、name:姓名、gender:性别、age:年龄、personality:性格）。
     提取scenes:场景信息（id:编号、location:地点、time:时间、atmosphere:氛围）。
     storyParagraphs:故事段落（id:编号、sceneRefId:引用场景编号、text:内容）。
+
     输入：
     "${rawText.slice(0, 30000)}"
   `;
@@ -268,7 +270,7 @@ export const generateShotListDoubaoForScene = async (
 
   const prompt = `
     担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
-    文本输出语言: ${lang}.
+    文本输出语言: ${lang}。
 
     场景细节:
     地点: ${scene.location}
@@ -282,7 +284,7 @@ export const generateShotListDoubaoForScene = async (
     题材类型: ${scriptData.genre}
     剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
 
-    人物:
+    角色:
     ${JSON.stringify(
       scriptData.characters.map((c) => ({
         id: c.id,

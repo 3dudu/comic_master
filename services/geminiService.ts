@@ -1,5 +1,5 @@
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
-import { ScriptData, Shot, Character, Scene } from "../types";
+import { GenerateContentResponse, GoogleGenAI, Type } from "@google/genai";
+import { Character, Scene, ScriptData, Shot } from "../types";
 
 // Module-level variable to store the key at runtime
 let runtimeApiKey: string = process.env.API_KEY || "";
@@ -50,16 +50,16 @@ const cleanJsonString = (str: string): string => {
 export const parseScriptToData = async (rawText: string, language: string = '中文'): Promise<ScriptData> => {
   const ai = getAiClient();
   const prompt = `
-    Analyze the text and output a JSON object in the language: ${language}.
-    
-    Tasks:
-    1. Extract title, genre, logline (in ${language}).
-    2. Extract characters (id, name, gender, age, personality).
-    3. Extract scenes (id, location, time, atmosphere).
-    4. Break down the story into paragraphs linked to scenes.
-    
-    Input:
-    "${rawText.slice(0, 30000)}" // Limit input context if needed
+    分析文本并以 ${language} 语言输出一个 JSON 对象。
+
+    任务：
+    提取title:标题、genre:类型、logline:故事梗概（以 ${language} 语言呈现）。
+    提取characters:人物信息（id:编号、name:姓名、gender:性别、age:年龄、personality:性格）。
+    提取scenes:场景信息（id:编号、location:地点、time:时间、atmosphere:氛围）。
+    storyParagraphs:故事段落（id:编号、sceneRefId:引用场景编号、text:内容）。
+
+    输入：
+    "${rawText.slice(0, 30000)}"
   `;
 
   const response = await retryOperation<GenerateContentResponse>(() => ai.models.generateContent({
@@ -167,31 +167,34 @@ export const generateShotList = async (scriptData: ScriptData): Promise<Shot[]> 
     if (!paragraphs.trim()) return [];
 
     const prompt = `
-      Act as a professional cinematographer. Generate a detailed shot list (Camera blocking) for Scene ${index + 1}.
-      Language for Text Output: ${lang}.
+      担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
+      文本输出语言: ${lang}。
       
-      Scene Details:
-      Location: ${scene.location}
-      Time: ${scene.time}
-      Atmosphere: ${scene.atmosphere}
+      场景细节:
+      地点: ${scene.location}
+      时间: ${scene.time}
+      氛围: ${scene.atmosphere}
       
-      Scene Action:
+      场景动作:
       "${paragraphs.slice(0, 5000)}"
       
-      Context:
-      Genre: ${scriptData.genre}
-      Target Duration (Whole Script): ${scriptData.targetDuration || 'Standard'}
+
+      创作背景:
+      题材类型: ${scriptData.genre}
+      剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
       
-      Characters:
+      角色:
       ${JSON.stringify(scriptData.characters.map(c => ({ id: c.id, name: c.name, desc: c.visualPrompt || c.personality })))}
 
-      Instructions:
-      1. Create a sequence of shots covering the action.
-      2. IMPORTANT: Limit to maximum 6-8 shots per scene to prevent JSON truncation errors. If the scene is long, summarize the less critical actions.
-      3. 'cameraMovement': Use professional terms (e.g., Dolly In, Pan Right, Static, Handheld, Tracking).
-      4. 'shotSize': Specify the field of view (e.g., Extreme Close-up, Medium Shot, Wide Shot).
-      5. 'actionSummary': Detailed description of what happens in the shot (in ${lang}).
-      6. 'visualPrompt': Detailed English description for image generation. Keep it under 40 words to save tokens.
+      说明：
+      1. 设计一组覆盖全部情节动作的镜头序列。
+      2. 重要提示：每场戏镜头数量上限为 6-8 个，避免出现 JSON 截断错误。
+      3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
+      4. 景别：明确取景范围（如：大特写、中景、全景）。
+      5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
+      6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
+      7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
+      8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
     `;
 
     try {
@@ -281,9 +284,9 @@ export const generateShotList = async (scriptData: ScriptData): Promise<Shot[]> 
  */
 export const generateVisualPrompts = async (type: 'character' | 'scene', data: Character | Scene, genre: string): Promise<string> => {
    const ai = getAiClient();
-   const prompt = `Generate a high-fidelity visual prompt for a ${type} in a ${genre} movie. 
-   Data: ${JSON.stringify(data)}. 
-   Output only the prompt in English, comma-separated, focused on visual details (lighting, texture, appearance).`;
+    const prompt = `为电影${genre}的${type}生成高还原度视觉提示词。 
+    内容: ${JSON.stringify(data)}. 
+    中文输出提示词，以逗号分隔，聚焦视觉细节（光线、质感、外观）。`;
 
    const response = await retryOperation<GenerateContentResponse>(() => ai.models.generateContent({
      model: 'gemini-2.5-flash',

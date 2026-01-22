@@ -19,10 +19,6 @@ const DOUBAO_CONFIG = {
   API_ENDPOINT: "https://ark.cn-beijing.volces.com/api/v3",
 };
 
-const IMAGE_X = [
-  '1','1x1','1x2','1x3','2x2','2x3','2x3','3x3','3x3','3x3'
-];
-
 // Module-level variable to store the key at runtime
 let runtimeApiKey: string = process.env.VOLCENGINE_API_KEY || "";
 let runtimeApiUrl: string = DOUBAO_CONFIG.API_ENDPOINT;
@@ -437,11 +433,9 @@ export const generateImage = async (
   imageCount: number = 1
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/images/generations`;
-  let imagex = IMAGE_X[imageCount];
-  const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
   const requestBody: any = {
     model: DOUBAO_CONFIG.IMAGE_MODEL,
-    prompt:  "请使用 "+localStyle+" 风格创作图画，内容为" + prompt + (imageCount > 1 ? " 生成 "+imagex+" 宫格，包含 "+imageCount+" 张风格统一的图片，每张长宽比 "+image_rate+"，间距 2px，白色背景，铺满整张图。" : ""),
+    prompt:  prompt,
     size: ischaracter?"1728x2304":imageSize,
     //sequential_image_generation: ischaracter?"disabled":"auto",
     watermark: false
@@ -469,7 +463,7 @@ export const generateImage = async (
 
   // 提取图片 URL 或 base64 数据
   if(response.data){
-    if(response.data.length>0){
+    if(response.data.length>1){
       let imagesGroup = [];
       for(let i=0;i<response.data.length;i++){
         imagesGroup.push(response.data[i].url)
@@ -500,7 +494,7 @@ export const joinImage = async (
   }
   const requestBody: any = {
     model: DOUBAO_CONFIG.IMAGE_MODEL,
-    prompt:  "请将这些图片拼成一张"+imageCount+"宫格图片，图片直接留有5个像素的间隔，最终图片大小为" + imageSize + "。" ,
+    prompt:  "请将这些图片拼成一张"+imageCount+"宫格图片，图片直接留有1个像素的间隔，最终图片大小为" + imageSize + "。" ,
     size: imageSize,
     watermark: false
   };
@@ -535,6 +529,7 @@ export const generateVideo = async (
   startImageBase64?: string,
   endImageBase64?: string,
   duration: number = 5,
+  full_frame: boolean = false
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/contents/generations/tasks`;
 
@@ -556,13 +551,13 @@ export const generateVideo = async (
             "image_url": {
                 "url": startImageBase64
             },
-            "role": "first_frame"
+            "role": full_frame?"reference_image":"first_frame"
     });
   }
 
   // 处理结束图片（如果火山引擎支持）
   
-  if (endImageBase64) {
+  if (endImageBase64 && !full_frame) {
     requestBody.content.push({
             "type": "image_url",
             "image_url": {

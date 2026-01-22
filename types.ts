@@ -27,7 +27,7 @@ export interface Scene {
 
 export interface Keyframe {
   id: string;
-  type: 'start' | 'end';
+  type: 'start' | 'end' | 'full';
   visualPrompt: string;
   imageUrl?: string;
   status: 'pending' | 'generating' | 'completed' | 'failed';

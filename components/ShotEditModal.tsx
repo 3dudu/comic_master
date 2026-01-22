@@ -4,7 +4,7 @@ import { Character } from '../types';
 
 interface Keyframe {
   id?: string;
-  type: 'start' | 'end';
+  type: 'start' | 'end' | 'full';
   visualPrompt: string;
   status?: 'pending' | 'generating' | 'completed' | 'failed';
 }

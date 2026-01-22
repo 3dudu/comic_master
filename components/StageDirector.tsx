@@ -10,7 +10,7 @@ interface Props {
 
 const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const [activeShotId, setActiveShotId] = useState<string | null>(null);
-  const [processingState, setProcessingState] = useState<{id: string, type: 'kf_start'|'kf_end'|'video'}|null>(null);
+  const [processingState, setProcessingState] = useState<{id: string, type: 'kf_start'|'kf_end'|'kf_full'|'video'}|null>(null);
   const [batchProgress, setBatchProgress] = useState<{current: number, total: number, message: string} | null>(null);
   const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
@@ -24,6 +24,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   // Safe access to keyframes (may be undefined if data is incomplete)
   const startKf = activeShot?.keyframes?.find(k => k.type === 'start');
   const endKf = activeShot?.keyframes?.find(k => k.type === 'end');
+  const fullKf = activeShot?.keyframes?.find(k => k.type === 'full');
 
   // Check if all start frames are generated
   const allStartFramesGenerated = project.shots.length > 0 && project.shots.every(s => s.keyframes?.find(k => k.type === 'start')?.imageUrl);
@@ -68,17 +69,27 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       return referenceImages;
   };
 
-  const handleGenerateKeyframe = async (shot: Shot, type: 'start' | 'end') => {
+  const handleGenerateKeyframe = async (shot: Shot, type: 'start' | 'end' | 'full') => {
     // Robustly handle missing keyframe object
     const existingKf = shot.keyframes?.find(k => k.type === type);
     const kfId = existingKf?.id || `kf-${shot.id}-${type}-${Date.now()}`;
-    const prompt = existingKf?.visualPrompt || shot.actionSummary;
-    
-    setProcessingState({ id: kfId, type: type === 'start' ? 'kf_start' : 'kf_end' });
+    let prompt = shot.actionSummary;
+    if(type === 'full'){
+        const startKey = shot.keyframes?.find(k => k.type === 'start');
+        const endKey = shot.keyframes?.find(k => k.type === 'end');
+        if (startKey || endKey){
+            prompt = `画面开始：${startKey.visualPrompt} 画面结束：${endKey.visualPrompt}`;
+        }
+    }else{
+        prompt = existingKf?.visualPrompt || shot.actionSummary;
+    }
+
+    const processingType = type === 'full' ? 'kf_full' : (type === 'start' ? 'kf_start' : 'kf_end');
+    setProcessingState({ id: kfId, type: processingType });
 
     try {
       const referenceImages = getRefImagesForShot(shot);
-      const url = await ModelService.generateImage(prompt, referenceImages, false, localStyle, imageSize,imageCount);
+      const url = await ModelService.generateImage(prompt, referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1);
 
       updateProject({ 
         shots: project.shots.map(s => {
@@ -115,23 +126,29 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     console.log("Generating Video for Shot:", shot);
     if (!shot.interval) return;
     
-    const sKf = shot.keyframes?.find(k => k.type === 'start');
+    let sKf = shot.keyframes?.find(k => k.type === 'start');
+    let prompt = shot.actionSummary + (shot.dialogue?"对白："+shot.dialogue:"");
+    console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
+    if(imageCount > 1){
+        sKf = shot.keyframes?.find(k => k.type === 'full');
+        if (!sKf?.imageUrl) return alert("请先生成连续图！");
+        prompt = "图片包含"+imageCount+"个连续的子图，请结合下面描述生成完整视频。"+prompt;
+    }else{
+        if (!sKf?.imageUrl) return alert("请先生成起始帧！");
+    }
     const eKf = shot.keyframes?.find(k => k.type === 'end');
-
-    if (!sKf?.imageUrl) return alert("请先生成起始帧！");
-
     // Fix: Remove logic that auto-grabs next shot's frame.
     // Prevent morphing artifacts by defaulting to Image-to-Video unless an End Frame is explicitly generated.
     let endImageUrl = eKf?.imageUrl;
     
     setProcessingState({ id: shot.interval.id, type: 'video' });
-    
     try {
       const videoUrl = await ModelService.generateVideo(
-          shot.actionSummary + shot.dialogue?'对白：'+shot.dialogue:"",
+          prompt,
           sKf.imageUrl,
           endImageUrl, // Only pass if it exists
-          shot.interval.duration
+          shot.interval.duration,
+          imageCount>1
       );
 
       updateShot(shot.id, (s) => ({
@@ -365,7 +382,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
               <div className={`grid gap-4 ${activeShotId ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
                   {project.shots.map((shot, idx) => {
                       const sKf = shot.keyframes?.find(k => k.type === 'start');
-                      const hasImage = !!sKf?.imageUrl;
+                      const fKf = shot.keyframes?.find(k => k.type === 'full');
+                      const hasImage = !!sKf?.imageUrl || !!fKf?.imageUrl;
                       const hasVideo = !!shot.interval?.videoUrl;
                       const isActive = activeShotId === shot.id;
 
@@ -387,7 +405,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               {/* Thumbnail */}
                               <div className="aspect-video bg-slate-900 relative overflow-hidden">
                                   {hasImage ? (
-                                      <img src={sKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                      <img src={sKf!.imageUrl || fKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                   ) : (
                                       <div className="absolute inset-0 flex items-center justify-center text-slate-800">
                                           <ImageIcon className="w-8 h-8 opacity-20" />
@@ -485,25 +503,24 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">视觉制作 (Visual Production)</h4>
                            </div>
 
-                           <div className="grid grid-cols-2 gap-4">
-                               {/* Start Frame */}
+                           {imageCount > 1 ? (
                                <div className="space-y-2">
                                    <div className="flex justify-between items-center">
-                                       <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">起始帧 (Start)</span>
+                                       <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">宫格图 (Grid)</span>
                                        <button
-                                           onClick={() => handleGenerateKeyframe(activeShot, 'start')}
+                                           onClick={() => handleGenerateKeyframe(activeShot, 'full')}
                                            disabled={!!processingState || !!batchProgress}
                                            className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                        >
-                                           {processingState?.type === 'kf_start' && (processingState?.id === startKf?.id || (!startKf && processingState?.type === 'kf_start')) ? '生成中...' : startKf?.imageUrl ? '重新生成' : '生成'}
+                                           {processingState?.type === 'kf_full' && (processingState?.id === fullKf?.id || (!fullKf && processingState?.type === 'kf_full')) ? '生成中...' : fullKf?.imageUrl ? '重新生成' : '生成'}
                                        </button>
                                    </div>
                                    <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
-                                       {startKf?.imageUrl ? (
+                                       {fullKf?.imageUrl ? (
                                            <img
-                                             src={startKf.imageUrl}
-                                             className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id ? 'cursor-pointer' : ''}`}
-                                             onClick={() => (!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id) && setPreviewImageUrl(startKf.imageUrl!)}
+                                             src={fullKf.imageUrl}
+                                             className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_full' || processingState?.id !== fullKf.id ? 'cursor-pointer' : ''}`}
+                                             onClick={() => (!processingState || processingState?.type !== 'kf_full' || processingState?.id !== fullKf.id) && setPreviewImageUrl(fullKf.imageUrl!)}
                                            />
                                        ) : (
                                            <div className="absolute inset-0 flex items-center justify-center">
@@ -511,48 +528,84 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                            </div>
                                        )}
                                        {/* Loading State matching ID */}
-                                       {((startKf && processingState?.id === startKf.id) || (processingState?.type === 'kf_start' && !startKf)) && (
+                                       {((fullKf && processingState?.id === fullKf.id) || (processingState?.type === 'kf_full' && !fullKf)) && (
                                             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                                                 <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
                                             </div>
                                        )}
                                    </div>
                                </div>
+                           ) : (
+                               <div className="grid grid-cols-2 gap-4">
+                                   {/* Start Frame */}
+                                   <div className="space-y-2">
+                                       <div className="flex justify-between items-center">
+                                           <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">起始帧 (Start)</span>
+                                           <button
+                                               onClick={() => handleGenerateKeyframe(activeShot, 'start')}
+                                               disabled={!!processingState || !!batchProgress}
+                                               className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                           >
+                                               {processingState?.type === 'kf_start' && (processingState?.id === startKf?.id || (!startKf && processingState?.type === 'kf_start')) ? '生成中...' : startKf?.imageUrl ? '重新生成' : '生成'}
+                                           </button>
+                                       </div>
+                                       <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
+                                           {startKf?.imageUrl ? (
+                                               <img
+                                                 src={startKf.imageUrl}
+                                                 className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id ? 'cursor-pointer' : ''}`}
+                                                 onClick={() => (!processingState || processingState?.type !== 'kf_start' || processingState?.id !== startKf.id) && setPreviewImageUrl(startKf.imageUrl!)}
+                                               />
+                                           ) : (
+                                               <div className="absolute inset-0 flex items-center justify-center">
+                                                   <div className="w-2 h-2 rounded-full bg-slate-800"></div>
+                                               </div>
+                                           )}
+                                           {/* Loading State matching ID */}
+                                           {((startKf && processingState?.id === startKf.id) || (processingState?.type === 'kf_start' && !startKf)) && (
+                                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                    <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+                                                </div>
+                                           )}
+                                       </div>
+                                   </div>
 
-                               {/* End Frame */}
-                               <div className="space-y-2">
-                                   <div className="flex justify-between items-center">
-                                       <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">结束帧 (End)</span>
-                                       <button
-                                           onClick={() => handleGenerateKeyframe(activeShot, 'end')}
-                                           disabled={!!processingState || !!batchProgress}
-                                           className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                       >
-                                           {processingState?.type === 'kf_end' && (processingState?.id === endKf?.id || (!endKf && processingState?.type === 'kf_end')) ? '生成中...' : endKf?.imageUrl ? '重新生成' : '生成'}
-                                       </button>
-                                   </div>
-                                   <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
-                                       {endKf?.imageUrl ? (
-                                           <img
-                                             src={endKf.imageUrl}
-                                             className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id ? 'cursor-pointer' : ''}`}
-                                             onClick={() => (!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id) && setPreviewImageUrl(endKf.imageUrl!)}
-                                           />
-                                       ) : (
-                                           <div className="absolute inset-0 flex items-center justify-center">
-                                               <span className="text-[11px] text-slate-700 uppercase">Optional</span>
-                                           </div>
-                                       )}
-                                       {/* Loading State matching ID */}
-                                       {((endKf && processingState?.id === endKf.id) || (processingState?.type === 'kf_end' && !endKf)) && (
-                                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                                <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
-                                            </div>
-                                       )}
+                                   {/* End Frame */}
+                                   <div className="space-y-2">
+                                       <div className="flex justify-between items-center">
+                                           <span className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">结束帧 (End)</span>
+                                           <button
+                                               onClick={() => handleGenerateKeyframe(activeShot, 'end')}
+                                               disabled={!!processingState || !!batchProgress}
+                                               className="text-[12px] text-indigo-400 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                           >
+                                               {processingState?.type === 'kf_end' && (processingState?.id === endKf?.id || (!endKf && processingState?.type === 'kf_end')) ? '生成中...' : endKf?.imageUrl ? '重新生成' : '生成'}
+                                           </button>
+                                       </div>
+                                       <div className="aspect-video bg-black rounded-lg border border-slate-800 overflow-hidden relative group">
+                                           {endKf?.imageUrl ? (
+                                               <img
+                                                 src={endKf.imageUrl}
+                                                 className={`w-full h-full object-contain ${!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id ? 'cursor-pointer' : ''}`}
+                                                 onClick={() => (!processingState || processingState?.type !== 'kf_end' || processingState?.id !== endKf.id) && setPreviewImageUrl(endKf.imageUrl!)}
+                                               />
+                                           ) : (
+                                               <div className="absolute inset-0 flex items-center justify-center">
+                                                   <span className="text-[11px] text-slate-700 uppercase">Optional</span>
+                                               </div>
+                                           )}
+                                           {/* Loading State matching ID */}
+                                           {((endKf && processingState?.id === endKf.id) || (processingState?.type === 'kf_end' && !endKf)) && (
+                                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                    <Loader2 className="w-6 h-6 text-indigo-500 animate-spin" />
+                                                </div>
+                                           )}
+                                       </div>
                                    </div>
                                </div>
+                           )}
+
                            </div>
-                       </div>
 
                        {/* Section 4: Video Generation */}
                        <div className="bg-[#0c0c2d] rounded-xl p-5 border border-slate-800 space-y-4">
@@ -576,12 +629,12 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                            <button
                              onClick={() => handleGenerateVideo(activeShot)}
-                             disabled={!startKf?.imageUrl || !!processingState || !!batchProgress}
+                             disabled={(!startKf?.imageUrl && !endKf?.imageUrl && !fullKf?.imageUrl) || !!processingState || !!batchProgress}
                              className={`w-full py-3 rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                                activeShot.interval?.videoUrl
                                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                                  : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'
-                             } ${(!startKf?.imageUrl || !!processingState || !!batchProgress) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                             } ${((!startKf?.imageUrl && !endKf?.imageUrl && !fullKf?.imageUrl) || !!processingState || !!batchProgress) ? 'opacity-50 cursor-not-allowed' : ''}`}
                            >
                              {processingState?.type === 'video' ? (
                                 <>
@@ -595,9 +648,9 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                              )}
                            </button>
                            
-                           {!endKf?.imageUrl && (
+                           {!endKf?.imageUrl && !startKf?.imageUrl && (
                                <div className="text-[11px] text-slate-500 text-center font-mono">
-                                  * 未检测到结束帧，将使用单图生成模式 (Image-to-Video)
+                                  * 将使用连续图生成模式
                                </div>
                            )}
                        </div>

@@ -34,13 +34,15 @@ import {
   setDoubaoApiUrl
 } from "./doubaoService";
 
+const IMAGE_X = [
+  '1','1x1','1x2','1x3','2x2','2x3','2x3','3x3','3x3','3x3'
+];
 /**
  * 模型包装服务
  * 根据启用的配置自动选择模型提供商
  */
 export class ModelService {
   private static initialized = false;
-
   /**
    * 初始化模型配置
    * 在应用启动时调用，加载启用的模型配置
@@ -348,16 +350,20 @@ export class ModelService {
     const provider = await this.getEnabledImageProvider();
     console.log(`使用 ${provider} 生成图片`);
 
+    const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
+    let imagex = IMAGE_X[imageCount];
+    const new_prompt = "请使用 "+localStyle+" 风格创作图画，内容为" + prompt + (imageCount > 1 ? " 生成连续 "+imageCount+" 宫格，包含 "+imageCount+" 张风格统一的图片，每张长宽比 "+image_rate+"，间距 1px，白色背景，铺满整张图。" : "");
+
     switch (provider) {
       case 'doubao':
-        return await generateImageDoubao(prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        return await generateImageDoubao(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
       case 'gemini':
-        return await generateImageGemini(prompt, referenceImages);
+        return await generateImageGemini(new_prompt, referenceImages);
       case 'openai':
         // TODO: 实现 OpenAI 文生图
         throw new Error(`暂不支持 ${provider} 提供商的文生图`);
       default:
-        return await generateImageDoubao(prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        return await generateImageDoubao(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
     }
   }
 
@@ -372,21 +378,22 @@ export class ModelService {
     prompt: string,
     startImageBase64?: string,
     endImageBase64?: string,
-    duration: number = 5
+    duration: number = 5,
+    full_frame: boolean = false
   ): Promise<string> {
     const provider = await this.getEnabledVideoProvider();
     console.log(`使用 ${provider} 生成视频`);
 
     switch (provider) {
       case 'doubao':
-        return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration);
+        return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
       case 'gemini':
         return await generateVideoGemini(prompt, startImageBase64, endImageBase64);
       case 'openai':
         // TODO: 实现 OpenAI 图生视频
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);
       default:
-        return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration);
+        return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
     }
   }
 }

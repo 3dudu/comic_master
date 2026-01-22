@@ -46,9 +46,7 @@ const IMAGE_SIZE_OPTIONS = [
 ];
 
 const IMAGE_COUNT_OPTIONS = [
-  { label: '1 张', value: 1 }
-];
-/*
+  { label: '1 张', value: 1 },
   { label: '2 张', value: 2 },
   { label: '3 张', value: 3 },
   { label: '4 张', value: 4 },
@@ -57,6 +55,8 @@ const IMAGE_COUNT_OPTIONS = [
   { label: '7 张', value: 7 },
   { label: '8 张', value: 8 },
   { label: '9 张', value: 9 }
+];
+/*
   */
 
 const StageScript: React.FC<Props> = ({ project, updateProject }) => {

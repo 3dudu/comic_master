@@ -1,4 +1,4 @@
-import { BarChart3, CheckCircle, Clock, Download, Film, Layers, Loader2, Share2 } from 'lucide-react';
+import { BarChart3, Check, CheckCircle, Clock, Download, Film, Layers, Loader2, Share2, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { mergeVideos } from '../services/cozeService';
 import { ProjectState } from '../types';
@@ -11,6 +11,7 @@ interface Props {
 const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   const [isMerging, setIsMerging] = useState(false);
   const [mergeError, setMergeError] = useState<string | null>(null);
+  const [selectedShotIds, setSelectedShotIds] = useState<Set<string>>(new Set());
 
   const completedShots = project.shots.filter(s => s.interval?.videoUrl);
   const totalShots = project.shots.length;
@@ -19,15 +20,43 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   // Calculate total duration roughly
   const estimatedDuration = project.shots.reduce((acc, s) => acc + (s.interval?.duration || 3), 0);
 
+  // Toggle shot selection
+  const toggleShotSelection = (shotId: string) => {
+    setSelectedShotIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(shotId)) {
+        newSet.delete(shotId);
+      } else {
+        newSet.add(shotId);
+      }
+      return newSet;
+    });
+  };
+
+  // Select all completed shots
+  const selectAllCompleted = () => {
+    const allCompletedIds = completedShots.map(s => s.id);
+    setSelectedShotIds(new Set(allCompletedIds));
+  };
+
+  // Deselect all
+  const deselectAll = () => {
+    setSelectedShotIds(new Set());
+  };
+
   const handleMerge = async () => {
-    if (completedShots.length === 0) return;
+    if (selectedShotIds.size === 0) {
+      setMergeError("请至少选择一个镜头进行合并");
+      return;
+    }
 
     setIsMerging(true);
     setMergeError(null);
 
     try {
-      // 收集所有已完成视频的 URL
-      const videoUrls = completedShots
+      // 收集选中镜头的视频 URL
+      const selectedShots = project.shots.filter(s => selectedShotIds.has(s.id) && s.interval?.videoUrl);
+      const videoUrls = selectedShots
         .map(shot => shot.interval?.videoUrl)
         .filter((url): url is string => !!url);
 
@@ -127,36 +156,75 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
 
              {/* Timeline Visualizer Strip */}
              <div className="mb-10">
-                <div className="flex justify-between text-[12px] text-slate-600 font-mono uppercase tracking-widest mb-2 px-1">
+                <div className="flex justify-between items-center text-[12px] text-slate-600 font-mono uppercase tracking-widest mb-2 px-1">
                     <span>Sequence Map</span>
                     <span>TC 00:00:00:00</span>
                 </div>
+
+                {/* Selection Toolbar */}
+                <div className="flex justify-between items-center mb-2 px-1">
+                    <div className="flex items-center gap-4">
+                        <span className="text-[12px] text-slate-500 font-mono">
+                            已选择: <span className="text-indigo-400 font-bold">{selectedShotIds.size}</span> / {completedShots.length}
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={selectAllCompleted}
+                                disabled={completedShots.length === 0}
+                                className="text-[11px] text-slate-500 hover:text-indigo-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                            >
+                                <Check className="w-3 h-3" />
+                                全选
+                            </button>
+                            <button
+                                onClick={deselectAll}
+                                disabled={selectedShotIds.size === 0}
+                                className="text-[11px] text-slate-500 hover:text-red-400 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1"
+                            >
+                                <X className="w-3 h-3" />
+                                取消
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="h-20 bg-[#090923] rounded-lg border border-slate-800 flex items-center px-2 gap-1 overflow-x-auto custom-scrollbar relative shadow-inner">
                    {project.shots.length === 0 ? (
                       <div className="w-full flex items-center justify-center text-slate-800 text-xs font-mono uppercase tracking-widest">
                           <Film className="w-4 h-4 mr-2" />
-                          No Shots Available
+                          无可用镜头
                       </div>
                    ) : (
                       project.shots.map((shot, idx) => {
                         const isDone = !!shot.interval?.videoUrl;
+                        const isSelected = selectedShotIds.has(shot.id);
                         return (
-                          <div 
-                            key={shot.id} 
-                            className={`h-14 min-w-[4px] flex-1 rounded-[2px] transition-all relative group flex flex-col justify-end overflow-hidden ${
-                              isDone
-                                ? 'bg-indigo-900/40 border border-indigo-500/30 hover:bg-indigo-500/40' 
-                                : 'bg-slate-900 border border-slate-800 hover:bg-slate-800'
+                          <div
+                            key={shot.id}
+                            onClick={() => isDone && toggleShotSelection(shot.id)}
+                            className={`h-14 min-w-[4px] flex-1 rounded-[2px] transition-all relative group flex flex-col justify-end overflow-hidden cursor-pointer ${
+                              isSelected
+                                ? 'bg-indigo-600/60 border-2 border-indigo-400'
+                                : isDone
+                                  ? 'bg-indigo-900/40 border border-indigo-500/30 hover:bg-indigo-500/40'
+                                  : 'bg-slate-900 border border-slate-800 cursor-not-allowed opacity-50'
                             }`}
-                            title={`Shot ${idx+1}: ${shot.actionSummary}`}
+                            title={`镜头 ${idx+1}: ${shot.actionSummary}`}
                           >
                              {/* Mini Progress Bar inside timeline segment */}
-                             {isDone && <div className="h-full w-full bg-indigo-500/20"></div>}
-                             
+                             {isDone && !isSelected && <div className="h-full w-full bg-indigo-500/20" title={`镜头 ${idx+1}: ${shot.actionSummary}`}></div>}
+
+                             {/* Selection Indicator */}
+                             {isSelected && (
+                               <div className="absolute inset-0 flex items-center justify-center">
+                                 <Check className="w-4 h-4 text-white" />
+                               </div>
+                             )}
+
                              {/* Hover Tooltip */}
                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-20 whitespace-nowrap">
                                 <div className="bg-black text-white text-[12px] px-2 py-1 rounded border border-slate-700 shadow-xl">
-                                    Shot {idx + 1}
+                                    镜头 {idx + 1}{isDone ? ' ✓' : ''}
                                 </div>
                              </div>
                           </div>
@@ -170,9 +238,9 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                <button
                   onClick={handleMerge}
-                  disabled={progress < 100 || isMerging || !!project.mergedVideoUrl}
+                  disabled={selectedShotIds.size === 0 || isMerging || !!project.mergedVideoUrl}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
-                 progress === 100 && !isMerging && !project.mergedVideoUrl
+                 selectedShotIds.size > 0 && !isMerging && !project.mergedVideoUrl
                    ? 'bg-white text-black hover:bg-slate-200 border-white shadow-lg shadow-white/5'
                    : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'
                }`}>
@@ -188,8 +256,8 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                    </>
                  ) : (
                    <>
-                     <Download className="w-4 h-4" />
-                     合并视频
+                     <Film className="w-4 h-4" />
+                     合并选中视频 ({selectedShotIds.size})
                    </>
                  )}
                </button>

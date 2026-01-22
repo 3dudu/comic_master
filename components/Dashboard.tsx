@@ -274,7 +274,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                           <h3 className="text-sm font-bold text-white mb-2 line-clamp-1 tracking-wide">{proj.title}</h3>
                         )}
                         <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="text-[11px] font-mono text-slate-500 border border-slate-800 px-1.5 py-0.5 uppercase tracking-wider">
+                            <span className="text-[11px] font-mono text-blue-500 border border-green-800 px-1.5 py-0.5 uppercase tracking-wider">
                               {proj.stage === 'script' ? '剧本阶段' :
                                proj.stage === 'assets' ? '资产生成' :
                                proj.stage === 'director' ? '导演工作台' : '导出阶段'}
@@ -282,23 +282,23 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                         </div>
                         <div className="flex flex-wrap gap-2 mb-3">
                             {proj.visualStyle && (
-                              <span className="text-[11px] text-slate-600 bg-slate-900/50 border border-slate-800/50 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[11px] text-green-600 bg-slate-900/50 border border-green-800/50 px-1.5 py-0.5 rounded-full">
                                 {proj.visualStyle}
                               </span>
                             )}
                             {proj.imageSize && (
-                              <span className="text-[11px] text-slate-600 bg-slate-900/50 border border-slate-800/50 px-1.5 py-0.5 rounded-full font-mono">
+                              <span className="text-[11px] text-pink-600 bg-slate-900/50 border border-pink-800/50 px-1.5 py-0.5 rounded-full font-mono">
                                 {proj.imageSize}
                               </span>
                             )}
                             {proj.targetDuration && (
-                              <span className="text-[11px] text-slate-600 bg-slate-900/50 border border-slate-800/50 px-1.5 py-0.5 rounded-full font-mono">
+                              <span className="text-[11px] text-yellow-600 bg-slate-900/50 border border-yellow-800/50 px-1.5 py-0.5 rounded-full font-mono">
                                 {proj.targetDuration}
                               </span>
                             )}
                         </div>
                         {proj.scriptData?.logline && (
-                            <p className="text-[12px] text-slate-600 line-clamp-2 leading-relaxed font-mono border-l border-slate-800 pl-2">
+                            <p className="text-[12px] text-white-600 line-clamp-2 leading-relaxed font-mono border-l border-slate-800 pl-2">
                             {proj.scriptData.logline}
                             </p>
                         )}

@@ -115,6 +115,36 @@ export const createDefaultModelConfigs = async (): Promise<void> => {
       apiUrl: 'https://ark.cn-beijing.volces.com/api/v3',
       enabled: true,
       description: 'Doubao Video'
+    },
+    {
+      id: 'yunwu-llm',
+      provider: 'yunwu',
+      modelType: 'llm',
+      model: 'gemini-2.5-pro',
+      apiKey: '',
+      apiUrl: 'https://yunwu.ai',
+      enabled: false,
+      description: 'Yunwu LLM'
+    },
+    {
+      id: 'yunwu-image',
+      provider: 'yunwu',
+      modelType: 'text2image',
+      model: 'gemini-2.5-flash-image',
+      apiKey: '',
+      apiUrl: 'https://yunwu.ai',
+      enabled: false,
+      description: 'Yunwu Image'
+    },
+    {
+      id: 'yunwu-video',
+      provider: 'yunwu',
+      modelType: 'image2video',
+      model: 'veo-3.1-fast-generate-preview',
+      apiKey: '',
+      apiUrl: 'https://yunwu.ai',
+      enabled: false,
+      description: 'Yunwu Video'
     }
   ];
 

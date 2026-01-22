@@ -12,7 +12,8 @@ const PROVIDER_OPTIONS = [
   { value: 'doubao', label: 'Doubao (火山引擎)' },
   { value: 'deepseek', label: 'DeepSeek' },
   { value: 'openai', label: 'OpenAI' },
-  { value: 'gemini', label: 'Gemini (Google)' }
+  { value: 'gemini', label: 'Gemini (Google)' },
+  { value: 'yunwu', label: 'Yunwu (云雾)' }
 ] as const;
 
 const MODEL_TYPE_OPTIONS = [

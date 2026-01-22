@@ -19,8 +19,21 @@ import {
 // Gemini 方法
 import {
   generateImage as generateImageGemini,
-  generateVideo as generateVideoGemini
+  generateVideo as generateVideoGemini,
+  setGlobalApiKey as setGeminiApiKey
 } from "./geminiService";
+
+// Yunwu 方法
+import {
+  generateScript as generateScriptYunwu,
+  generateShotList as generateShotListYunwu,
+  generateShotListForScene as generateShotListForSceneYunwu,
+  generateVisualPrompts as generateVisualPromptsYunwu,
+  parseScriptToData as parseScriptToDataYunwu,
+  setGlobalApiKey as setYunwuApiKey,
+  setYunwuApiUrl,
+  setYunwuModel
+} from "./yunwuService";
 
 // Doubao 方法
 import {
@@ -108,9 +121,34 @@ export class ModelService {
           break;
 
         case 'openai':
-        case 'gemini':
-          // TODO: 实现其他提供商的配置更新
+          // TODO: 实现 OpenAI 的配置更新
           console.log(`${config.provider} 配置暂不支持`);
+          break;
+
+        case 'gemini':
+          setGeminiApiKey(config.apiKey);
+          console.log(`已更新 Gemini ${config.modelType} 配置`);
+          break;
+
+        case 'yunwu':
+          setYunwuApiKey(config.apiKey);
+          if (config.apiUrl) {
+            setYunwuApiUrl(config.apiUrl);
+          }
+          if (config.model) {
+            switch (config.modelType) {
+              case 'llm':
+                setYunwuModel('text', config.model);
+                break;
+              case 'text2image':
+                setYunwuModel('image', config.model);
+                break;
+              case 'image2video':
+                setYunwuModel('video', config.model);
+                break;
+            }
+          }
+          console.log(`已更新 Yunwu ${config.modelType} 配置`);
           break;
       }
     } catch (error) {
@@ -121,7 +159,7 @@ export class ModelService {
   /**
    * 获取当前启用的 LLM 提供商
    */
-  private static async getEnabledLLMProvider(): Promise<'doubao' | 'deepseek' | 'openai' | 'gemini'> {
+  private static async getEnabledLLMProvider(): Promise<'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu'> {
     const config = await getEnabledConfigByType('llm');
 
     if (!config) {
@@ -138,7 +176,7 @@ export class ModelService {
   /**
    * 获取当前启用的文生图提供商
    */
-  private static async getEnabledImageProvider(): Promise<'doubao' | 'gemini' | 'openai'> {
+  private static async getEnabledImageProvider(): Promise<'doubao' | 'gemini' | 'openai' | 'yunwu'> {
     const config = await getEnabledConfigByType('text2image');
 
     if (!config) {
@@ -155,7 +193,7 @@ export class ModelService {
   /**
    * 获取当前启用的图生视频提供商
    */
-  private static async getEnabledVideoProvider(): Promise<'doubao' | 'gemini' | 'openai'> {
+  private static async getEnabledVideoProvider(): Promise<'doubao' | 'gemini' | 'openai' | 'yunwu'> {
     const config = await getEnabledConfigByType('image2video');
 
     if (!config) {
@@ -188,6 +226,10 @@ export class ModelService {
         return await parseScriptToDataDoubao(rawText, language);
       case 'openai':
       case 'gemini':
+      case 'yunwu':
+        if (provider === 'yunwu') {
+          return await parseScriptToDataYunwu(rawText, language);
+        }
         // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的剧本分析`);
     }
@@ -209,6 +251,10 @@ export class ModelService {
         return await generateShotListDoubao(scriptData);
       case 'openai':
       case 'gemini':
+      case 'yunwu':
+        if (provider === 'yunwu') {
+          return await generateShotListYunwu(scriptData);
+        }
         // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的镜头生成`);
     }
@@ -236,6 +282,10 @@ export class ModelService {
         return await generateShotListDoubaoForScene(scriptData, scene, sceneIndex);
       case 'openai':
       case 'gemini':
+      case 'yunwu':
+        if (provider === 'yunwu') {
+          return await generateShotListForSceneYunwu(scriptData, scene, sceneIndex);
+        }
         // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的镜头生成`);
     }
@@ -265,6 +315,10 @@ export class ModelService {
         return await generateScriptDoubao(prompt, genre, targetDuration, language);
       case 'openai':
       case 'gemini':
+      case 'yunwu':
+        if (provider === 'yunwu') {
+          return await generateScriptYunwu(prompt, genre, targetDuration, language);
+        }
         // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的剧本生成`);
     }
@@ -292,6 +346,10 @@ export class ModelService {
         return await generateVisualPromptsDoubao(type, data, genre);
       case 'openai':
       case 'gemini':
+      case 'yunwu':
+        if (provider === 'yunwu') {
+          return await generateVisualPromptsYunwu(type, data, genre);
+        }
         // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的视觉提示词生成`);
     }
@@ -302,7 +360,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiKey - API 密钥
    */
-  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini', apiKey: string): void {
+  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu', apiKey: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiKey(apiKey);
@@ -311,8 +369,13 @@ export class ModelService {
         // Doubao 使用全局设置
         break;
       case 'openai':
+        // TODO: 实现 OpenAI
+        break;
       case 'gemini':
-        // TODO: 实现其他提供商
+        setGeminiApiKey(apiKey);
+        break;
+      case 'yunwu':
+        setYunwuApiKey(apiKey);
         break;
     }
   }
@@ -322,7 +385,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiUrl - API 端点
    */
-  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini', apiUrl: string): void {
+  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu', apiUrl: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiUrl(apiUrl);
@@ -331,8 +394,14 @@ export class ModelService {
         // Doubao 使用固定配置
         break;
       case 'openai':
+        // TODO: 实现 OpenAI
+        break;
       case 'gemini':
-        // TODO: 实现其他提供商
+        // Gemini 使用 GoogleGenAI 的默认端点，不支持自定义 apiUrl
+        console.log('Gemini 使用默认 API 端点');
+        break;
+      case 'yunwu':
+        setYunwuApiUrl(apiUrl);
         break;
     }
   }
@@ -341,7 +410,7 @@ export class ModelService {
    * 获取当前使用的提供商信息
    */
   static async getProviderInfo(): Promise<{
-    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini';
+    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu';
     enabled: boolean;
   }> {
     const config = await getEnabledConfigByType('llm');
@@ -379,6 +448,9 @@ export class ModelService {
         return await generateImageDoubao(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
       case 'gemini':
         return await generateImageGemini(new_prompt, referenceImages);
+      case 'yunwu':
+        // TODO: 实现 Yunwu 文生图
+        throw new Error(`暂不支持 ${provider} 提供商的文生图`);
       case 'openai':
         // TODO: 实现 OpenAI 文生图
         throw new Error(`暂不支持 ${provider} 提供商的文生图`);
@@ -409,6 +481,9 @@ export class ModelService {
         return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
       case 'gemini':
         return await generateVideoGemini(prompt, startImageBase64, endImageBase64);
+      case 'yunwu':
+        // TODO: 实现 Yunwu 图生视频
+        throw new Error(`暂不支持 ${provider} 提供商的图生视频`);
       case 'openai':
         // TODO: 实现 OpenAI 图生视频
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);

@@ -92,7 +92,7 @@ export interface ProjectState {
 
 export interface AIModelConfig {
   id: string;
-  provider: 'doubao' | 'deepseek' | 'openai' | 'gemini';
+  provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu';
   modelType: 'llm' | 'text2image' | 'image2video' | 'tts' | 'stt';
   model: string;
   apiKey: string;

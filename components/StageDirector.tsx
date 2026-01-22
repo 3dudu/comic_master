@@ -126,10 +126,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     try {
       const referenceImages = getRefImagesForShot(shot);
       const referencePrompt = getRefImagesDescForShot(shot);
-      if(referencePrompt){
-        prompt = `${prompt} 参考图说明：${referencePrompt}`;
-      }
-      const url = await ModelService.generateImage(prompt, referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1);
+      const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1);
 
       updateProject({ 
         shots: project.shots.map(s => {
@@ -249,10 +246,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 }
                 const existingFf = shot.keyframes?.find(k => k.type === 'full');
                 const ffId = existingFf?.id || `kf-${shot.id}-full-${Date.now()}`;
-                if(referencePrompt){
-                    full_prompt = `${full_prompt} 参考图说明：${referencePrompt}`;
-                }
-                const full_url = await ModelService.generateImage(full_prompt, referenceImages, false, localStyle, imageSize);
+                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];

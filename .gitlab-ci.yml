@@ -13,7 +13,7 @@ publish:
         - package.json
   script:
     - npm install
-    - npm run build
+    - npm run build:gitlab
   artifacts:
     paths:
       - dist
@@ -22,7 +22,7 @@ pages:
   stage: deploy
   script:
     - npm install
-    - npm run build
+    - npm run build:gitlab
     - mv dist public
 
   artifacts:

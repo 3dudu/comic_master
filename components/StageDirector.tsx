@@ -193,7 +193,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       const referenceImages = getRefImagesForShot(shot);
       const referencePrompt = getRefImagesDescForShot(shot);
       const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1);
-
+      existingKf.imageUrl = url;
       updateProject({ 
         shots: project.shots.map(s => {
            if (s.id !== shot.id) return s;
@@ -226,12 +226,12 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   };
 
   const handleGenerateVideo = async (shot: Shot) => {
-    console.log("Generating Video for Shot:", shot);
+    //console.log("Generating Video for Shot:", shot);
     if (!shot.interval) return;
     
     let sKf = shot.keyframes?.find(k => k.type === 'start');
     let prompt = "镜头运动："+shot.cameraMovement+"； 取景："+shot.shotSize+"； 情节概述："+shot.actionSummary+" 人物："+shot.characters + (shot.dialogue?"; 对白："+shot.dialogue:"");
-    console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
+    //console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
     if(imageCount > 1){
         sKf = shot.keyframes?.find(k => k.type === 'full');
         if (!sKf?.imageUrl) return alert("请先生成连续图！");
@@ -458,17 +458,20 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
           // Step 1: Generate images
           if (imageCount > 1) {
               // Generate full grid
-              if (!fullKf?.imageUrl) {
+              //if (!fullKf?.imageUrl) {
                   await handleGenerateKeyframe(shot, 'full');
-              }
+              //}
           } else {
               // Generate start and end frames
-              if (!startKf?.imageUrl) {
-                  await handleGenerateKeyframe(shot, 'start');
-              }
-              if (!endKf?.imageUrl) {
-                  await handleGenerateKeyframe(shot, 'end');
-              }
+              //if (!startKf?.imageUrl) {
+                await handleGenerateKeyframe(shot, 'start');
+              //}
+              // Wait a moment for the first update to be applied
+                await new Promise(r => setTimeout(r, 1000));
+
+              //if (!endKf?.imageUrl) {
+                await handleGenerateKeyframe(shot, 'end');
+              //}
           }
 
           // Step 2: Generate video
@@ -478,11 +481,11 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
           await new Promise(r => setTimeout(r, 1000));
 
           // Regenerate the shot to get updated keyframes
-          const updatedShot = project.shots.find(s => s.id === shot.id);
-          if (!updatedShot) return;
+          const finalShot = project.shots.find(s => s.id === shot.id);
+          if (!finalShot) return;
 
-          const updatedStartKf = updatedShot?.keyframes?.find(k => k.type === 'start');
-          const updatedFullKf = updatedShot?.keyframes?.find(k => k.type === 'full');
+          const updatedStartKf = finalShot?.keyframes?.find(k => k.type === 'start');
+          const updatedFullKf = finalShot?.keyframes?.find(k => k.type === 'full');
 
           // Check if images are ready
           if (imageCount > 1 && !updatedFullKf?.imageUrl) {
@@ -492,7 +495,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
               throw new Error("起始帧生成失败");
           }
 
-          await handleGenerateVideo(updatedShot);
+          await handleGenerateVideo(finalShot);
       } catch (e: any) {
           console.error(e);
           alert(`一键制作失败: ${e.message}`);
@@ -745,7 +748,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
           {/* Grid View - Responsive Logic */}
           <div className={`flex-1 overflow-y-auto p-6 transition-all duration-500 ease-in-out ${activeShotId ? 'border-r border-slate-800' : ''}`}>
-              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
+              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
                   {project.shots.map((shot, idx) => {
                       const sKf = shot.keyframes?.find(k => k.type === 'start');
                       const fKf = shot.keyframes?.find(k => k.type === 'full');
@@ -759,7 +762,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               onClick={() => setActiveShotId(shot.id)}
                               className={`
                                   group relative flex flex-col bg-[#0e1230] border rounded-xl overflow-hidden cursor-pointer transition-all duration-200
-                                  ${isActive ? 'border-indigo-500 ring-1 ring-indigo-500/50 shadow-xl scale-[0.98]' : 'border-slate-800 hover:border-slate-600 hover:shadow-lg'}
+                                  ${isActive ? 'border-indigo-500 ring-1 ring-indigo-500/50 shadow-xl scale-[1.02]' : 'border-slate-800 hover:border-slate-600 hover:shadow-lg'}
                               `}
                           >
                               {/* Header */}

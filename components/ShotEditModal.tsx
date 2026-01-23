@@ -200,13 +200,13 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                   >
                     {/* 头像 */}
                     {hasImage && (
-                      <div className={`w-5 h-5 rounded-full overflow-hidden flex-shrink-0 ${
+                      <div className={`w-6 h-6 rounded-full overflow-hidden flex-shrink-0 ${
                         isSelected ? 'ring-2 ring-white/30' : 'opacity-70'
                       }`}>
                         <img
                           src={char.referenceImage}
                           alt={char.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover" 
                         />
                       </div>
                     )}

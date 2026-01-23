@@ -158,7 +158,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              <div className="mb-10">
                 <div className="flex justify-between items-center text-[12px] text-slate-600 font-mono uppercase tracking-widest mb-2 px-1">
                     <span>Sequence Map</span>
-                    <span>TC 00:00:00:00</span>
+                    <span></span>
                 </div>
 
                 {/* Selection Toolbar */}

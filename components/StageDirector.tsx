@@ -1,7 +1,9 @@
-import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Film, Image as ImageIcon, LayoutGrid, Loader2, MapPin, MessageSquare, Sparkles, Video, X } from 'lucide-react';
+import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Edit, Film, Image as ImageIcon, LayoutGrid, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Users, Video, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { ModelService } from '../services/modelService';
-import { Keyframe, ProjectState, Shot } from '../types';
+import { Keyframe, ProjectState, Scene, Shot } from '../types';
+import SceneEditModal from './SceneEditModal';
+import ShotEditModal from './ShotEditModal';
 
 interface Props {
   project: ProjectState;
@@ -10,12 +12,19 @@ interface Props {
 
 const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const [activeShotId, setActiveShotId] = useState<string | null>(null);
-  const [processingState, setProcessingState] = useState<{id: string, type: 'kf_start'|'kf_end'|'kf_full'|'video'}|null>(null);
+  const [editingShotId, setEditingShotId] = useState<string | null>(null);
+  const [editingSceneInMain, setEditingSceneInMain] = useState<Scene | null>(null);
+  const [processingState, setProcessingState] = useState<{id: string, type: 'kf_start'|'kf_end'|'kf_full'|'video'|'character'}|null>(null);
   const [batchProgress, setBatchProgress] = useState<{current: number, total: number, message: string} | null>(null);
   const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
   const [imageCount, setImageCount] = useState(project.imageCount || 0);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [selectedCharId, setSelectedCharId] = useState<string | null>(null);
+  const [newVarName, setNewVarName] = useState("");
+  const [newVarPrompt, setNewVarPrompt] = useState("");
+  const [oneClickProcessing, setOneClickProcessing] = useState<{shotId: string, step: 'images'|'video'}|null>(null);
+  const [batchVideoProgress, setBatchVideoProgress] = useState<{current: number, total: number, currentShotName: string} | null>(null);
   
 
   const activeShotIndex = project.shots.findIndex(s => s.id === activeShotId);
@@ -32,6 +41,45 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const updateShot = (shotId: string, transform: (s: Shot) => Shot) => {
     const newShots = project.shots.map(s => s.id === shotId ? transform(s) : s);
     updateProject({ shots: newShots });
+  };
+
+  const updateKeyframePrompt = (shotId: string, type: 'start' | 'end' | 'full', prompt: string) => {
+    updateShot(shotId, (s) => {
+      const newKeyframes = [...(s.keyframes || [])];
+      const idx = newKeyframes.findIndex(k => k.type === type);
+      if (idx >= 0) {
+        newKeyframes[idx] = { ...newKeyframes[idx], visualPrompt: prompt };
+      }
+      return { ...s, keyframes: newKeyframes };
+    });
+  };
+
+  const startEditShot = (shot: Shot) => {
+    setEditingShotId(shot.id);
+  };
+
+  const saveShot = (updatedShot: Partial<Shot>) => {
+    if (!editingShotId) return;
+    const newShots = project.shots.map(s =>
+      s.id === editingShotId ? { ...s, ...updatedShot } : s
+    );
+    updateProject({ shots: newShots });
+    setEditingShotId(null);
+  };
+
+  const saveSceneFromModal = (updatedScene: Partial<Scene>, updatedStoryParagraphs: any[]) => {
+    if (!project.scriptData || !editingSceneInMain) return;
+    const updatedScenes = project.scriptData.scenes.map(s =>
+      s.id === editingSceneInMain.id ? { ...s, ...updatedScene } as Scene : s
+    );
+    updateProject({
+      scriptData: {
+        ...project.scriptData,
+        scenes: updatedScenes,
+        storyParagraphs: updatedStoryParagraphs
+      }
+    });
+    setEditingSceneInMain(null);
   };
 
   const getRefImagesForShot = (shot: Shot) => {
@@ -324,6 +372,177 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
      }));
   };
 
+  const handleAddVariation = (charId: string) => {
+      if (!project.scriptData) return;
+      const newData = { ...project.scriptData };
+      const char = newData.characters.find(c => String(c.id) === String(charId));
+      if (!char) return;
+
+      const newVar = {
+          id: `var-${Date.now()}`,
+          name: newVarName || "New Outfit",
+          visualPrompt: newVarPrompt || char.visualPrompt || "",
+          referenceImage: undefined
+      };
+
+      if (!char.variations) char.variations = [];
+      char.variations.push(newVar);
+
+      updateProject({ scriptData: newData });
+      setNewVarName("");
+      setNewVarPrompt("");
+  };
+
+  const handleGenerateVariation = async (charId: string, varId: string) => {
+      const char = project.scriptData?.characters.find(c => String(c.id) === String(charId));
+      const variation = char?.variations?.find(v => v.id === varId);
+      if (!char || !variation) return;
+
+      setProcessingState({ id: varId, type: 'character' });
+      try {
+          // Use Base Look as reference to maintain facial consistency
+          const refImages = char.referenceImage ? [char.referenceImage] : [];
+          // Enhance prompt to emphasize character consistency
+          const enhancedPrompt = `Character: ${char.name}. ${variation.visualPrompt}. Keep facial features consistent with reference.`;
+
+          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, true, localStyle, imageSize);
+
+          const newData = { ...project.scriptData! };
+          const c = newData.characters.find(c => String(c.id) === String(charId));
+          const v = c?.variations?.find(v => v.id === varId);
+          if (v) v.referenceImage = imageUrl;
+
+          updateProject({ scriptData: newData });
+      } catch (e) {
+          console.error(e);
+          alert("Variation generation failed");
+      } finally {
+          setProcessingState(null);
+      }
+  };
+
+  const handleDeleteVariation = (charId: string, varId: string) => {
+     if (!project.scriptData) return;
+      const newData = { ...project.scriptData };
+      const char = newData.characters.find(c => String(c.id) === String(charId));
+      if (!char) return;
+
+      char.variations = char.variations.filter(v => v.id !== varId);
+      updateProject({ scriptData: newData });
+  };
+
+  const handleOneClickProduction = async (shot: Shot) => {
+      if (!!processingState || !!batchProgress) return;
+
+      setOneClickProcessing({ shotId: shot.id, step: 'images' });
+
+      try {
+          // Step 1: Generate images
+          if (imageCount > 1) {
+              // Generate full grid
+              if (!fullKf?.imageUrl) {
+                  await handleGenerateKeyframe(shot, 'full');
+              }
+          } else {
+              // Generate start and end frames
+              if (!startKf?.imageUrl) {
+                  await handleGenerateKeyframe(shot, 'start');
+              }
+              if (!endKf?.imageUrl) {
+                  await handleGenerateKeyframe(shot, 'end');
+              }
+          }
+
+          // Step 2: Generate video
+          setOneClickProcessing({ shotId: shot.id, step: 'video' });
+
+          // Wait a moment for images to be ready
+          await new Promise(r => setTimeout(r, 1000));
+
+          // Regenerate the shot to get updated keyframes
+          const updatedShot = project.shots.find(s => s.id === shot.id);
+          if (!updatedShot) return;
+
+          const updatedStartKf = updatedShot?.keyframes?.find(k => k.type === 'start');
+          const updatedFullKf = updatedShot?.keyframes?.find(k => k.type === 'full');
+
+          // Check if images are ready
+          if (imageCount > 1 && !updatedFullKf?.imageUrl) {
+              throw new Error("宫格图生成失败");
+          }
+          if (imageCount <= 1 && !updatedStartKf?.imageUrl) {
+              throw new Error("起始帧生成失败");
+          }
+
+          await handleGenerateVideo(updatedShot);
+      } catch (e: any) {
+          console.error(e);
+          alert(`一键制作失败: ${e.message}`);
+      } finally {
+          setOneClickProcessing(null);
+      }
+  };
+
+  const handleBatchGenerateVideos = async () => {
+      if (!project.shots.length) return;
+
+      const isRegenerate = project.shots.every(s => s.interval?.videoUrl);
+      if (isRegenerate) {
+          if (!window.confirm("确定要重新生成所有视频吗？这将覆盖现有视频。")) return;
+      }
+
+      const targetShots = isRegenerate ? project.shots : project.shots.filter(s => !s.interval?.videoUrl);
+      if (targetShots.length === 0) return;
+
+      setBatchVideoProgress({ current: 0, total: targetShots.length, currentShotName: '' });
+
+      for (let i = 0; i < targetShots.length; i++) {
+          const shot = targetShots[i];
+          setBatchVideoProgress({
+              current: i + 1,
+              total: targetShots.length,
+              currentShotName: `镜头 ${project.shots.findIndex(s => s.id === shot.id) + 1}`
+          });
+
+          try {
+              // Step 1: Generate images if needed
+              const currentStartKf = shot.keyframes?.find(k => k.type === 'start');
+              const currentEndKf = shot.keyframes?.find(k => k.type === 'end');
+              const currentFullKf = shot.keyframes?.find(k => k.type === 'full');
+
+              if (imageCount > 1 && !currentFullKf?.imageUrl) {
+                  await handleGenerateKeyframe(shot, 'full');
+              } else if (imageCount <= 1 && (!currentStartKf?.imageUrl || !currentEndKf?.imageUrl)) {
+                  if (!currentStartKf?.imageUrl) {
+                      await handleGenerateKeyframe(shot, 'start');
+                  }
+                  if (!currentEndKf?.imageUrl) {
+                      await handleGenerateKeyframe(shot, 'end');
+                  }
+              }
+
+              // Step 2: Generate video
+              // Wait a moment for images to be ready
+              await new Promise(r => setTimeout(r, 1000));
+
+              // Get updated shot
+              const updatedShot = project.shots.find(s => s.id === shot.id);
+              if (!updatedShot) continue;
+
+              await handleGenerateVideo(updatedShot);
+          } catch (e) {
+              console.error(`Failed to generate video for shot ${shot.id}`, e);
+          }
+
+          // Small delay between shots
+          if (i < targetShots.length - 1) {
+              await new Promise(r => setTimeout(r, 2000));
+          }
+      }
+
+      setBatchVideoProgress(null);
+  };
+
   const goToPrevShot = () => {
     if (activeShotIndex > 0) {
       setActiveShotId(project.shots[activeShotIndex - 1].id);
@@ -344,9 +563,19 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
       return (
           <div className="bg-[#0c0c2d] p-5 rounded-xl border border-slate-800 mb-6 space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                 <MapPin className="w-4 h-4 text-slate-500" />
-                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景环境 (Scene Context)</h4>
+              <div className="flex items-center justify-between mb-2">
+                 <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-slate-500" />
+                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景环境 (Scene Context)</h4>
+                 </div>
+                 <button
+                    onClick={() => setEditingSceneInMain(scene!)}
+                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded transition-all flex items-center justify-center gap-1.5"
+                    title="编辑场景"
+                 >
+                    <Edit className="w-3 h-3" />
+                    <span>编辑场景</span>
+                 </button>
               </div>
               
               <div className="flex gap-4">
@@ -390,18 +619,27 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                          <span className="text-[11px] text-slate-300 font-medium">{char.name}</span>
                                      </div>
 
-                                     {hasVars && (
-                                         <select
-                                            value={activeShot.characterVariations?.[char.id] || ""}
-                                            onChange={(e) => handleVariationChange(activeShot.id, char.id, e.target.value)}
-                                            className="bg-black text-[12px] text-slate-400 border border-slate-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
+                                     <div className="flex items-center gap-2">
+                                         {hasVars && (
+                                             <select
+                                                value={activeShot.characterVariations?.[String(char.id)] || ""}
+                                                onChange={(e) => handleVariationChange(activeShot.id, String(char.id), e.target.value)}
+                                                className="bg-black text-[12px] text-slate-400 border border-slate-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
+                                             >
+                                                 <option value="">默认造型</option>
+                                                 {char.variations.map(v => (
+                                                     <option key={v.id} value={v.id}>{v.name}</option>
+                                                 ))}
+                                             </select>
+                                         )}
+                                         <button
+                                             onClick={() => setSelectedCharId(char.id)}
+                                             className="p-1.5 bg-black/50 text-slate-400 hover:text-white rounded-full hover:bg-white/20 transition-all border border-white/10"
+                                             title="管理造型"
                                          >
-                                             <option value="">默认造型</option>
-                                             {char.variations.map(v => (
-                                                 <option key={v.id} value={v.id}>{v.name}</option>
-                                             ))}
-                                         </select>
-                                     )}
+                                        <Shirt className="w-3 h-3" />
+                                         </button>
+                                     </div>
                                  </div>
                              );
                          })}
@@ -434,6 +672,19 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
         </div>
       )}
 
+      {/* Batch Video Progress Overlay */}
+      {batchVideoProgress && (
+        <div className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center backdrop-blur-md animate-in fade-in">
+           <Video className="w-12 h-12 text-indigo-500 mb-6 animate-pulse" />
+           <h3 className="text-xl font-bold text-white mb-2">正在批量生成视频...</h3>
+           <p className="text-slate-400 mb-4 text-sm">{batchVideoProgress.currentShotName}</p>
+           <div className="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+               <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${(batchVideoProgress.current / batchVideoProgress.total) * 100}%` }}></div>
+           </div>
+           <p className="text-slate-500 mt-3 text-xs font-mono">{batchVideoProgress.current} / {batchVideoProgress.total} ({Math.round((batchVideoProgress.current / batchVideoProgress.total) * 100)}%)</p>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="h-16 border-b border-slate-800 bg-[#0e1230] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
@@ -450,7 +701,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
               </span>
               <button
                   onClick={handleBatchGenerateImages}
-                  disabled={!!batchProgress}
+                  disabled={!!batchProgress || !!batchVideoProgress}
                   className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                       allStartFramesGenerated
                         ? 'bg-[#0c0c2d] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
@@ -460,6 +711,14 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                   <Sparkles className="w-3 h-3" />
                   {allStartFramesGenerated ? '重新生成所有帧图片' : '批量生成帧图片'}
               </button>
+              <button
+                  onClick={handleBatchGenerateVideos}
+                  disabled={!!batchProgress || !!batchVideoProgress}
+                  className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+              >
+                  <Video className="w-3 h-3" />
+                  {project.shots.every(s => s.interval?.videoUrl) ? '重新生成所有视频' : '批量生成视频'}
+              </button>
           </div>
       </div>
 
@@ -468,7 +727,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
           {/* Grid View - Responsive Logic */}
           <div className={`flex-1 overflow-y-auto p-6 transition-all duration-500 ease-in-out ${activeShotId ? 'border-r border-slate-800' : ''}`}>
-              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
+              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
                   {project.shots.map((shot, idx) => {
                       const sKf = shot.keyframes?.find(k => k.type === 'start');
                       const fKf = shot.keyframes?.find(k => k.type === 'full');
@@ -488,7 +747,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               {/* Header */}
                               <div className="px-3 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
                                   <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>镜头 {String(idx + 1).padStart(2, '0')}</span>
-                                  <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement}</span>
+                                  <div className="flex items-center gap-2">
+                                      <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement}</span>
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); startEditShot(shot); }}
+                                        className="p-1.5 hover:bg-slate-700 text-slate-500 hover:text-white rounded transition-colors"
+                                        title="编辑镜头"
+                                      >
+                                        <Edit className="w-3 h-3" />
+                                      </button>
+                                  </div>
                               </div>
 
                               {/* Thumbnail */}
@@ -535,7 +803,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
           {/* Right Workbench - Optimized Interaction */}
           {activeShotId && activeShot && (
-              <div className="w-[480px] bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20">
+              <div className="w-[720px] bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20">
                   
                   {/* Workbench Header */}
                   <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between bg-[#0c0c2d] shrink-0">
@@ -595,9 +863,29 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                        {/* Section 3: Visual Production */}
                        <div className="space-y-4">
-                           <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-                               <Aperture className="w-4 h-4 text-slate-500" />
-                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">视觉制作 (Visual Production)</h4>
+                           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                               <div className="flex items-center gap-2">
+                                   <Aperture className="w-4 h-4 text-slate-500" />
+                                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">视觉制作 (Visual Production)</h4>
+                               </div>
+                               <button
+                                   onClick={() => handleOneClickProduction(activeShot)}
+                                   disabled={!!processingState || !!batchProgress || oneClickProcessing?.shotId === activeShot.id ||
+                                       (imageCount > 1 ? !!fullKf?.imageUrl : (!!startKf?.imageUrl && !!endKf?.imageUrl))}
+                                   className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                               >
+                                   {oneClickProcessing?.shotId === activeShot.id ? (
+                                       <>
+                                           <Loader2 className="w-3 h-3 animate-spin" />
+                                           {oneClickProcessing.step === 'images' ? '生成图中...' : '制作视频中...'}
+                                       </>
+                                   ) : (
+                                       <>
+                                           <Sparkles className="w-3 h-3" />
+                                           一键制作
+                                       </>
+                                   )}
+                               </button>
                            </div>
 
                            {imageCount > 1 ? (
@@ -631,6 +919,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                             </div>
                                        )}
                                    </div>
+                                   {/* Visual Prompt Editor */}
+                                   {fullKf && (
+                                       <textarea
+                                           value={fullKf.visualPrompt || ''}
+                                           onChange={(e) => updateKeyframePrompt(activeShot.id, 'full', e.target.value)}
+                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                           placeholder="输入宫格图画面描述..."
+                                           rows={3}
+                                       />
+                                   )}
                                </div>
                            ) : (
                                <div className="grid grid-cols-2 gap-4">
@@ -665,6 +963,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                                 </div>
                                            )}
                                        </div>
+                                       {/* Visual Prompt Editor */}
+                                       {startKf && (
+                                           <textarea
+                                               value={startKf.visualPrompt || ''}
+                                               onChange={(e) => updateKeyframePrompt(activeShot.id, 'start', e.target.value)}
+                                               className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               placeholder="输入起始帧画面描述..."
+                                               rows={3}
+                                           />
+                                       )}
                                    </div>
 
                                    {/* End Frame */}
@@ -698,6 +1006,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                                                 </div>
                                            )}
                                        </div>
+                                       {/* Visual Prompt Editor */}
+                                       {endKf && (
+                                           <textarea
+                                               value={endKf.visualPrompt || ''}
+                                               onChange={(e) => updateKeyframePrompt(activeShot.id, 'end', e.target.value)}
+                                               className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               placeholder="输入结束帧画面描述..."
+                                               rows={3}
+                                           />
+                                       )}
                                    </div>
                                </div>
                            )}
@@ -774,6 +1092,168 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 <X className="w-6 h-6" />
               </button>
             </div>
+          )}
+
+          {/* Edit Shot Modal */}
+          {editingShotId && (
+            <ShotEditModal
+              shot={project.shots.find(s => s.id === editingShotId)!}
+              characters={project.scriptData?.characters || []}
+              onSave={saveShot}
+              onClose={() => setEditingShotId(null)}
+            />
+          )}
+
+          {/* Edit Scene Modal */}
+          {editingSceneInMain && (
+            <SceneEditModal
+              scene={editingSceneInMain}
+              storyParagraphs={project.scriptData?.storyParagraphs || []}
+              onSave={saveSceneFromModal}
+              onClose={() => setEditingSceneInMain(null)}
+            />
+          )}
+
+          {/* Wardrobe Modal */}
+          {selectedCharId && project.scriptData && (
+              <div className="absolute inset-0 z-40 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in duration-200">
+                  <div className="bg-[#0c0c2d] border border-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+                      {/* Modal Header */}
+                      <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#0e1230]">
+                          <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-slate-800 overflow-hidden border border-slate-700">
+                                  {project.scriptData.characters.find(c => String(c.id) === String(selectedCharId))?.referenceImage && (
+                                      <img src={project.scriptData.characters.find(c => String(c.id) === String(selectedCharId))?.referenceImage} className="w-full h-full object-cover"/>
+                                  )}
+                              </div>
+                              <div>
+                                  <h3 className="text-lg font-bold text-white">{project.scriptData.characters.find(c => String(c.id) === String(selectedCharId))?.name}</h3>
+                                  <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">服装造型（Wardrobe & Variations）</p>
+                              </div>
+                          </div>
+                          <button onClick={() => setSelectedCharId(null)} className="p-2 hover:bg-slate-800 rounded-full transition-colors">
+                              <X className="w-5 h-5 text-slate-500" />
+                          </button>
+                      </div>
+
+                      {/* Modal Body */}
+                      <div className="flex-1 overflow-y-auto p-8">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              {/* Base Look */}
+                              <div>
+                                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                      <Users className="w-4 h-4" /> 基础形象
+                                  </h4>
+                                  {(() => {
+                                      const selectedChar = project.scriptData.characters.find(c => String(c.id) === String(selectedCharId));
+                                      if (!selectedChar) return null;
+                                      return (
+                                          <div className="bg-[#0e0e28] p-4 rounded-xl border border-slate-800">
+                                              <div className="aspect-[3/4] bg-slate-900 rounded-lg overflow-hidden mb-4 relative cursor-pointer" onClick={() => selectedChar.referenceImage && setPreviewImageUrl(selectedChar.referenceImage)}>
+                                                  {selectedChar.referenceImage ? (
+                                                      <img src={selectedChar.referenceImage} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+                                                  ) : (
+                                                      <div className="flex items-center justify-center h-full text-slate-700">无图像</div>
+                                                  )}
+                                                  <div className="absolute top-2 left-2 px-2 py-1 bg-black/60 backdrop-blur rounded text-[12px] text-white font-bold uppercase border border-white/10">默认</div>
+                                                  {selectedChar.referenceImage && (
+                                                      <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 hover:opacity-100">
+                                                          <span className="text-white/80 text-xs font-bold uppercase tracking-wider">点击预览</span>
+                                                      </div>
+                                                  )}
+                                              </div>
+                                              <p className="text-xs text-slate-500 leading-relaxed font-mono">{selectedChar.visualPrompt}</p>
+                                          </div>
+                                      );
+                                  })()}
+                              </div>
+
+                              {/* Variations */}
+                              <div>
+                                  <div className="flex items-center justify-between mb-4">
+                                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                          <Shirt className="w-4 h-4" /> 服装造型
+                                      </h4>
+                                  </div>
+
+                                  {(() => {
+                                      const selectedChar = project.scriptData.characters.find(c => String(c.id) === String(selectedCharId));
+                                      if (!selectedChar) return null;
+                                      return (
+                                          <div className="space-y-4">
+                                              {/* List */}
+                                              {(selectedChar.variations || []).map((variation) => (
+                                                  <div key={variation.id} className="flex gap-4 p-4 bg-[#0e0e28] border border-slate-800 rounded-xl group hover:border-slate-700 transition-colors">
+                                                      <div className={`w-20 h-24 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden relative border border-slate-800 ${variation.referenceImage && !(processingState?.type === 'character' && processingState?.id === variation.id) ? 'cursor-pointer' : ''}`} onClick={variation.referenceImage && !(processingState?.type === 'character' && processingState?.id === variation.id) ? () => setPreviewImageUrl(variation.referenceImage) : undefined}>
+                                                          {variation.referenceImage ? (
+                                                              <img src={variation.referenceImage} className="w-full h-full object-cover hover:scale-105 transition-transform duration-200" />
+                                                          ) : (
+                                                              <div className="w-full h-full flex items-center justify-center">
+                                                                  <Shirt className="w-6 h-6 text-slate-800" />
+                                                              </div>
+                                                          )}
+                                                          {variation.referenceImage && !(processingState?.type === 'character' && processingState?.id === variation.id) && (
+                                                              <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 hover:opacity-100 pointer-events-none">
+                                                                  <span className="text-white/80 text-[10px] font-bold uppercase tracking-wider">预览</span>
+                                                              </div>
+                                                          )}
+                                                          {processingState?.type === 'character' && processingState?.id === variation.id && (
+                                                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                                  <Loader2 className="w-4 h-4 text-white animate-spin" />
+                                                              </div>
+                                                          )}
+                                                      </div>
+                                                      <div className="flex-1 min-w-0">
+                                                          <div className="flex justify-between items-start mb-2">
+                                                              <h5 className="font-bold text-slate-200 text-sm">{variation.name}</h5>
+                                                              <button onClick={() => handleDeleteVariation(selectedChar.id, variation.id)} className="text-slate-600 hover:text-red-500"><X className="w-3 h-3"/></button>
+                                                          </div>
+                                                          <p className="text-[12px] text-slate-500 line-clamp-2 mb-3 font-mono">{variation.visualPrompt}</p>
+                                                          <button
+                                                              onClick={() => handleGenerateVariation(selectedChar.id, variation.id)}
+                                                              disabled={!!processingState || !!batchProgress}
+                                                              className="text-[12px] font-bold uppercase tracking-wider text-indigo-400 hover:text-white flex items-center gap-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                          >
+                                                              <RefreshCw className={`w-3 h-3 ${processingState?.type === 'character' && processingState?.id === variation.id ? 'animate-spin' : ''}`} />
+                                                              {processingState?.type === 'character' && processingState?.id === variation.id ? '生成中...' : variation.referenceImage ? '重新生成' : '生成造型'}
+                                                          </button>
+                                                      </div>
+                                                  </div>
+                                              ))}
+
+                                              {/* Add New */}
+                                              <div className="p-4 border border-dashed border-slate-800 rounded-xl bg-[#0e0e28]/50">
+                                                  <div className="space-y-3">
+                                                      <input
+                                                          type="text"
+                                                          placeholder="造型名称（示例：穿校服）"
+                                                          value={newVarName}
+                                                          onChange={e => setNewVarName(e.target.value)}
+                                                          className="w-full bg-[#0c0c2d] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600"
+                                                      />
+                                                      <textarea
+                                                          placeholder="服饰 / 状态的视觉描述……"
+                                                          value={newVarPrompt}
+                                                          onChange={e => setNewVarPrompt(e.target.value)}
+                                                          className="w-full bg-[#0c0c2d] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600 resize-none h-16"
+                                                      />
+                                                      <button
+                                                          onClick={() => handleAddVariation(selectedChar.id)}
+                                                          disabled={!newVarName || !newVarPrompt}
+                                                          className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50 transition-colors"
+                                                      >
+                                                          <Shirt className="w-3 h-3" /> 添加造型
+                                                      </button>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      );
+                                  })()}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
           )}
       </div>
     </div>

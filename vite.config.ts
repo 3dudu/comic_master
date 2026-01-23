@@ -20,6 +20,20 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              // 拆分React核心全家桶为单独chunk
+              reactVendor: ['react', 'react-dom'],
+              // 拆分大体积UI组件库（如Antd/MUI/Element-React）
+              uiLib: ['lucide-react'],
+              // 拆分大体积工具库（如axios/echarts/lodash/moment）
+              utilsLib: ['@google/genai'],
+            }
+          }
+        }
       }
     };
 });

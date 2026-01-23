@@ -5,7 +5,7 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
-      base: '/cinegen-ai/', // 替换为你的实际二级路径：比如仓库名是my-react-proj，就写/base: '/my-react-proj/'
+      base: '/comic_master/', // 替换为你的实际二级路径：比如仓库名是my-react-proj，就写/base: '/my-react-proj/'
       server: {
         port: 3000,
         host: '0.0.0.0',

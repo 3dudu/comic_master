@@ -11,6 +11,110 @@ const DEEPSEEK_CONFIG = {
   API_ENDPOINT: "https://api.deepseek.com/v1",
 };
 
+// 提示词模板配置
+const PROMPT_TEMPLATES = {
+  // 系统提示词
+  SYSTEM_SCRIPT_ANALYZER: "你是一名专业的剧本分析员。请始终以有效的 JSON 格式进行回复。",
+  SYSTEM_PHOTOGRAPHER: "你是一名专业的摄影师，请始终以有效的 JSON 数组格式进行回复。",
+  SYSTEM_SCREENWRITER: "你是一名专业的编剧，擅长创作各种类型的影视剧本。",
+
+  // 剧本结构化解析
+  PARSE_SCRIPT: (rawText: string, language: string) => `
+    分析文本并以 ${language} 语言输出一个 JSON 对象。
+    任务：
+    提取title:标题、genre:类型、logline:故事梗概（以 ${language} 语言呈现）。
+    提取characters:人物信息（id:编号、name:姓名、gender:性别、age:年龄、personality:性格）。
+    提取scenes:场景信息（id:编号、location:地点、time:时间、atmosphere:氛围）。
+    storyParagraphs:故事段落（id:编号、sceneRefId:引用场景编号、text:内容）。
+    输入：
+    "${rawText.slice(0, 30000)}"
+  `,
+
+  // 场景镜头清单生成
+  GENERATE_SHOTS: (
+    sceneIndex: number,
+    scene: Scene,
+    paragraphs: string,
+    genre: string,
+    targetDuration: string,
+    characters: Character[],
+    lang: string
+  ) => `
+    担任专业摄影师，为第${sceneIndex + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
+    文本输出语言: ${lang}.
+
+    场景细节:
+    地点: ${scene.location}
+    时间: ${scene.time}
+    氛围: ${scene.atmosphere}
+
+    场景动作:
+    "${paragraphs.slice(0, 5000)}"
+
+    创作背景:
+    题材类型: ${genre}
+    剧本整体目标时长: ${targetDuration || "Standard"}
+
+    人物:
+    ${JSON.stringify(
+      characters.map((c) => ({
+        id: c.id,
+        name: c.name,
+        desc: c.visualPrompt || c.personality,
+      }))
+    )}
+
+    说明：
+    1. 设计一组覆盖全部情节动作的镜头序列。
+    2. 重要提示：每场戏镜头数量上限为 6-8 个，避免出现 JSON 截断错误。
+    3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
+    4. 景别：明确取景范围（如：大特写、中景、全景）。
+    5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
+    6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
+    7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
+    8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
+
+    输出格式：JSON 数组，数组内对象包含以下字段：
+    - id（字符串类型）
+    - sceneId（字符串类型）
+    - actionSummary（字符串类型）
+    - dialogue（字符串类型，可选）
+    - cameraMovement（字符串类型）
+    - shotSize（字符串类型）
+    - characters（字符串数组类型）
+    - keyframes（对象数组类型，对象包含 id、type（取值为 ["start", "end"]）、visualPrompt（使用 ${lang} 指定语言） 字段）
+    - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration、motionStrength、status（取值为 ["pending", "completed"]） 字段）
+  `,
+
+  // 剧本生成
+  GENERATE_SCRIPT: (
+    prompt: string,
+    targetDuration: string,
+    genre: string,
+    language: string
+  ) => `
+    你是一名专业的编剧。请根据以下提示词创作一个完整的影视剧本。
+
+    创作要求：
+    1. 目标时长：${targetDuration}
+    2. 题材类型：${genre}
+    3. 输出语言：${language}
+    4. 剧本结构清晰，包含场景标题、时间、地点、人物、动作描述、对白
+    5. 情节紧凑，画面感强
+    6. 人物性格鲜明，对话自然
+
+    用户提示词：
+    "${prompt}"
+
+    请以Markdown格式输出剧本结构，不要使用 JSON 格式，直接输出可阅读的剧本文本。
+  `,
+
+  // 视觉提示词生成
+  GENERATE_VISUAL_PROMPT: (type: "character" | "scene", data: any, genre: string) => `为${genre}的${type}生成高还原度视觉提示词。
+  内容: ${JSON.stringify(data)}.
+  中文输出提示词，以逗号分隔，聚焦视觉细节（光线、质感、外观）。`,
+};
+
 // Module-level variable to store key at runtime
 let runtimeApiKey: string = "";
 let runtimeApiUrl: string = DEEPSEEK_CONFIG.API_ENDPOINT;
@@ -133,16 +237,7 @@ export const parseScriptToDataDeepseek = async (
 ): Promise<ScriptData> => {
   const endpoint = `${runtimeApiUrl}/chat/completions`;
 
-  const prompt = `
-    分析文本并以 ${language} 语言输出一个 JSON 对象。
-    任务：
-    提取title:标题、genre:类型、logline:故事梗概（以 ${language} 语言呈现）。
-    提取characters:人物信息（id:编号、name:姓名、gender:性别、age:年龄、personality:性格）。
-    提取scenes:场景信息（id:编号、location:地点、time:时间、atmosphere:氛围）。
-    storyParagraphs:故事段落（id:编号、sceneRefId:引用场景编号、text:内容）。
-    输入：
-    "${rawText.slice(0, 30000)}"
-  `;
+  const prompt = PROMPT_TEMPLATES.PARSE_SCRIPT(rawText, language);
 
   const response = await retryOperation(async () => {
     return await fetchWithRetry(endpoint, {
@@ -152,8 +247,7 @@ export const parseScriptToDataDeepseek = async (
         messages: [
           {
             role: "system",
-            content:
-              "你是一名专业的剧本分析员。请始终以有效的 JSON 格式进行回复。",
+            content: PROMPT_TEMPLATES.SYSTEM_SCRIPT_ANALYZER,
           },
           {
             role: "user",
@@ -229,52 +323,15 @@ export const generateShotListDeepseekForScene = async (
 
   if (!paragraphs.trim()) return [];
 
-  const prompt = `
-    担任专业摄影师，为第${index + 1}场戏制作一份详尽的镜头清单（镜头调度设计）。
-    文本输出语言: ${lang}.
-
-    场景细节:
-    地点: ${scene.location}
-    时间: ${scene.time}
-    氛围: ${scene.atmosphere}
-
-    场景动作:
-    "${paragraphs.slice(0, 5000)}"
-
-    创作背景:
-    题材类型: ${scriptData.genre}
-    剧本整体目标时长: ${scriptData.targetDuration || "Standard"}
-
-    人物:
-    ${JSON.stringify(
-      scriptData.characters.map((c) => ({
-        id: c.id,
-        name: c.name,
-        desc: c.visualPrompt || c.personality,
-      }))
-    )}
-
-    说明：
-    1. 设计一组覆盖全部情节动作的镜头序列。
-    2. 重要提示：每场戏镜头数量上限为 6-8 个，避免出现 JSON 截断错误。
-    3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
-    4. 景别：明确取景范围（如：大特写、中景、全景）。
-    5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
-    6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 40 词以内。
-    7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
-    8. 视频提示词：visualPrompt 使用 ${lang} 指定语言。
-
-    输出格式：JSON 数组，数组内对象包含以下字段：
-    - id（字符串类型）
-    - sceneId（字符串类型）
-    - actionSummary（字符串类型）
-    - dialogue（字符串类型，可选）
-    - cameraMovement（字符串类型）
-    - shotSize（字符串类型）
-    - characters（字符串数组类型）
-    - keyframes（对象数组类型，对象包含 id、type（取值为 ["start", "end"]）、visualPrompt（使用 ${lang} 指定语言） 字段）
-    - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration、motionStrength、status（取值为 ["pending", "completed"]） 字段）
-  `;
+  const prompt = PROMPT_TEMPLATES.GENERATE_SHOTS(
+    index,
+    scene,
+    paragraphs,
+    scriptData.genre,
+    scriptData.targetDuration || "Standard",
+    scriptData.characters,
+    lang
+  );
 
   try {
     const endpoint = `${runtimeApiUrl}/chat/completions`;
@@ -285,8 +342,7 @@ export const generateShotListDeepseekForScene = async (
         messages: [
           {
             role: "system",
-            content:
-              "你是一名专业的摄影师，请始终以有效的 JSON 数组格式进行回复。",
+            content: PROMPT_TEMPLATES.SYSTEM_PHOTOGRAPHER,
           },
           {
             role: "user",
@@ -360,22 +416,7 @@ export const generateScriptDeepseek = async (
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/chat/completions`;
 
-  const generationPrompt = `
-    你是一名专业的编剧。请根据以下提示词创作一个完整的影视剧本。
-
-    创作要求：
-    1. 目标时长：${targetDuration}
-    2. 题材类型：${genre}
-    3. 输出语言：${language}
-    4. 剧本结构清晰，包含场景标题、时间、地点、人物、动作描述、对白
-    5. 情节紧凑，画面感强
-    6. 人物性格鲜明，对话自然
-
-    用户提示词：
-    "${prompt}"
-
-    请以Markdown格式输出剧本结构，不要使用 JSON 格式，直接输出可阅读的剧本文本。
-  `;
+  const generationPrompt = PROMPT_TEMPLATES.GENERATE_SCRIPT(prompt, targetDuration, genre, language);
 
   const response = await fetchWithRetry(endpoint, {
     method: "POST",
@@ -384,7 +425,7 @@ export const generateScriptDeepseek = async (
       messages: [
         {
           role: "system",
-          content: "你是一名专业的编剧，擅长创作各种类型的影视剧本。"
+          content: PROMPT_TEMPLATES.SYSTEM_SCREENWRITER,
         },
         {
           role: "user",
@@ -409,9 +450,7 @@ export const generateVisualPromptsDeepseek = async (
   data: Character | Scene,
   genre: string
 ): Promise<string> => {
-  const prompt = `为${genre}的${type}生成高还原度视觉提示词。
-  内容: ${JSON.stringify(data)}.
-  中文输出提示词，以逗号分隔，聚焦视觉细节（光线、质感、外观）。`;
+  const prompt = PROMPT_TEMPLATES.GENERATE_VISUAL_PROMPT(type, data, genre);
 
   const endpoint = `${runtimeApiUrl}/chat/completions`;
   const response = await fetchWithRetry(endpoint, {

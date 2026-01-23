@@ -1,0 +1,61 @@
+# 工作流名称，GitHub 仓库 Actions 页面会显示该名称
+name: Build and Deploy to GitHub Pages
+
+# 触发规则：当代码推送到 main 或 master 分支时，自动执行该工作流
+# 若你的主分支是其他名称（如 dev），修改为对应的分支名即可
+on:
+  push:
+    branches: [ main, master ]
+  # 可选：允许在 GitHub 仓库手动触发该工作流（方便测试）
+  workflow_dispatch:
+
+# 工作流权限配置：必须赋予写入 Pages 和推送代码的权限（核心！否则部署失败）
+permissions:
+  contents: read        # 读取仓库代码的权限（必须）
+  pages: write          # 写入 GitHub Pages 的权限（必须）
+  id-token: write       # 用于 Pages 部署鉴权的令牌权限（必须）
+
+# 定义工作流的执行任务（一个工作流可包含多个任务，此处只需一个部署任务）
+jobs:
+  deploy:
+    # 运行环境：使用 GitHub 官方的 Ubuntu 最新版（稳定、速度快）
+    runs-on: ubuntu-latest
+    # 环境关联：关联 GitHub Pages 环境（固定配置，无需修改）
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # 部署成功后自动生成访问地址
+    # 任务执行步骤（按顺序执行）
+    steps:
+      # 步骤1：拉取当前仓库的代码到运行环境
+      - name: Checkout code
+        uses: actions/checkout@v4 # 官方拉取代码的 Action，v4 为最新稳定版
+
+      # 步骤2：安装 Node.js 环境（适配前端项目，指定长期支持版 LTS）
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # 选择 Node.js 版本（20为LTS，可改为18，与本地开发环境一致即可）
+          cache: 'npm'     # 缓存 npm 依赖，提升后续构建速度（可选，推荐）
+
+      # 步骤3：安装项目依赖（npm/yarn/pnpm 三选一，根据你的项目包管理器修改）
+      - name: Install dependencies
+        run: npm install # 若用 yarn 改为 yarn install；若用 pnpm 改为 pnpm install
+
+      # 步骤4：执行 Vite 构建，生成 dist 静态目录
+      - name: Build project with Vite
+        run: npm run build # 对应 package.json 中的 build 脚本（无需修改，确保脚本存在）
+
+      # 步骤5：配置 GitHub Pages 部署环境（官方固定步骤，无需修改）
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      # 步骤6：上传 dist 目录作为 Pages 部署的静态资源（核心步骤）
+      - name: Upload build artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # 指定要部署的静态目录为 Vite 构建的 dist（必须与构建输出目录一致）
+
+      # 步骤7：正式部署到 GitHub Pages（自动完成，无需手动干预）
+      - name: Deploy to GitHub Pages
+        id: deployment # 为该步骤命名，用于获取部署后的访问地址
+        uses: actions/deploy-pages@v4

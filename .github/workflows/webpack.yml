@@ -43,7 +43,7 @@ jobs:
 
       # 步骤4：执行 Vite 构建，生成 dist 静态目录
       - name: Build project with Vite
-        run: npm run build # 对应 package.json 中的 build 脚本（无需修改，确保脚本存在）
+        run: npm run build:pages # 对应 package.json 中的 build 脚本（无需修改，确保脚本存在）
 
       # 步骤5：配置 GitHub Pages 部署环境（官方固定步骤，无需修改）
       - name: Setup GitHub Pages

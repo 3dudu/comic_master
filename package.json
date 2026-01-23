@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:pages": "vite build -c vite.config.pages.js", 
+    "build:gitlab": "vite build -c vite.gitlab.js", 
     "preview": "vite preview"
   },
   "dependencies": {

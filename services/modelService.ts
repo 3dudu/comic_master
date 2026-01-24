@@ -42,6 +42,19 @@ import {
   setModel as setYunwuModel
 } from "./yunwuService";
 
+// OpenAI 方法
+import {
+  generateImage as generateImageOpenai,
+  generateScript as generateScriptOpenai,
+  generateShotListForScene as generateShotListForSceneOpenai,
+  generateShotList as generateShotListOpenai,
+  generateVideo as generateVideoOpenai,
+  generateVisualPrompts as generateVisualPromptsOpenai,
+  parseScriptToData as parseScriptToDataOpenai,
+  setApiKey as setOpenaiApiKey,
+  setModel as setOpenaiModel
+} from "./openaiService";
+
 // Doubao 方法
 import {
   generateImage as generateImageDoubao,
@@ -155,8 +168,21 @@ export class ModelService {
           break;
 
         case 'openai':
-          // TODO: 实现 OpenAI 的配置更新
-          console.log(`${config.provider} 配置暂不支持`);
+          setOpenaiApiKey(config.apiKey);
+          if (config.model) {
+            switch (config.modelType) {
+              case 'llm':
+                setOpenaiModel('text', config.model);
+                break;
+              case 'text2image':
+                setOpenaiModel('image', config.model);
+                break;
+              case 'image2video':
+                setOpenaiModel('video', config.model);
+                break;
+            }
+          }
+          console.log(`已更新 OpenAI ${config.modelType} 配置`);
           break;
 
         case 'gemini':
@@ -239,7 +265,7 @@ export class ModelService {
     // 立即更新对应服务的配置参数
     await this.updateServiceConfig(config);
 
-    return config.provider;
+    return config.provider as 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu';
   }
 
   /**
@@ -323,8 +349,8 @@ export class ModelService {
       case 'yunwu':
         return await parseScriptToDataYunwu(rawText, language);
       case 'openai':
+        return await parseScriptToDataOpenai(rawText, language);
       default:
-        // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的剧本分析`);
     }
   }
@@ -347,8 +373,8 @@ export class ModelService {
       case 'yunwu':
         return await generateShotListYunwu(scriptData);
       case 'openai':
+        return await generateShotListOpenai(scriptData);
       default:
-        // TODO: 实现其他提供商
         throw new Error(`暂不支持 ${provider} 提供商的镜头生成`);
     }
   }
@@ -377,7 +403,8 @@ export class ModelService {
       case 'yunwu':
         return await generateShotListForSceneYunwu(scriptData, scene, sceneIndex);
       case 'openai':
-      default:   // TODO: 实现其他提供商
+        return await generateShotListForSceneOpenai(scriptData, scene, sceneIndex);
+      default:
         throw new Error(`暂不支持 ${provider} 提供商的镜头生成`);
     }
   }
@@ -408,6 +435,7 @@ export class ModelService {
       case 'yunwu':
         return await generateScriptYunwu(prompt, genre, targetDuration, language);
       case 'openai':
+        return await generateScriptOpenai(prompt, genre, targetDuration, language);
       default:
         throw new Error(`暂不支持 ${provider} 提供商的剧本生成`);
     }
@@ -437,6 +465,7 @@ export class ModelService {
       case 'yunwu':
         return await generateVisualPromptsYunwu(type, data, genre);
       case 'openai':
+        return await generateVisualPromptsOpenai(type, data, genre);
       default:
         throw new Error(`暂不支持 ${provider} 提供商的视觉提示词生成`);
     }
@@ -456,7 +485,7 @@ export class ModelService {
         setDoubaoApiKey(apiKey);
         break;
       case 'openai':
-        // TODO: 实现 OpenAI
+        setOpenaiApiKey(apiKey);
         break;
       case 'gemini':
         setGeminiApiKey(apiKey);
@@ -552,8 +581,9 @@ export class ModelService {
         return await generateImageGemini(new_prompt, referenceImages,isCharacter, localStyle, imageSize,imageCount);
       case 'yunwu':
         return await generateImageYunwu(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
-      default:
       case 'openai':
+        return await generateImageOpenai(new_prompt, referenceImages, isCharacter, localStyle, imageSize, imageCount);
+      default:
         throw new Error(`暂不支持 ${provider} 提供商的文生图`);
     }
   }
@@ -588,6 +618,7 @@ export class ModelService {
       case 'kling':
         return await generateVideoKling(prompt, startImageBase64, endImageBase64, duration, full_frame);
       case 'openai':
+        return await generateVideoOpenai(prompt, startImageBase64, endImageBase64, duration, full_frame);
       default:
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);
     }

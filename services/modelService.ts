@@ -60,8 +60,17 @@ import {
 import {
   generateVideo as generateVideoMinimax,
   setApiKey as setMinimaxApiKey,
-  setApiUrl as setMinimaxApiUrl
+  setApiUrl as setMinimaxApiUrl,
+  setModel as setMinimaxModel
 } from "./minimaxService";
+
+// Kling 方法
+import {
+  generateVideo as generateVideoKling,
+  setApiKey as setKlingApiKey,
+  setApiUrl as setKlingApiUrl,
+  setModel as setKlingModel
+} from "./klingService";
 
 const IMAGE_X = [
   '1','1x1','1x2','1x3','2x2','2x3','2x3','3x3','3x3','3x3'
@@ -181,7 +190,21 @@ export class ModelService {
           if (config.apiUrl) {
             setMinimaxApiUrl(config.apiUrl);
           }
+          if (config.model) {
+            setMinimaxModel(config.model);
+          }
           console.log(`已更新 MiniMax ${config.modelType} 配置`);
+          break;
+
+        case 'kling':
+          setKlingApiKey(config.apiKey);
+          if (config.apiUrl) {
+            setKlingApiUrl(config.apiUrl);
+          }
+          if (config.model) {
+            setKlingModel(config.model);
+          }
+          console.log(`已更新 Kling ${config.modelType} 配置`);
           break;
       }
     } catch (error) {
@@ -253,7 +276,7 @@ export class ModelService {
    * 获取当前启用的图生视频提供商
    * @param projectModelProviders - 项目级别的模型供应商配置
    */
-  private static async getEnabledVideoProvider(projectModelProviders?: { image2video?: string }): Promise<'doubao' | 'gemini' | 'openai' | 'yunwu' | 'minimax'> {
+  private static async getEnabledVideoProvider(projectModelProviders?: { image2video?: string }): Promise<'doubao' | 'gemini' | 'openai' | 'yunwu' | 'minimax' | 'kling'> {
     let config;
 
     // 优先使用项目级别的供应商配置
@@ -424,7 +447,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiKey - API 密钥
    */
-  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax', apiKey: string): void {
+  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling', apiKey: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiKey(apiKey);
@@ -444,6 +467,9 @@ export class ModelService {
       case 'minimax':
         setMinimaxApiKey(apiKey);
         break;
+      case 'kling':
+        setKlingApiKey(apiKey);
+        break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的 API 密钥设置`);
     }
@@ -454,7 +480,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiUrl - API 端点
    */
-  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax', apiUrl: string): void {
+  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling', apiUrl: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiUrl(apiUrl);
@@ -475,6 +501,9 @@ export class ModelService {
       case 'minimax':
         setMinimaxApiUrl(apiUrl);
         break;
+      case 'kling':
+        setKlingApiUrl(apiUrl);
+        break;
     }
   }
 
@@ -482,7 +511,7 @@ export class ModelService {
    * 获取当前使用的提供商信息
    */
   static async getProviderInfo(): Promise<{
-    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax';
+    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling';
     enabled: boolean;
   }> {
     const config = await getEnabledConfigByType('llm');
@@ -556,6 +585,8 @@ export class ModelService {
         return await generateVideoYunwu(prompt, startImageBase64, endImageBase64, duration,full_frame);
       case 'minimax':
         return await generateVideoMinimax(prompt, startImageBase64, endImageBase64, duration, full_frame);
+      case 'kling':
+        return await generateVideoKling(prompt, startImageBase64, endImageBase64, duration, full_frame);
       case 'openai':
       default:
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);

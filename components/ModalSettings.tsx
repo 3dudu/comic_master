@@ -15,7 +15,8 @@ const PROVIDER_OPTIONS = [
   { value: 'openai', label: 'OpenAI' },
   { value: 'gemini', label: 'Gemini (Google)' },
   { value: 'yunwu', label: 'Yunwu (云雾)' },
-  { value: 'minimax', label: 'Minimax (海螺)'}
+  { value: 'minimax', label: 'Minimax (海螺)'},
+  { value: 'kling', label: 'Kling (可灵)'}
 ] as const;
 
 const MODEL_TYPE_OPTIONS = [
@@ -33,7 +34,8 @@ const PROVIDER_MODEL_TYPES: Record<string, readonly string[]> = {
   openai: ['llm', 'text2image', 'image2video'] as const,
   gemini: ['llm', 'text2image', 'image2video'] as const,
   yunwu: ['llm', 'text2image', 'image2video'] as const,
-  minimax: ['image2video'] as const
+  minimax: ['image2video'] as const,
+  kling: ['image2video'] as const
 };
 
 // 根据供应商获取支持的模型类型选项

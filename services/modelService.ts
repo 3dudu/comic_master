@@ -485,9 +485,10 @@ export class ModelService {
     isCharacter: boolean = false,
     localStyle: string = "写实",
     imageSize: string = "2560x1440",
-    imageCount: number = 1
+    imageCount: number = 1,
+    shotprovider: any = null
   ): Promise<string> {
-    const provider = await this.getEnabledImageProvider(this.currentProjectModelProviders);
+    const provider = await this.getEnabledImageProvider(shotprovider || this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成图片`);
 
     const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
@@ -519,9 +520,10 @@ export class ModelService {
     startImageBase64?: string,
     endImageBase64?: string,
     duration: number = 5,
-    full_frame: boolean = false
+    full_frame: boolean = false,
+    shotprovider: any = null
   ): Promise<string> {
-    const provider = await this.getEnabledVideoProvider(this.currentProjectModelProviders);
+    const provider = await this.getEnabledVideoProvider(shotprovider || this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成视频`);
 
     switch (provider) {

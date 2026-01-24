@@ -54,6 +54,12 @@ export interface Shot {
   characterVariations?: { [characterId: string]: string }; // Added: Map char ID to variation ID for this shot
   keyframes: Keyframe[];
   interval?: VideoInterval;
+
+  // AI Model Providers configuration (stores config IDs)
+  modelProviders?: {
+    text2image?: string; // Text-to-image model config ID
+    image2video?: string; // Image-to-video model config ID
+  };
 }
 
 export interface ScriptData {

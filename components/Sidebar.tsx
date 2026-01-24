@@ -306,7 +306,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="">默认模型</option>
-                  {modelConfigs.filter(c => c.modelType === 'llm').map(config => (
+                  {modelConfigs.filter(c => c.modelType === 'llm' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
                       {config.provider} - {config.model || config.description}
                     </option>
@@ -331,7 +331,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="">默认模型</option>
-                  {modelConfigs.filter(c => c.modelType === 'text2image').map(config => (
+                  {modelConfigs.filter(c => c.modelType === 'text2image' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
                       {config.provider} - {config.model || config.description}
                     </option>
@@ -356,7 +356,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="">默认模型</option>
-                  {modelConfigs.filter(c => c.modelType === 'image2video').map(config => (
+                  {modelConfigs.filter(c => c.modelType === 'image2video' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
                       {config.provider} - {config.model || config.description}
                     </option>

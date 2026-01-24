@@ -1,7 +1,8 @@
 import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Edit, Film, Image as ImageIcon, LayoutGrid, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Users, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { getAllModelConfigs } from '../services/modelConfigService';
 import { ModelService } from '../services/modelService';
-import { Keyframe, ProjectState, Scene, Shot } from '../types';
+import { AIModelConfig, Keyframe, ProjectState, Scene, Shot } from '../types';
 import SceneEditModal from './SceneEditModal';
 import ShotEditModal from './ShotEditModal';
 
@@ -32,6 +33,19 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const [newVarPrompt, setNewVarPrompt] = useState("");
   const [oneClickProcessing, setOneClickProcessing] = useState<{shotId: string, step: 'images'|'video'}|null>(null);
   const [batchVideoProgress, setBatchVideoProgress] = useState<{current: number, total: number, currentShotName: string} | null>(null);
+  const [modelConfigs, setModelConfigs] = useState<AIModelConfig[]>([]);
+
+  useEffect(() => {
+    const loadModelConfigs = async () => {
+      try {
+        const configs = await getAllModelConfigs();
+        setModelConfigs(configs);
+      } catch (error) {
+        console.error('加载模型配置失败:', error);
+      }
+    };
+    loadModelConfigs();
+  }, []);
   
 
   const activeShotIndex = project.shots.findIndex(s => s.id === activeShotId);
@@ -192,7 +206,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     try {
       const referenceImages = getRefImagesForShot(shot);
       const referencePrompt = getRefImagesDescForShot(shot);
-      const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1);
+      const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize,type === 'full'?imageCount:1, shot.modelProviders);
       existingKf.imageUrl = url;
       updateProject({ 
         shots: project.shots.map(s => {
@@ -251,7 +265,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
           sKf.imageUrl,
           endImageUrl, // Only pass if it exists
           shot.interval.duration,
-          imageCount>1
+          imageCount>1,
+          shot.modelProviders
       );
 
       updateShot(shot.id, (s) => ({
@@ -312,7 +327,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 }
                 const existingFf = shot.keyframes?.find(k => k.type === 'full');
                 const ffId = existingFf?.id || `kf-${shot.id}-full-${Date.now()}`;
-                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize);
+                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize, 1, shot.modelProviders);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];
@@ -332,7 +347,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 const existingKf = shot.keyframes?.find(k => k.type === 'start');
                 let prompt = existingKf?.visualPrompt || shot.actionSummary;
                 const kfId = existingKf?.id || `kf-${shot.id}-start-${Date.now()}`;
-                const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize);
+                const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize, 1, shot.modelProviders);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];
@@ -352,7 +367,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 const existingEf = shot.keyframes?.find(k => k.type === 'end');
                 let end_prompt = existingEf?.visualPrompt || shot.actionSummary;
                 const efId = existingEf?.id || `kf-${shot.id}-end-${Date.now()}`;
-                const end_url = await ModelService.generateImage(end_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize);
+                const end_url = await ModelService.generateImage(end_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, false, localStyle, imageSize, 1, shot.modelProviders);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];
@@ -889,7 +904,82 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </div>
                        </div>
 
-                       {/* Section 3: Visual Production */}
+                       {/* Section 3: Shot Model Providers */}
+                       <div className="space-y-4">
+                           <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
+                               <RefreshCw className="w-4 h-4 text-slate-500" />
+                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">模型供应商 (Model Providers)</h4>
+                           </div>
+                           <div className="grid grid-cols-2 gap-4">
+                               {/* Text2Image Provider */}
+                               <div className="space-y-2">
+                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">文生图</label>
+                                   <div className="relative">
+                                       <select
+                                           value={activeShot.modelProviders?.text2image || ''}
+                                           onChange={(e) => {
+                                               const text2image = e.target.value || undefined;
+                                               updateShot(activeShot.id, (s) => ({
+                                                   ...s,
+                                                   modelProviders: {
+                                                       ...s.modelProviders,
+                                                       text2image
+                                                   }
+                                               }));
+                                           }}
+                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                                       >
+                                           <option value="">使用项目默认</option>
+                                           {modelConfigs
+                                               .filter(c => c.modelType === 'text2image' && c.apiKey)
+                                               .map(config => (
+                    <option key={config.id} value={config.id}>
+                      {config.provider} - {config.model || config.description}
+                    </option>
+                  ))}
+                                       </select>
+                                       <div className="absolute right-3 top-2.5 pointer-events-none">
+                                           <ChevronRight className="w-3 h-3 text-slate-600 rotate-90" />
+                                       </div>
+                                   </div>
+                               </div>
+
+                               {/* Image2Video Provider */}
+                               <div className="space-y-2">
+                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图生视频</label>
+                                   <div className="relative">
+                                       <select
+                                           value={activeShot.modelProviders?.image2video || ''}
+                                           onChange={(e) => {
+                                               const image2video = e.target.value || undefined;
+                                               updateShot(activeShot.id, (s) => ({
+                                                   ...s,
+                                                   modelProviders: {
+                                                       ...s.modelProviders,
+                                                       image2video
+                                                   }
+                                               }));
+                                           }}
+                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                                       >
+                                           <option value="">使用项目默认</option>
+                                           {modelConfigs
+                                               .filter(c => c.modelType === 'image2video' && c.apiKey)
+                                               .map(config => (
+                    <option key={config.id} value={config.id}>
+                      {config.provider} - {config.model || config.description}
+                    </option>
+                  ))}
+                                       </select>
+                                       <div className="absolute right-3 top-2.5 pointer-events-none">
+                                           <ChevronRight className="w-3 h-3 text-slate-600 rotate-90" />
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+
+                       {/* Section 4: Visual Production */}
                        <div className="space-y-4">
                            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                                <div className="flex items-center gap-2">

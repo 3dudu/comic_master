@@ -1,6 +1,7 @@
 import { Aperture, Check, ChevronRight, Plus, Trash, X } from 'lucide-react';
-import React, { useState } from 'react';
-import { Character } from '../types';
+import React, { useEffect, useState } from 'react';
+import { getAllModelConfigs } from '../services/modelConfigService';
+import { AIModelConfig, Character } from '../types';
 
 interface Keyframe {
   id?: string;
@@ -19,6 +20,10 @@ interface Shot {
   duration?: number;
   characters: string[];
   keyframes: Keyframe[];
+  modelProviders?: {
+    text2image?: string;
+    image2video?: string;
+  };
 }
 
 interface Props {
@@ -30,7 +35,20 @@ interface Props {
 
 const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) => {
   const [tempShot, setTempShot] = useState<Partial<Shot>>({ ...shot });
+  const [modelConfigs, setModelConfigs] = useState<AIModelConfig[]>([]);
   const isNewShot = !shot.id;
+
+  useEffect(() => {
+    const loadModelConfigs = async () => {
+      try {
+        const configs = await getAllModelConfigs();
+        setModelConfigs(configs);
+      } catch (error) {
+        console.error('加载模型配置失败:', error);
+      }
+    };
+    loadModelConfigs();
+  }, []);
 
   const toggleCharacter = (charId: string) => {
     const currentChars = tempShot.characters || [];
@@ -96,8 +114,8 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
             <textarea
               value={tempShot.actionSummary || ''}
               onChange={(e) => setTempShot({ ...tempShot, actionSummary: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
-              rows={3}
+              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              rows={2}
               placeholder="描述镜头中的动作..."
             />
           </div>
@@ -108,7 +126,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
             <textarea
               value={tempShot.dialogue || ''}
               onChange={(e) => setTempShot({ ...tempShot, dialogue: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
               rows={2}
               placeholder="镜头中的对白..."
             />
@@ -122,7 +140,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <select
                   value={tempShot.shotSize || 'MED'}
                   onChange={(e) => setTempShot({ ...tempShot, shotSize: e.target.value })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="特写">特写</option>
                   <option value="大特写">大特写</option>
@@ -144,7 +162,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <select
                   value={tempShot.cameraMovement || '固定'}
                   onChange={(e) => setTempShot({ ...tempShot, cameraMovement: e.target.value })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="固定">固定</option>
                   <option value="前推">前推</option>
@@ -168,7 +186,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <select
                   value={tempShot.duration || 5}
                   onChange={(e) => setTempShot({ ...tempShot, duration: Number(e.target.value) })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {Array.from({ length: 30 }, (_, i) => i + 1).map(sec => (
                     <option key={sec} value={sec}>{sec} 秒</option>
@@ -200,13 +218,13 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                   >
                     {/* 头像 */}
                     {hasImage && (
-                      <div className={`w-6 h-6 rounded-full overflow-hidden flex-shrink-0 ${
+                      <div className={`w-5 h-5 rounded-full overflow-hidden flex-shrink-0 ${
                         isSelected ? 'ring-2 ring-white/30' : 'opacity-70'
                       }`}>
                         <img
                           src={char.referenceImage}
                           alt={char.name}
-                          className="w-full h-full object-cover" 
+                          className="w-full h-full object-cover"
                         />
                       </div>
                     )}
@@ -284,6 +302,72 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <p className="text-xs text-slate-500">暂无关键帧，点击上方按钮添加</p>
               </div>
             )}
+          </div>
+
+          {/* Model Providers */}
+          <div className="space-y-4 border-t border-slate-800 pt-4">
+            <div className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">模型供应商</div>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Text2Image Provider */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">文生图</label>
+                <div className="relative">
+                  <select
+                    value={tempShot.modelProviders?.text2image || ''}
+                    onChange={(e) => setTempShot({
+                      ...tempShot,
+                      modelProviders: {
+                        ...tempShot.modelProviders,
+                        text2image: e.target.value || undefined
+                      }
+                    })}
+                    className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="">使用项目默认</option>
+                    {modelConfigs
+                      .filter(c => c.modelType === 'text2image' && c.apiKey)
+                      .map(config => (
+                    <option key={config.id} value={config.id}>
+                      {config.provider} - {config.model || config.description}
+                    </option>
+                  ))}
+                  </select>
+                  <div className="absolute right-3 top-2.5 pointer-events-none">
+                    <ChevronRight className="w-3 h-3 text-slate-600 rotate-90" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Image2Video Provider */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图生视频</label>
+                <div className="relative">
+                  <select
+                    value={tempShot.modelProviders?.image2video || ''}
+                    onChange={(e) => setTempShot({
+                      ...tempShot,
+                      modelProviders: {
+                        ...tempShot.modelProviders,
+                        image2video: e.target.value || undefined
+                      }
+                    })}
+                    className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  >
+                    <option value="">使用项目默认</option>
+                    {modelConfigs
+                      .filter(c => c.modelType === 'image2video' && c.apiKey)
+                      .map(config => (
+                    <option key={config.id} value={config.id}>
+                      {config.provider} - {config.model || config.description}
+                    </option>
+                  ))}
+                  </select>
+                  <div className="absolute right-3 top-2.5 pointer-events-none">
+                    <ChevronRight className="w-3 h-3 text-slate-600 rotate-90" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

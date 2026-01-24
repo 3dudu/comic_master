@@ -1,6 +1,7 @@
 import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Edit, Film, Image as ImageIcon, LayoutGrid, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Users, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { getAllModelConfigs } from '../services/modelConfigService';
+import { modelConfigEventBus } from '../services/modelConfigEvents';
 import { ModelService } from '../services/modelService';
 import { AIModelConfig, Keyframe, ProjectState, Scene, Shot } from '../types';
 import SceneEditModal from './SceneEditModal';
@@ -45,6 +46,23 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       }
     };
     loadModelConfigs();
+  }, []);
+
+  // 监听模型配置变更事件
+  useEffect(() => {
+    const unsubscribe = modelConfigEventBus.subscribe(async () => {
+      try {
+        const configs = await getAllModelConfigs();
+        setModelConfigs(configs);
+        console.log('模型配置已自动刷新');
+      } catch (error) {
+        console.error('自动刷新模型配置失败:', error);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
   
 
@@ -906,9 +924,27 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                        {/* Section 3: Shot Model Providers */}
                        <div className="space-y-4">
-                           <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
-                               <RefreshCw className="w-4 h-4 text-slate-500" />
-                               <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">模型供应商 (Model Providers)</h4>
+                           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                               <div className="flex items-center gap-2">
+                                   <RefreshCw className="w-4 h-4 text-slate-500" />
+                                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">模型供应商 (Model Providers)</h4>
+                               </div>
+                               <button
+                                   onClick={async () => {
+                                       try {
+                                           const configs = await getAllModelConfigs();
+                                           setModelConfigs(configs);
+                                           console.log('模型配置已刷新');
+                                       } catch (error) {
+                                           console.error('刷新模型配置失败:', error);
+                                       }
+                                   }}
+                                   className="text-[11px] text-indigo-400 hover:text-white transition-colors flex items-center gap-1"
+                                   title="刷新模型配置"
+                               >
+                                   <RefreshCw className="w-3 h-3" />
+                                   <span>刷新</span>
+                               </button>
                            </div>
                            <div className="grid grid-cols-2 gap-4">
                                {/* Text2Image Provider */}

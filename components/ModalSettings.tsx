@@ -1,6 +1,7 @@
 import { Check, ChevronRight, Edit, Film, Globe, Image, Key, Music, Plus, Sparkles, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createDefaultModelConfigs, deleteModelConfig, getAllModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
+import { triggerModelConfigChanged } from '../services/modelConfigEvents';
 import { AIModelConfig } from '../types';
 
 interface Props {
@@ -96,6 +97,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
     try {
       await saveModelConfigWithExclusiveEnabled(newConfig);
       await loadConfigs();
+      triggerModelConfigChanged(); // 触发配置变更事件
       setShowAddModal(false);
       resetForm();
     } catch (error) {
@@ -144,6 +146,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
     try {
       await saveModelConfigWithExclusiveEnabled(updatedConfig);
       await loadConfigs();
+      triggerModelConfigChanged(); // 触发配置变更事件
       setShowAddModal(false);
       setEditingConfig(null);
       resetForm();
@@ -159,6 +162,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
     try {
       await deleteModelConfig(id);
       await loadConfigs();
+      triggerModelConfigChanged(); // 触发配置变更事件
     } catch (error) {
       console.error('Failed to delete config:', error);
       alert('删除配置失败');
@@ -436,12 +440,14 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => {
+                            onClick={async () => {
                               if (!config.enabled && !config.apiKey) {
                                 alert('请先配置 API Key');
                                 return;
                               }
-                              toggleConfigEnabled(config.id).then(loadConfigs);
+                              await toggleConfigEnabled(config.id);
+                              await loadConfigs();
+                              triggerModelConfigChanged(); // 触发配置变更事件
                             }}
                             disabled={!config.enabled && !config.apiKey}
                             className={`p-2 transition-colors rounded-lg ${config.enabled ? 'text-indigo-400 hover:text-indigo-300 bg-indigo-900/20 hover:bg-indigo-900/30' : !config.apiKey ? 'text-slate-700 bg-transparent cursor-not-allowed' : 'text-slate-600 hover:text-slate-300 hover:bg-slate-800'}`}

@@ -61,7 +61,7 @@ export async function generateVideo(
     const requestBody:any = {
       model: 'MiniMax-Hailuo-2.3',
       prompt: prompt,
-      duration: duration,
+      duration: duration>7?10:6,
       first_frame_image: startImageBase64,
       resolution: '768P',
       prompt_optimizer: true

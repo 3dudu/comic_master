@@ -1,6 +1,7 @@
-import { Aperture, Check, ChevronRight, Plus, Trash, X } from 'lucide-react';
+import { Aperture, Check, ChevronRight, Plus, RefreshCw, Trash, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { getAllModelConfigs } from '../services/modelConfigService';
+import { modelConfigEventBus } from '../services/modelConfigEvents';
 import { AIModelConfig, Character } from '../types';
 
 interface Keyframe {
@@ -48,6 +49,23 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
       }
     };
     loadModelConfigs();
+  }, []);
+
+  // 监听模型配置变更事件
+  useEffect(() => {
+    const unsubscribe = modelConfigEventBus.subscribe(async () => {
+      try {
+        const configs = await getAllModelConfigs();
+        setModelConfigs(configs);
+        console.log('模型配置已自动刷新');
+      } catch (error) {
+        console.error('自动刷新模型配置失败:', error);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const toggleCharacter = (charId: string) => {
@@ -306,7 +324,25 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
 
           {/* Model Providers */}
           <div className="space-y-4 border-t border-slate-800 pt-4">
-            <div className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">模型供应商</div>
+            <div className="flex items-center justify-between">
+              <div className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">模型供应商</div>
+              <button
+                onClick={async () => {
+                  try {
+                    const configs = await getAllModelConfigs();
+                    setModelConfigs(configs);
+                    console.log('模型配置已刷新');
+                  } catch (error) {
+                    console.error('刷新模型配置失败:', error);
+                  }
+                }}
+                className="text-[11px] text-indigo-400 hover:text-white transition-colors flex items-center gap-1"
+                title="刷新模型配置"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>刷新</span>
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Text2Image Provider */}
               <div className="space-y-2">

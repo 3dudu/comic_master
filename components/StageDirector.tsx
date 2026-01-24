@@ -22,6 +22,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
   const [imageCount, setImageCount] = useState(project.imageCount || 0);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [videoPlayingShots, setVideoPlayingShots] = useState<Set<string>>(new Set());
+  const [videoReadyShots, setVideoReadyShots] = useState<Set<string>>(new Set());
 
   // Sync local state with project settings
   useEffect(() => {
@@ -814,17 +816,59 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               </div>
 
                               {/* Thumbnail */}
-                              <div className="aspect-video bg-slate-900 relative overflow-hidden">
-                                  {hasVideo ? (
+                              <div
+                                className="aspect-video bg-slate-900 relative overflow-hidden"
+                                onMouseEnter={() => {
+                                  if (hasVideo && !videoPlayingShots.has(shot.id)) {
+                                    setVideoPlayingShots(prev => new Set([...prev, shot.id]));
+                                  }
+                                }}
+                                
+                              >
+                                  {videoReadyShots.has(shot.id) && hasVideo && videoPlayingShots.has(shot.id) ? (
                                       <video
+                                        data-shot-id={shot.id}
                                         src={shot.interval?.videoUrl}
                                         className="w-full h-full object-cover"
-                                        loop controls
+                                        muted controls autoPlay loop
                                         onMouseEnter={(e) => e.currentTarget.play()}
                                         onMouseLeave={(e) => e.currentTarget.pause()}
+                                        onCanPlay={() => {
+                                          if (!videoReadyShots.has(shot.id)) {
+                                            setVideoReadyShots(prev => new Set([...prev, shot.id]));
+                                          }
+                                        }}
                                       />
                                   ) : hasImage ? (
-                                      <img src={sKf!.imageUrl || fKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                      <>
+                                        <img src={sKf!.imageUrl || fKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        {/* Preload video in background */}
+                                        {hasVideo && !videoReadyShots.has(shot.id) && (
+                                          <video
+                                            src={shot.interval?.videoUrl}
+                                            className="hidden"
+                                            onCanPlay={() => {
+                                              if (!videoReadyShots.has(shot.id)) {
+                                                setVideoReadyShots(prev => new Set([...prev, shot.id]));
+                                              }
+                                            }}
+                                          />
+                                        )}
+                                      </>
+                                  ) : hasVideo ? (
+                                      <video
+                                        data-shot-id={shot.id}
+                                        src={shot.interval?.videoUrl}
+                                        className="w-full h-full object-cover"
+                                        muted controls autoPlay loop
+                                        onMouseEnter={(e) => e.currentTarget.play()}
+                                        onMouseLeave={(e) => e.currentTarget.pause()}
+                                        onCanPlay={() => {
+                                          if (!videoReadyShots.has(shot.id)) {
+                                            setVideoReadyShots(prev => new Set([...prev, shot.id]));
+                                          }
+                                        }}
+                                      />
                                   ) : (
                                       <div className="absolute inset-0 flex items-center justify-center text-slate-800">
                                           <ImageIcon className="w-8 h-8 opacity-20" />

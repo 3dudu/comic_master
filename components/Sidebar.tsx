@@ -2,6 +2,7 @@ import { Aperture, ChevronLeft, ChevronRight, Clapperboard, FileText, Film, Gith
 import React, { useEffect, useState } from 'react';
 import { getAllModelConfigs } from '../services/modelConfigService';
 import { ProjectState } from '../types';
+import { ModelService } from '../services/modelService';
 import ModalSettings from './ModalSettings';
 
 
@@ -122,6 +123,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
 
   const saveSettings = () => {
     const finalDuration = localDuration === 'custom' ? customDurationInput : localDuration;
+    const newModelProviders = {
+      ...project.modelProviders,
+      llm: localLlmProvider,
+      text2image: localText2imageProvider,
+      image2video: localImage2videoProvider
+    };
+
     updateProject({
       title: localTitle,
       targetDuration: finalDuration,
@@ -129,13 +137,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
       visualStyle: localStyle,
       imageSize: localImageSize,
       imageCount: localImageCount,
-      modelProviders: {
-        ...project.modelProviders,
-        llm: localLlmProvider,
-        text2image: localText2imageProvider,
-        image2video: localImage2videoProvider
-      }
+      modelProviders: newModelProviders
     });
+
+    // 使模型供应商配置生效
+    ModelService.setCurrentProjectProviders(newModelProviders);
+
     setShowSettings(false);
   };
 

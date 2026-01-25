@@ -18,9 +18,17 @@ interface Shot {
   dialogue?: string;
   cameraMovement: string;
   shotSize?: string;
-  duration?: number;
   characters: string[];
   keyframes: Keyframe[];
+  interval?: {
+    id: string;
+    startKeyframeId: string;
+    endKeyframeId: string;
+    duration: number;
+    motionStrength: number;
+    videoUrl?: string;
+    status: 'pending' | 'generating' | 'completed' | 'failed';
+  };
   modelProviders?: {
     text2image?: string;
     image2video?: string;
@@ -202,8 +210,14 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
               <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">时长 (秒)</label>
               <div className="relative">
                 <select
-                  value={tempShot.duration || 5}
-                  onChange={(e) => setTempShot({ ...tempShot, duration: Number(e.target.value) })}
+                  value={tempShot.interval?.duration || 5}
+                  onChange={(e) => setTempShot({
+                    ...tempShot,
+                    interval: {
+                      ...tempShot.interval,
+                      duration: Number(e.target.value)
+                    } as any
+                  })}
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {Array.from({ length: 30 }, (_, i) => i + 1).map(sec => (

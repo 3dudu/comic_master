@@ -44,6 +44,10 @@ function App() {
     }
     // Initialize Coze service config
     initializeCozeConfig();
+    // Initialize ModelService (包括MinIO)
+    ModelService.initialize().catch(err => {
+      console.error('ModelService初始化失败:', err);
+    });
   }, []);
 
   // Auto-save logic

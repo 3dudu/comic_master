@@ -92,6 +92,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   const [scriptPrompt, setScriptPrompt] = useState('');
   const [isGeneratingScript, setIsGeneratingScript] = useState(false);
   const [processingStep, setProcessingStep] = useState<string>('');
+  const [regeneratingSceneId, setRegeneratingSceneId] = useState<string | null>(null);
 
   // Editing states
   const [editingLogline, setEditingLogline] = useState(false);
@@ -365,6 +366,46 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
     if (!window.confirm('确定要删除这个分镜吗？')) return;
     const updatedShots = project.shots.filter(s => s.id !== shotId);
     updateProject({ shots: updatedShots });
+  };
+
+  const handleRegenerateSceneShots = async (sceneId: string, sceneIndex: number) => {
+    if (!project.scriptData) return;
+
+    const scene = project.scriptData.scenes.find(s => s.id === sceneId);
+    if (!scene) return;
+
+    if (!window.confirm('确定要重新生成该场景的分镜吗？这将替换该场景的所有分镜。')) return;
+
+    setRegeneratingSceneId(sceneId);
+    try {
+      const newShots = await ModelService.generateShotListForScene(project.scriptData, scene, sceneIndex);
+
+      // 删除该场景的旧分镜
+      const otherShots = project.shots.filter(s => s.sceneId !== sceneId);
+
+      // 重新索引新分镜
+      const indexedShots = newShots.map((s, idx) => ({
+        ...s,
+        id: `shot-regen-${Date.now()}-${idx}`,
+        sceneId: sceneId,
+        keyframes: Array.isArray(s.keyframes)
+          ? s.keyframes.map((k: any) => ({
+              ...k,
+              id: `kf-regen-${idx}-${k.type}`,
+              status: "pending",
+            }))
+          : [],
+      }));
+
+      updateProject({
+        shots: [...otherShots, ...indexedShots]
+      });
+    } catch (err: any) {
+      console.error(err);
+      alert(`重新生成分镜失败: ${err.message || "AI 连接失败"}`);
+    } finally {
+      setRegeneratingSceneId(null);
+    }
   };
 
   const handleGenerateScript = async () => {
@@ -1196,6 +1237,15 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                  >
                                     <Plus className="w-3 h-3" />
                                     <span>添加镜头</span>
+                                 </button>
+                                 <button
+                                    onClick={() => handleRegenerateSceneShots(scene.id, index)}
+                                    disabled={regeneratingSceneId === scene.id}
+                                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-indigo-400 bg-slate-900/80 border border-slate-800 hover:border-indigo-600 rounded transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    title="重新生成分镜"
+                                 >
+                                    <Wand2 className="w-3 h-3" />
+                                    <span>{regeneratingSceneId === scene.id ? '生成中...' : '重新生成分镜'}</span>
                                  </button>
                               </div>
                            </div>

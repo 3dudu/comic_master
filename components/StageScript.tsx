@@ -1236,7 +1236,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                     title="添加分镜"
                                  >
                                     <Plus className="w-3 h-3" />
-                                    <span>添加镜头</span>
+                                    <span>添加分镜</span>
                                  </button>
                                  <button
                                     onClick={() => handleRegenerateSceneShots(scene.id, index)}
@@ -1261,7 +1261,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                    <div className="flex items-center justify-between">
                                      <div className="flex flex-col gap-1">
                                        <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
-                                         镜头 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                         分镜 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
                                        </div>
                                        {shot.interval?.duration && (
                                          <div className="text-xs font-mono text-indigo-400">

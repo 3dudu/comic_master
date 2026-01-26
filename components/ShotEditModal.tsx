@@ -119,8 +119,8 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-[#0e0e28] border border-slate-800 rounded-lg w-[600px] max-w-[90vw] max-h-[85vh] overflow-y-auto shadow-2xl">
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+      <div className="bg-[#0e0e28] border border-slate-800 rounded-lg w-[600px] max-w-[90vw] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+        <div className="p-6 border-b border-slate-800 flex items-center justify-between shrink-0">
           <h3 className="text-sm font-bold text-white tracking-wide flex items-center gap-2">
             <Aperture className="w-4 h-4 text-slate-400" />
             {isNewShot ? '添加分镜' : '编辑分镜'}
@@ -133,7 +133,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
           </button>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Action Summary */}
           <div className="space-y-2">
             <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">动作描述</label>
@@ -421,7 +421,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
           </div>
         </div>
 
-        <div className="p-6 border-t border-slate-800 flex gap-3">
+        <div className="p-6 border-t border-slate-800 flex gap-3 shrink-0">
           <button
             onClick={onClose}
             className="flex-1 py-3 bg-slate-900 text-slate-400 hover:text-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"

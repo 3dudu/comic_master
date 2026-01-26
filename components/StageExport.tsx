@@ -20,6 +20,11 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   // Calculate total duration roughly
   const estimatedDuration = project.shots.reduce((acc, s) => acc + (s.interval?.duration || 5), 0);
 
+  // Calculate selected shots total duration
+  const selectedDuration = project.shots
+    .filter(s => selectedShotIds.has(s.id))
+    .reduce((acc, s) => acc + (s.interval?.duration || 5), 0);
+
   // Toggle shot selection
   const toggleShotSelection = (shotId: string) => {
     setSelectedShotIds(prev => {
@@ -158,7 +163,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              <div className="mb-10">
                 <div className="flex justify-between items-center text-[12px] text-slate-600 font-mono uppercase tracking-widest mb-2 px-1">
                     <span>Sequence Map</span>
-                    <span></span>
+                    <span>~{selectedDuration}s</span>
                 </div>
 
                 {/* Selection Toolbar */}

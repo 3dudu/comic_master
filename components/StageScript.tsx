@@ -47,13 +47,9 @@ const IMAGE_SIZE_OPTIONS = [
 ];
 
 const IMAGE_COUNT_OPTIONS = [
-  { label: '1 张', value: 1 },
-  { label: '2 张', value: 2 },
-  { label: '3 张', value: 3 },
+  { label: '首尾帧', value: 1 },
   { label: '4 张', value: 4 },
-  { label: '5 张', value: 5 },
   { label: '6 张', value: 6 },
-  { label: '7 张', value: 7 },
   { label: '8 张', value: 8 },
   { label: '9 张', value: 9 }
 ];
@@ -356,7 +352,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         dialogue: updatedShot.dialogue || '',
         cameraMovement: updatedShot.cameraMovement || '固定',
         shotSize: updatedShot.shotSize || 'MED',
-        duration: updatedShot.duration || 5,
+        interval:{duration: updatedShot.duration || 5},
         characters: updatedShot.characters || [],
         keyframes: updatedShot.keyframes || []
       };
@@ -574,7 +570,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
             {/* Image Count Selection */}
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                组图数量
+                出图数量
               </label>
               <div className="relative">
                 <select
@@ -995,6 +991,13 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                   className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded px-2 py-1 focus:border-slate-600 focus:outline-none"
                                   placeholder="年龄"
                                 />
+                                <input
+                                  type="text"
+                                  value={tempCharacter.personality || ''}
+                                  onChange={(e) => setTempCharacter({ ...tempCharacter, personality: e.target.value })}
+                                  className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded px-2 py-1 focus:border-slate-600 focus:outline-none"
+                                  placeholder="性格特点"
+                                />
                                 <div className="flex gap-1">
                                   <button onClick={saveCharacter} className="flex-1 py-1 bg-slate-800 text-slate-300 text-[11px] rounded hover:bg-slate-700">保存</button>
                                   <button onClick={() => { setEditingCharacterId(null); setTempCharacter({}); }} className="flex-1 py-1 bg-slate-900 text-slate-500 text-[11px] rounded hover:text-slate-300">取消</button>
@@ -1036,6 +1039,13 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                              onChange={(e) => setTempCharacter({ ...tempCharacter, age: e.target.value })}
                              className="w-full bg-[#0e0e28] border border-slate-800 text-slate-300 text-xs rounded px-2 py-1 focus:border-slate-600 focus:outline-none"
                              placeholder="年龄"
+                           />
+                           <input
+                             type="text"
+                             value={tempCharacter.personality || ''}
+                             onChange={(e) => setTempCharacter({ ...tempCharacter, personality: e.target.value })}
+                             className="w-full bg-[#0e0e28] border border-slate-800 text-slate-300 text-xs rounded px-2 py-1 focus:border-slate-600 focus:outline-none"
+                             placeholder="性格特点"
                            />
                            <div className="flex gap-1">
                              <button onClick={addCharacter} className="flex-1 py-1 bg-slate-800 text-slate-300 text-[11px] rounded hover:bg-slate-700">添加</button>
@@ -1185,7 +1195,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                     title="添加分镜"
                                  >
                                     <Plus className="w-3 h-3" />
-                                    <span>添加分镜</span>
+                                    <span>添加镜头</span>
                                  </button>
                               </div>
                            </div>
@@ -1199,8 +1209,15 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                                 {/* Shot ID & Tech Data */}
                                 <div className="w-32 flex-shrink-0 flex flex-col gap-4">
                                    <div className="flex items-center justify-between">
-                                     <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
-                                       镜头 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                     <div className="flex flex-col gap-1">
+                                       <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
+                                         镜头 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                       </div>
+                                       {shot.interval?.duration && (
+                                         <div className="text-xs font-mono text-indigo-400">
+                                           {shot.interval?.duration}s
+                                         </div>
+                                       )}
                                      </div>
                                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                        <button

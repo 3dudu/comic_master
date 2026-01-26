@@ -269,11 +269,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     if(imageCount > 1){
         sKf = shot.keyframes?.find(k => k.type === 'full');
         if (!sKf?.imageUrl) return alert("请先生成连续图！");
-        prompt = "参考图片包含"+imageCount+"个连续的子图，请结合下面描述生成完整视频。"+prompt+sKf.visualPrompt;
+        prompt = "参考图片包含"+imageCount+"个连续的子图，请结合下面描述生成完整视频。"+prompt+"。视频详情："+sKf.visualPrompt;
     }else{
         if (!sKf?.imageUrl) return alert("请先生成起始帧！");
+        prompt = prompt+"。开始："+sKf.visualPrompt;
     }
     const eKf = shot.keyframes?.find(k => k.type === 'end');
+    if(eKf?.visualPrompt){
+        prompt = prompt+"。结束："+eKf.visualPrompt;
+    }
+    prompt = prompt + "\n 按照上面描述生成视频！";
     // Fix: Remove logic that auto-grabs next shot's frame.
     // Prevent morphing artifacts by defaulting to Image-to-Video unless an End Frame is explicitly generated.
     let endImageUrl = eKf?.imageUrl;
@@ -804,7 +809,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                               <div className="px-3 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
                                   <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>镜头 {String(idx + 1).padStart(2, '0')}</span>
                                   <div className="flex items-center gap-2">
-                                      <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement}</span>
+                                        <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement} {shot.interval?.duration}s</span>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); startEditShot(shot); }}
                                         className="p-1.5 hover:bg-slate-700 text-slate-500 hover:text-white rounded transition-colors"
@@ -911,13 +916,6 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                            </span>
                            <div>
                                <span className="text-[16px] text-white font-bold text-sm">镜头详情</span>
-                               <button
-                                        onClick={(e) => { e.stopPropagation(); startEditShot(activeShot); }}
-                                        className="ml-2 p-1.5 hover:bg-slate-700 text-slate-500 hover:text-white rounded transition-colors"
-                                        title="编辑镜头"
-                                      >
-                                <Edit className="w-3 h-3" />
-                                </button>
                                <p className="text-[12px] text-slate-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
                            </div>
                        </div>
@@ -944,10 +942,19 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                        {/* Section 2: Narrative */}
                        <div className="space-y-4">
+                           <div className="flex items-center justify-between mb-2">
                            <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
                                <Film className="w-4 h-4 text-slate-500" />
                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">叙事动作 (Action & Dialogue)</h4>
                            </div>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); startEditShot(activeShot); }}
+                            className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded transition-all flex items-center justify-center gap-1.5"
+                            title="修改镜头"
+                             >
+                            <Edit className="w-3 h-3" />修改镜头
+                            </button>
+              </div>
                            
                            <div className="space-y-3">
                                <div className="bg-[#0c0c2d] p-4 rounded-lg border border-slate-800">
@@ -1231,14 +1238,17 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
                            </div>
 
-                       {/* Section 4: Video Generation */}
+                           {/* Section 4: Video Generation */}
                        <div className="bg-[#0c0c2d] rounded-xl p-5 border border-slate-800 space-y-4">
                            <div className="flex items-center justify-between">
                                <h4 className="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
                                   <Video className="w-3 h-3 text-indigo-500" />
                                   视频生成
                                </h4>
-                               {activeShot.interval?.status === 'completed' && <span className="text-[12px] text-green-500 font-mono flex items-center gap-1">● READY</span>}
+                               <div className="flex items-center gap-3">
+                                   {activeShot.interval?.status === 'completed' && <span className="text-[12px] text-green-500 font-mono flex items-center gap-1">● READY</span>}
+                                   {activeShot.interval?.duration && <span className="text-[12px] text-indigo-400 font-mono flex items-center gap-1">{activeShot.interval?.duration}s</span>}
+                               </div>
                            </div>
                            
                            {activeShot.interval?.videoUrl ? (

@@ -85,7 +85,10 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
       onOpenProject(importedProject);
     } catch (error: any) {
       console.error('Import failed:', error);
-      alert(error.message || '导入项目失败');
+      // 如果是用户取消，不显示错误提示
+      if (error.message !== 'User cancelled file selection' && error.message !== 'No file selected') {
+        alert(error.message || '导入项目失败');
+      }
     } finally {
       setImporting(false);
     }

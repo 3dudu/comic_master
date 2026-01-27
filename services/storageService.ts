@@ -128,7 +128,10 @@ export const importProjectFromFile = (): Promise<ProjectState> => {
     input.type = 'file';
     input.accept = 'application/json';
 
+    let eventTriggered = false;
+
     input.onchange = async (e) => {
+      eventTriggered = true;
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) {
         reject(new Error('No file selected'));
@@ -151,6 +154,18 @@ export const importProjectFromFile = (): Promise<ProjectState> => {
       }
     };
 
+    // 添加超时处理，如果用户取消文件选择，超时后恢复按钮状态
+    const timeoutId = setTimeout(() => {
+      if (!eventTriggered) {
+        reject(new Error('User cancelled file selection'));
+      }
+    }, 500); // 短延迟检测用户是否取消
+
     input.click();
+
+    // 如果用户快速选择了文件，取消超时
+    if (eventTriggered) {
+      clearTimeout(timeoutId);
+    }
   });
 };

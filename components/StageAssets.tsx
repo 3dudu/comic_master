@@ -48,10 +48,16 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
         const newData = { ...project.scriptData };
         if (type === 'character') {
           const c = newData.characters.find(c => String(c.id) === String(id));
-          if (c) c.referenceImage = imageUrl;
+          if (c) {
+            c.referenceImage = imageUrl;
+            c.visualPrompt = prompt;
+          }
         } else {
           const s = newData.scenes.find(s => String(s.id) === String(id));
-          if (s) s.referenceImage = imageUrl;
+          if (s) {
+            s.referenceImage = imageUrl;
+            s.visualPrompt = prompt;
+          }
         }
         updateProject({ scriptData: newData });
       }

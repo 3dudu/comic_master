@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle, Key, Save, ShieldCheck } from 'lucide-react';
+import { CheckCircle, Save } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ApiKeyModal from './components/ApiKeyModal'; // 新增
 import Dashboard from './components/Dashboard';
@@ -17,9 +17,10 @@ import { ProjectState } from './types';
 function App() {
   const [project, setProject] = useState<ProjectState | null>(null);
   const [apiKey, setApiKey] = useState<string>('');
-  const [inputKey, setInputKey] = useState('');
   const [cozeWorkflowId, setCozeWorkflowId] = useState('');
   const [cozeApiKey, setCozeApiKey] = useState('');
+  const [fileUploadServiceUrl, setFileUploadServiceUrl] = useState('');
+  const [fileAccessDomain, setFileAccessDomain] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -41,6 +42,14 @@ function App() {
     const storedCozeApiKey = localStorage.getItem('cinegen_coze_api_key');
     if (storedCozeApiKey) {
       setCozeApiKey(storedCozeApiKey);
+    }
+    const storedFileUploadServiceUrl = localStorage.getItem('cinegen_file_upload_service_url');
+    if (storedFileUploadServiceUrl) {
+      setFileUploadServiceUrl(storedFileUploadServiceUrl);
+    }
+    const storedFileAccessDomain = localStorage.getItem('cinegen_file_access_domain');
+    if (storedFileAccessDomain) {
+      setFileAccessDomain(storedFileAccessDomain);
     }
     // Initialize Coze service config
     initializeCozeConfig();
@@ -72,7 +81,7 @@ function App() {
     };
   }, [project]);
 
-  const handleSaveKey = (newKey: string, newCozeWorkflowId?: string, newCozeApiKey?: string) => {
+  const handleSaveKey = (newKey: string, newCozeWorkflowId?: string, newCozeApiKey?: string, newFileUploadServiceUrl?: string, newFileAccessDomain?: string) => {
     if (!newKey.trim()) return;
     setApiKey(newKey);
     setGlobalApiKey(newKey);
@@ -85,14 +94,16 @@ function App() {
       setCozeApiKey(newCozeApiKey);
       localStorage.setItem('cinegen_coze_api_key', newCozeApiKey);
     }
+    if (newFileUploadServiceUrl !== undefined) {
+      setFileUploadServiceUrl(newFileUploadServiceUrl);
+      localStorage.setItem('cinegen_file_upload_service_url', newFileUploadServiceUrl);
+    }
+    if (newFileAccessDomain !== undefined) {
+      setFileAccessDomain(newFileAccessDomain);
+      localStorage.setItem('cinegen_file_access_domain', newFileAccessDomain);
+    }
   };
-  const handleSaveCozeConfig = () => {
-    localStorage.setItem('cinegen_coze_workflow_id', cozeWorkflowId);
-    localStorage.setItem('cinegen_coze_api_key', cozeApiKey);
-  };
-  const handleSaveKeyWrapper = () => {
-    handleSaveKey(inputKey);
-  };
+
   const handleClearKey = () => {
       localStorage.removeItem('cinegen_api_key');
       setApiKey('');
@@ -144,91 +155,24 @@ function App() {
   // API Key Entry Screen (Industrial Design)
   if (!apiKey) {
     return (
-      <div className="h-screen bg-[#0e1229] flex flex-col items-center justify-center p-8 relative overflow-hidden">
+      <div className="h-screen bg-[#0e1229] flex items-center justify-center p-8 relative overflow-hidden">
         {/* Background Accents */}
         <div className="absolute top-0 right-0 p-64 bg-indigo-900/5 blur-[150px] rounded-full pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 p-48 bg-slate-900/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-        <div className="w-full max-w-md bg-[#0e0e28] border border-slate-800 p-8 rounded-xl shadow-2xl relative z-10 animate-in fade-in zoom-in-95 duration-300">
-
-          <div className="flex items-center gap-3 mb-8 border-b border-slate-900 pb-6">
-             <div className="w-10 h-10 bg-white text-black flex items-center justify-center">
-                <Key className="w-5 h-5" />
-             </div>
-             <div>
-                <h1 className="text-xl font-bold text-white tracking-wide">API 配置</h1>
-                <p className="text-[12px] text-slate-500 uppercase tracking-widest font-mono">Authentication</p>
-             </div>
-          </div>
-
-          <div className="space-y-6">
-             <div>
-               <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-                 火山引擎 / 豆包 API Key
-               </label>
-               <input
-                 type="password"
-                 value={inputKey}
-                 onChange={(e) => setInputKey(e.target.value)}
-                 placeholder="Enter your API Key..."
-                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
-               />
-               <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
-                 本应用需要火山引擎的 API 访问权限。请确保您的 API Key 已开通相应的服务权限。
-                 <a href="https://www.volcengine.com/docs/82379" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline ml-1">查看文档</a>
-               </p>
-             </div>
-
-             <div>
-               <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-                 Coze 工作流 ID
-               </label>
-               <input
-                 type="text"
-                 value={cozeWorkflowId}
-                 onChange={(e) => setCozeWorkflowId(e.target.value)}
-                 placeholder="Enter Coze Workflow ID..."
-                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
-               />
-               <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
-                 配置 Coze 工作流 ID 用于智能剧本分析等功能。
-               </p>
-             </div>
-
-             <div>
-               <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
-                 Coze API Key
-               </label>
-               <input
-                 type="password"
-                 value={cozeApiKey}
-                 onChange={(e) => setCozeApiKey(e.target.value)}
-                 placeholder="Enter Coze API Key..."
-                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
-               />
-               <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
-                 本应用需要 Coze 的 API 访问权限。
-                 <a href="https://www.coze.cn/docs" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline ml-1">查看文档</a>
-               </p>
-             </div>
-
-             <button
-               onClick={() => {
-                 handleSaveKeyWrapper();
-                 handleSaveCozeConfig();
-               }}
-               disabled={!inputKey.trim()}
-               className="w-full py-3 bg-white text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-slate-200 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-             >
-               保存配置 <ArrowRight className="w-3 h-3" />
-             </button>
-
-             <div className="flex items-center justify-center gap-2 text-[12px] text-slate-700 font-mono">
-               <ShieldCheck className="w-3 h-3" />
-               密钥仅保存在浏览器本地
-             </div>
-          </div>
-        </div>
+        <ApiKeyModal
+          isOpen={true}
+          onClose={() => {}}
+          onSave={handleSaveKey}
+          currentKey={''}
+          cozeWorkflowId={cozeWorkflowId}
+          cozeApiKey={cozeApiKey}
+          currentFileUploadServiceUrl={fileUploadServiceUrl}
+          currentFileAccessDomain={fileAccessDomain}
+          providerName="火山引擎 / 豆包"
+          providerDescription="本应用需要火山引擎的 API 访问权限。请确保您的 API Key 已开通相应的服务权限。"
+          documentationUrl="https://www.volcengine.com/docs/82379"
+        />
       </div>
     );
   }
@@ -270,6 +214,8 @@ function App() {
     currentKey={apiKey}
     cozeWorkflowId={cozeWorkflowId}
     cozeApiKey={cozeApiKey}
+    currentFileUploadServiceUrl={fileUploadServiceUrl}
+    currentFileAccessDomain={fileAccessDomain}
     providerName="火山引擎 / 豆包"
     providerDescription="本应用需要火山引擎的 API 访问权限。请确保您的 API Key 已开通相应的服务权限。"
     documentationUrl="https://www.volcengine.com/docs/82379"

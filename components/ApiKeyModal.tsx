@@ -5,10 +5,12 @@ import React from 'react';
 interface ApiKeyModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (key: string, cozeWorkflowId?: string, cozeApiKey?: string) => void;
+  onSave: (key: string, cozeWorkflowId?: string, cozeApiKey?: string, fileUploadServiceUrl?: string, fileAccessDomain?: string) => void;
   currentKey: string;
   cozeWorkflowId?: string;
   cozeApiKey?: string;
+  currentFileUploadServiceUrl?: string;
+  currentFileAccessDomain?: string;
   providerName: string;
   providerDescription: string;
   documentationUrl: string;
@@ -21,6 +23,8 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
   currentKey,
   cozeWorkflowId = '',
   cozeApiKey = '',
+  currentFileUploadServiceUrl = '',
+  currentFileAccessDomain = '',
   providerName,
   providerDescription,
   documentationUrl
@@ -28,18 +32,28 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
   const [inputKey, setInputKey] = React.useState(currentKey);
   const [inputCozeWorkflowId, setInputCozeWorkflowId] = React.useState(cozeWorkflowId);
   const [inputCozeApiKey, setInputCozeApiKey] = React.useState(cozeApiKey);
+  const [inputFileUploadServiceUrl, setInputFileUploadServiceUrl] = React.useState(currentFileUploadServiceUrl);
+  const [inputFileAccessDomain, setInputFileAccessDomain] = React.useState(currentFileAccessDomain);
 
   React.useEffect(() => {
     setInputKey(currentKey);
     setInputCozeWorkflowId(cozeWorkflowId);
     setInputCozeApiKey(cozeApiKey);
-  }, [currentKey, cozeWorkflowId, cozeApiKey, isOpen]);
+    setInputFileUploadServiceUrl(currentFileUploadServiceUrl);
+    setInputFileAccessDomain(currentFileAccessDomain);
+  }, [currentKey, cozeWorkflowId, cozeApiKey, currentFileUploadServiceUrl, currentFileAccessDomain, isOpen]);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     if (inputKey.trim()) {
-      onSave(inputKey.trim(), inputCozeWorkflowId.trim(), inputCozeApiKey.trim());
+      onSave(
+        inputKey.trim(),
+        inputCozeWorkflowId.trim(),
+        inputCozeApiKey.trim(),
+        inputFileUploadServiceUrl.trim(),
+        inputFileAccessDomain.trim()
+      );
       onClose();
     }
   };
@@ -137,6 +151,40 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                >
                  查看文档
                </a>
+             </p>
+           </div>
+
+           <div>
+             <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
+               文件上传服务地址
+             </label>
+             <input
+               type="text"
+               value={inputFileUploadServiceUrl}
+               onChange={(e) => setInputFileUploadServiceUrl(e.target.value)}
+               placeholder="https://apppub.good365.net:6443/apppub_api/thirdparty/upload"
+               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+             />
+             <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
+               配置后，AI 生成的图片和视频将上传到此服务。
+               <span className="text-slate-700">（可选）</span>
+             </p>
+           </div>
+
+           <div>
+             <label className="block text-[12px] font-bold text-slate-500 uppercase tracking-widest mb-2">
+               文件访问域名
+             </label>
+             <input
+               type="text"
+               value={inputFileAccessDomain}
+               onChange={(e) => setInputFileAccessDomain(e.target.value)}
+               placeholder="ofs.good365.net:6443"
+               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+             />
+             <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
+               上传后的文件将使用此域名访问，不包含协议头。
+               <span className="text-slate-700">（可选）</span>
              </p>
            </div>
 

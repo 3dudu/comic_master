@@ -2,6 +2,7 @@
 // 模型调用包装类，根据启用的配置动态选择模型提供商
 
 import { ScriptData, Shot } from "../types";
+import { uploadFileToService } from "../utils/fileUploadUtils";
 import { getAllModelConfigs, getEnabledConfigByType } from "./modelConfigService";
 
 // DeepSeek 方法
@@ -393,6 +394,9 @@ export class ModelService {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成场景 ${sceneIndex + 1} 的镜头清单`);
 
+    if(scene.referenceImage){
+      scene.referenceImage=null;
+    }
     switch (provider) {
       case 'deepseek':
         return await generateShotListDeepseekForScene(scriptData, scene, sceneIndex);
@@ -454,6 +458,13 @@ export class ModelService {
   ): Promise<string> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成视觉提示词`);
+
+    if(data.referenceImage){
+      data.referenceImage=null;
+    }
+    if(data.variations){
+      data.variations=[];
+    }
 
     switch (provider) {
       case 'deepseek':
@@ -574,17 +585,49 @@ export class ModelService {
     let imagex = IMAGE_X[imageCount];
     const new_prompt = "请使用 "+localStyle+" 风格创作图画，内容为" + prompt + (imageCount > 1 ? " 生成连续 "+imageCount+" 宫格，包含 "+imageCount+" 张风格统一的图片，每张长宽比 "+image_rate+"，间距 1px，白色背景，铺满整张图。" : "");
 
+    let imageUrlOrBase64: string;
+
+    // 调用各个模型服务生成图片
     switch (provider) {
       case 'doubao':
-        return await generateImageDoubao(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageDoubao(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        break;
       case 'gemini':
-        return await generateImageGemini(new_prompt, referenceImages,isCharacter, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageGemini(new_prompt, referenceImages,isCharacter, localStyle, imageSize,imageCount);
+        break;
       case 'yunwu':
-        return await generateImageYunwu(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageYunwu(new_prompt, referenceImages, isCharacter, localStyle, imageSize,imageCount);
+        break;
       case 'openai':
-        return await generateImageOpenai(new_prompt, referenceImages, isCharacter, localStyle, imageSize, imageCount);
+        imageUrlOrBase64 = await generateImageOpenai(new_prompt, referenceImages, isCharacter, localStyle, imageSize, imageCount);
+        break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的文生图`);
+    }
+
+    // 将模型返回的 URL 或 Base64 转换成本地服务器文件
+    try {
+      // 判断是否是 Base64 格式
+      const isBase64 = imageUrlOrBase64.startsWith('data:');
+
+      const uploadResponse = await uploadFileToService({
+        fileType: 'image_'+provider,
+        fileUrl: isBase64 ? undefined : imageUrlOrBase64,
+        base64Data: isBase64 ? imageUrlOrBase64 : undefined
+      });
+
+      if (uploadResponse.success && uploadResponse.data?.fileUrl) {
+        console.log(`图片已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        return uploadResponse.data.fileUrl;
+      } else {
+        console.error(`图片上传失败: ${uploadResponse.error}`);
+        // 上传失败时返回原始图片
+        return imageUrlOrBase64;
+      }
+    } catch (error) {
+      console.error(`处理生成图片时出错:`, error);
+      // 出错时返回原始图片
+      return imageUrlOrBase64;
     }
   }
 
@@ -606,21 +649,51 @@ export class ModelService {
     const provider = await this.getEnabledVideoProvider(shotprovider || this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成视频`);
 
+    let videoUrl: string;
+
+    // 调用各个模型服务生成视频
     switch (provider) {
       case 'doubao':
-        return await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        videoUrl = await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        break;
       case 'gemini':
-        return await generateVideoGemini(prompt, startImageBase64, endImageBase64,full_frame);
+        videoUrl = await generateVideoGemini(prompt, startImageBase64, endImageBase64,full_frame);
+        break;
       case 'yunwu':
-        return await generateVideoYunwu(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        videoUrl = await generateVideoYunwu(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        break;
       case 'minimax':
-        return await generateVideoMinimax(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoMinimax(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        break;
       case 'kling':
-        return await generateVideoKling(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoKling(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        break;
       case 'openai':
-        return await generateVideoOpenai(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoOpenai(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);
+    }
+
+    // 将模型返回的视频 URL 转换成本地服务器文件
+    try {
+      const uploadResponse = await uploadFileToService({
+        fileType: 'video_'+provider,
+        fileUrl: videoUrl
+      });
+
+      if (uploadResponse.success && uploadResponse.data?.fileUrl) {
+        console.log(`视频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        return uploadResponse.data.fileUrl;
+      } else {
+        console.error(`视频上传失败: ${uploadResponse.error}`);
+        // 上传失败时返回原始 URL
+        return videoUrl;
+      }
+    } catch (error) {
+      console.error(`处理生成视频时出错:`, error);
+      // 出错时返回原始 URL
+      return videoUrl;
     }
   }
 }

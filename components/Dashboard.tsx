@@ -1,5 +1,6 @@
-import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Trash2, Upload } from 'lucide-react';
+import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Settings, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import ApiKeyModal from './ApiKeyModal';
 import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 import { ProjectState } from '../types';
 
@@ -14,6 +15,12 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
   const [importing, setImporting] = useState(false);
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [apiKeyModalOpen, setApiKeyModalOpen] = useState(false);
+  const [currentApiKey, setCurrentApiKey] = useState('');
+  const [currentCozeWorkflowId, setCurrentCozeWorkflowId] = useState('');
+  const [currentCozeApiKey, setCurrentCozeApiKey] = useState('');
+  const [currentFileUploadServiceUrl, setCurrentFileUploadServiceUrl] = useState('');
+  const [currentFileAccessDomain, setCurrentFileAccessDomain] = useState('');
 
   const loadProjects = async () => {
     setIsLoading(true);
@@ -30,6 +37,41 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
   useEffect(() => {
     loadProjects();
   }, []);
+
+  // 加载保存的 API 配置
+  useEffect(() => {
+    const apiKey = localStorage.getItem('cinegen_api_key');
+    const cozeWorkflowId = localStorage.getItem('cinegen_coze_workflow_id');
+    const cozeApiKey = localStorage.getItem('cinegen_coze_api_key');
+    const fileUploadServiceUrl = localStorage.getItem('cinegen_file_upload_service_url');
+    const fileAccessDomain = localStorage.getItem('cinegen_file_access_domain');
+
+    if (apiKey) setCurrentApiKey(apiKey);
+    if (cozeWorkflowId) setCurrentCozeWorkflowId(cozeWorkflowId);
+    if (cozeApiKey) setCurrentCozeApiKey(cozeApiKey);
+    if (fileUploadServiceUrl) setCurrentFileUploadServiceUrl(fileUploadServiceUrl);
+    if (fileAccessDomain) setCurrentFileAccessDomain(fileAccessDomain);
+  }, []);
+
+  // 保存 API 配置
+  const handleApiKeySave = (key: string, cozeWorkflowId?: string, cozeApiKey?: string, fileUploadServiceUrl?: string, fileAccessDomain?: string) => {
+    localStorage.setItem('cinegen_api_key', key);
+    if (cozeWorkflowId) localStorage.setItem('cinegen_coze_workflow_id', cozeWorkflowId);
+    if (cozeApiKey) localStorage.setItem('cinegen_coze_api_key', cozeApiKey);
+    if (fileUploadServiceUrl) localStorage.setItem('cinegen_file_upload_service_url', fileUploadServiceUrl);
+    if (fileAccessDomain) localStorage.setItem('cinegen_file_access_domain', fileAccessDomain);
+
+    setCurrentApiKey(key);
+    setCurrentCozeWorkflowId(cozeWorkflowId || '');
+    setCurrentCozeApiKey(cozeApiKey || '');
+    setCurrentFileUploadServiceUrl(fileUploadServiceUrl || '');
+    setCurrentFileAccessDomain(fileAccessDomain || '');
+
+    // 初始化 Coze 配置
+    if (typeof window !== 'undefined' && (window as any).initializeCozeConfig) {
+      (window as any).initializeCozeConfig();
+    }
+  };
 
   const handleCreate = () => {
     const newProject = createNewProjectState();
@@ -229,6 +271,14 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
             </h1>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => setApiKeyModalOpen(true)}
+              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              title="系统设置"
+            >
+              <Settings className="w-4 h-4" />
+              <span className="font-bold text-xs tracking-widest uppercase">设置</span>
+            </button>
             <button
               onClick={handleImport}
               disabled={importing}
@@ -438,6 +488,21 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
           </div>
         )}
       </div>
+
+      {/* API Key Modal */}
+      <ApiKeyModal
+        isOpen={apiKeyModalOpen}
+        onClose={() => setApiKeyModalOpen(false)}
+        onSave={handleApiKeySave}
+        currentKey={currentApiKey}
+        cozeWorkflowId={currentCozeWorkflowId}
+        cozeApiKey={currentCozeApiKey}
+        currentFileUploadServiceUrl={currentFileUploadServiceUrl}
+        currentFileAccessDomain={currentFileAccessDomain}
+        providerName="CineGen"
+        providerDescription="CineGen 是一个 AI 视频生成工具，需要配置 API 密钥才能使用。请前往相关提供商获取 API Key。"
+        documentationUrl="#"
+      />
     </div>
   );
 };

@@ -130,7 +130,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
 
     // 加载模型配置
     loadModelConfigs();
-    initSystemModelProviders();
+    //initSystemModelProviders();
   }, [project.id, project.title, project.targetDuration, project.language, project.visualStyle, project.imageSize, project.imageCount]);
 
   const initSystemModelProviders = async () => {
@@ -703,10 +703,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   }}
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="">默认模型</option>
+                  <option value="">系统默认模型</option>
                   {modelConfigs.filter(c => c.modelType === 'llm' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
-                      {config.provider} - {config.model || config.description}
+                      {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                     </option>
                   ))}
                 </select>
@@ -736,10 +736,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   }}
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="">默认模型</option>
+                  <option value="">系统默认模型</option>
                   {modelConfigs.filter(c => c.modelType === 'text2image' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
-                      {config.provider} - {config.model || config.description}
+                      {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                     </option>
                   ))}
                 </select>
@@ -769,10 +769,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
                   }}
                   className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
-                  <option value="">默认模型</option>
+                  <option value="">系统默认模型</option>
                   {modelConfigs.filter(c => c.modelType === 'image2video' && c.apiKey).map(config => (
                     <option key={config.id} value={config.id}>
-                      {config.provider} - {config.model || config.description}
+                      {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                     </option>
                   ))}
                 </select>

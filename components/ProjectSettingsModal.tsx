@@ -69,7 +69,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
   useEffect(() => {
     if (isOpen) {
       loadModelConfigs();
-      initSystemModelProviders();
+      //initSystemModelProviders();
       // Reset local state when opening modal
       setLocalTitle(project.title);
       setLocalDuration(project.targetDuration || '60s');
@@ -85,7 +85,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
     const llm = await getEnabledConfigByType('llm');
     const text2image = await getEnabledConfigByType('text2image');
     const image2video = await getEnabledConfigByType('image2video');
-    setLocalLlmProvider(project.modelProviders?.llm || llm.id);
+    setLocalLlmProvider(project.modelProviders.llm || llm.id);
     setLocalText2imageProvider(project.modelProviders?.text2image || text2image.id);
     setLocalImage2videoProvider(project.modelProviders?.image2video || image2video.id);
   };
@@ -289,10 +289,10 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
                 onChange={(e) => setLocalLlmProvider(e.target.value)}
                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
               >
-                <option value="">默认模型</option>
+                <option value="">系统默认模型</option>
                 {modelConfigs.filter(c => c.modelType === 'llm' && c.apiKey).map(config => (
                   <option key={config.id} value={config.id}>
-                    {config.provider} - {config.description || config.model}
+                    {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                   </option>
                 ))}
               </select>
@@ -314,10 +314,10 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
                 onChange={(e) => setLocalText2imageProvider(e.target.value)}
                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
               >
-                <option value="">默认模型</option>
+                <option value="">系统默认模型</option>
                 {modelConfigs.filter(c => c.modelType === 'text2image' && c.apiKey).map(config => (
                   <option key={config.id} value={config.id}>
-                    {config.provider} - {config.description || config.model}
+                    {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                   </option>
                 ))}
               </select>
@@ -339,10 +339,10 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
                 onChange={(e) => setLocalImage2videoProvider(e.target.value)}
                 className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
               >
-                <option value="">默认模型</option>
+                <option value="">系统默认模型</option>
                 {modelConfigs.filter(c => c.modelType === 'image2video' && c.apiKey).map(config => (
                   <option key={config.id} value={config.id}>
-                    {config.provider} - {config.description || config.model}
+                    {config.provider} - {config.description || config.model}{config.enabled ? '✅' : null}
                   </option>
                 ))}
               </select>

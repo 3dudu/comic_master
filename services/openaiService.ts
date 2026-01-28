@@ -394,9 +394,6 @@ export const generateImage = async (
 
   // 构建提示词
   let finalPrompt = prompt;
-  if (imageType!="character" && referenceImages.length > 0) {
-    finalPrompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(prompt);
-  }
 
   const requestBody: any = {
     model: runtimeImageModel,

@@ -66,11 +66,21 @@ const WardrobeModal: React.FC<Props> = ({
           // IMPORTANT: Use Base Look as reference to maintain facial consistency
           const refImages = character.referenceImage ? [character.referenceImage] : [];
           const prompt = character.visualPrompt || await ModelService.generateVisualPrompts('character', character, project.scriptData?.genre || '剧情片');
-          
-          // Enhance prompt to emphasize character consistency
-          const enhancedPrompt = `角色: ${character.name} 的新造型，新造型是这样的: ${variation.visualPrompt}。 如果有参考图，请保持面部特征与参考图一致。如果没有，角色原来是这样的：${prompt}`;
 
-          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, "character", localStyle, imageSize,1,{},project.id);
+          // Enhance prompt to emphasize character consistency
+          const enhancedPrompt = `
+            生成角色: ${character.name} 的新造型画面，画面风为：${localStyle}，符合下面描述。
+
+            描述：
+                ${variation.visualPrompt}
+
+            要求：
+                - 画面风为：${localStyle}
+                - 如果有参考图，请保持面部特征与参考图一致。
+                - 如果没有，角色原来是这样的：${prompt}
+        `
+
+          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, "variation", localStyle, imageSize,1,{},project.id);
 
           const newData = { ...project.scriptData! };
           const c = newData.characters.find(c => c.id === character.id);

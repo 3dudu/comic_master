@@ -309,9 +309,6 @@ export const generateImage = async (prompt: string, referenceImages: string[] = 
 
   // If we have reference images, instruct the model to use them for consistency
   let finalPrompt = prompt;
-  if (referenceImages.length > 0) {
-    finalPrompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(prompt);
-  }
 
   const parts: any[] = [{ text: finalPrompt }];
 

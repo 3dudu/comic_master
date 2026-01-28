@@ -4,6 +4,7 @@
 import { ScriptData, Shot } from "../types";
 import { uploadFileToService } from "../utils/fileUploadUtils";
 import { getAllModelConfigs, getEnabledConfigByType } from "./modelConfigService";
+import { PROMPT_TEMPLATES } from "./promptTemplates";
 
 // DeepSeek 方法
 import {
@@ -86,9 +87,6 @@ import {
   setModel as setKlingModel
 } from "./klingService";
 
-const IMAGE_X = [
-  '1','1x1','1x2','1x3','2x2','2x3','2x3','3x3','3x3','3x3'
-];
 /**
  * 模型包装服务
  * 根据启用的配置自动选择模型提供商
@@ -583,9 +581,11 @@ export class ModelService {
     console.log(`使用 ${provider} 生成图片`);
 
     const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
-    let imagex = IMAGE_X[imageCount];
-    const new_prompt = "请使用 "+localStyle+" 风格创作图画，内容为" + prompt + (imageCount > 1 ? " 生成连续 "+imageCount+" 宫格，包含 "+imageCount+" 张风格统一的图片，每张长宽比 "+image_rate+"，间距 1px，白色背景，铺满整张图。" : "");
-
+    let new_prompt = prompt;
+    if(imageType!='variation'){
+      new_prompt = prompt + (imageCount > 1 ? " 生成连续 "+imageCount+" 宫格，包含 "+imageCount+" 张风格统一的图片，每张长宽比 "+image_rate+"，间距 1px，白色背景，铺满整张图。" : "");
+      new_prompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(new_prompt,localStyle);
+    }
     let imageUrlOrBase64: string;
 
     // 调用各个模型服务生成图片

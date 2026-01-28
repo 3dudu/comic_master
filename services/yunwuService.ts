@@ -331,9 +331,6 @@ export const generateImage = async (
 
   // 构建提示词
   let finalPrompt = prompt;
-  if (!ischaracter && referenceImages.length > 0) {
-    finalPrompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(prompt);
-  }
 
   const parts: any[] = [{ text: finalPrompt }];
 

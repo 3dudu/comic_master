@@ -176,8 +176,9 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       if (project.scriptData) {
         // 1. Scene Reference (Environment / Atmosphere) - PRIORITY
         const scene = project.scriptData.scenes.find(s => String(s.id) === String(shot.sceneId));
+        referenceImages.push("\n参考图说明：");
         if (scene?.referenceImage) {
-          referenceImages.push("第1张图是镜头布景、环境。");
+          referenceImages.push(" - 第1张图是镜头布景、环境。");
         }
         let imagecount = 2;
         // 2. Character References (Appearance)
@@ -191,7 +192,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
             if (varId) {
                 const variation = char.variations?.find(v => v.id === varId);
                 if (variation?.referenceImage) {
-                    referenceImages.push("第"+imagecount+"张图是角色："+char.name);
+                    referenceImages.push(" - 第"+imagecount+"张图是角色："+char.name);
                     imagecount++;
                     return; // Use variation image instead of base
                 }
@@ -199,7 +200,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
             // Fallback to base image
             if (char.referenceImage) {
-                referenceImages.push("第"+imagecount+"张图是角色："+char.name);
+                referenceImages.push(" - 第"+imagecount+"张图是角色："+char.name);
             }
             imagecount++;
           });
@@ -229,7 +230,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
     try {
       const referenceImages = getRefImagesForShot(shot);
       const referencePrompt = getRefImagesDescForShot(shot);
-      const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, type, localStyle, imageSize,type === 'full'?imageCount:1, shot.modelProviders,project.id);
+      const url = await ModelService.generateImage(prompt + (referencePrompt?referencePrompt:""), referenceImages, type, localStyle, imageSize,type === 'full'?imageCount:1, shot.modelProviders,project.id);
       existingKf.imageUrl = url;
       updateProject({ 
         shots: project.shots.map(s => {
@@ -384,7 +385,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 }
                 const existingFf = shot.keyframes?.find(k => k.type === 'full');
                 const ffId = existingFf?.id || `kf-${shot.id}-full-${Date.now()}`;
-                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, "full", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?referencePrompt:""), referenceImages, "full", localStyle, imageSize, 1, shot.modelProviders,project.id);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];
@@ -404,7 +405,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 const existingKf = shot.keyframes?.find(k => k.type === 'start');
                 let prompt = existingKf?.visualPrompt || shot.actionSummary;
                 const kfId = existingKf?.id || `kf-${shot.id}-start-${Date.now()}`;
-                const url = await ModelService.generateImage(prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, "start", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                const url = await ModelService.generateImage(prompt + (referencePrompt?referencePrompt:""), referenceImages, "start", localStyle, imageSize, 1, shot.modelProviders,project.id);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];
@@ -424,7 +425,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
                 const existingEf = shot.keyframes?.find(k => k.type === 'end');
                 let end_prompt = existingEf?.visualPrompt || shot.actionSummary;
                 const efId = existingEf?.id || `kf-${shot.id}-end-${Date.now()}`;
-                const end_url = await ModelService.generateImage(end_prompt + (referencePrompt?"参考图说明："+referencePrompt:""), referenceImages, "end", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                const end_url = await ModelService.generateImage(end_prompt + (referencePrompt?referencePrompt:""), referenceImages, "end", localStyle, imageSize, 1, shot.modelProviders,project.id);
                 currentShots = currentShots.map(s => {
                     if (s.id !== shot.id) return s;
                     const newKeyframes = [...(s.keyframes || [])];

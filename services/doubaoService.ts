@@ -444,9 +444,7 @@ export const generateImage = async (
     // 可能需要使用 image_url 参数或其他方式
     requestBody.image = referenceImages;
   }
-  if(imageType!="character" && referenceImages.length>0){
-    finalPrompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(prompt);
-  }
+
   requestBody.prompt = finalPrompt;
 
   const response = await fetchWithRetry(endpoint, {

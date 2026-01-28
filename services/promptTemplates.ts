@@ -119,15 +119,18 @@ export const PROMPT_TEMPLATES = {
   `,
 
   // ============ 带参考图的图片生成 ============
-  IMAGE_GENERATION_WITH_REFERENCE: (prompt: string) => `
-    参考图像说明：
+  IMAGE_GENERATION_WITH_REFERENCE: (prompt: string,localStyle: string="写实") => `
+    生成符合下面描述的电影级镜头，画面风为：${localStyle}。
+    
+    任务描述：
+      ${prompt}
+
+    参考图像附加说明：
     - 所提供的第一张图片为场景 / 环境参考图。
     - 后续所有图片均为角色参考图（例如：基础形象，或特定变体造型）。
 
-    任务：
-    生成符合此提示词的电影级镜头：${prompt}。
-
     要求：
+    - 画面风为：${localStyle}。
     - 严格保持与场景参考图一致的视觉风格、光影效果和环境氛围。
     - 若画面中出现角色，必须与所提供的角色参考图高度相似。
   `,

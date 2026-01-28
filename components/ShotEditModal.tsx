@@ -1,7 +1,7 @@
 import { Aperture, Check, ChevronRight, Plus, RefreshCw, Trash, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { modelConfigEventBus } from '../services/modelConfigEvents';
-import { getAllModelConfigs } from '../services/modelConfigService';
+import { getAllModelConfigs } from '../services/storageService';
 import { AIModelConfig, Character } from '../types';
 
 interface Keyframe {

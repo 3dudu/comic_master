@@ -1,7 +1,7 @@
 import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, Film, Image, List, MapPin, Plus, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { getAllModelConfigs } from '../services/modelConfigService';
 import { ModelService } from '../services/modelService';
+import { getAllModelConfigs } from '../services/storageService';
 import { Character, ProjectState, Scene } from '../types';
 import SceneEditModal from './SceneEditModal';
 import ShotEditModal from './ShotEditModal';

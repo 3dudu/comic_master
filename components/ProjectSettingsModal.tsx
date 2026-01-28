@@ -83,7 +83,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
 
   const loadModelConfigs = async () => {
     try {
-      const { getAllModelConfigs } = await import('../services/modelConfigService');
+      const { getAllModelConfigs } = await import('../services/storageService');
       const configs = await getAllModelConfigs();
       setModelConfigs(configs);
     } catch (error) {

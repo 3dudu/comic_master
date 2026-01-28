@@ -1,7 +1,8 @@
 import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Plus, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { triggerModelConfigChanged } from '../services/modelConfigEvents';
-import { createDefaultModelConfigs, deleteModelConfig, getAllModelConfigs, saveModelConfig, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
+import { createDefaultModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
+import { deleteModelConfig, getAllModelConfigs, saveModelConfig } from '../services/storageService';
 import { AIModelConfig } from '../types';
 
 interface Props {

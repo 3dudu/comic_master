@@ -3,6 +3,7 @@
 
 import { ScriptData, Shot } from "../types";
 import { uploadFileToService } from "../utils/fileUploadUtils";
+import { imageUrlToBase64 } from "../utils/imageUtils";
 import { getEnabledConfigByType } from "./modelConfigService";
 import { PROMPT_TEMPLATES } from "./promptTemplates";
 import { getAllModelConfigs } from "./storageService";
@@ -581,6 +582,22 @@ export class ModelService {
     const provider = await this.getEnabledImageProvider(shotprovider || this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成图片`);
 
+    // 处理参考图片：将HTTP/HTTPS URL转换为Base64
+    let processedReferenceImages = [];
+    if (referenceImages && referenceImages.length > 0) {
+      for(let i=0;i<referenceImages.length;i++){
+        try{
+          const baseurl = await imageUrlToBase64(referenceImages[i]);
+          processedReferenceImages.push(baseurl);
+        }catch(error){
+          console.error('转换参考图片为Base64失败:', error);
+          processedReferenceImages.push(referenceImages[i]);
+        }
+      }
+    }else{
+      processedReferenceImages = referenceImages;
+    }
+
     const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
     let new_prompt = prompt;
     if(imageType!='variation'){
@@ -592,16 +609,16 @@ export class ModelService {
     // 调用各个模型服务生成图片
     switch (provider) {
       case 'doubao':
-        imageUrlOrBase64 = await generateImageDoubao(new_prompt, referenceImages, imageType, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageDoubao(new_prompt, processedReferenceImages, imageType, localStyle, imageSize,imageCount);
         break;
       case 'gemini':
-        imageUrlOrBase64 = await generateImageGemini(new_prompt, referenceImages,imageType, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageGemini(new_prompt, processedReferenceImages,imageType, localStyle, imageSize,imageCount);
         break;
       case 'yunwu':
-        imageUrlOrBase64 = await generateImageYunwu(new_prompt, referenceImages, imageType, localStyle, imageSize,imageCount);
+        imageUrlOrBase64 = await generateImageYunwu(new_prompt, processedReferenceImages, imageType, localStyle, imageSize,imageCount);
         break;
       case 'openai':
-        imageUrlOrBase64 = await generateImageOpenai(new_prompt, referenceImages, imageType, localStyle, imageSize, imageCount);
+        imageUrlOrBase64 = await generateImageOpenai(new_prompt, processedReferenceImages, imageType, localStyle, imageSize, imageCount);
         break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的文生图`);
@@ -652,27 +669,49 @@ export class ModelService {
     const provider = await this.getEnabledVideoProvider(shotprovider || this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成视频`);
 
+    // 处理起始图片：如果是HTTP/HTTPS URL则转换为Base64
+    let processedStartImageBase64 = startImageBase64;
+    try {
+      processedStartImageBase64 = await imageUrlToBase64(startImageBase64);
+      console.log('已将起始图片转换为Base64格式');
+    } catch (error) {
+      console.error('转换起始图片为Base64失败:', error);
+      // 转换失败时继续使用原始图片
+      processedStartImageBase64 = startImageBase64;
+    }
+
+    // 处理结束图片：如果是HTTP/HTTPS URL则转换为Base64
+    let processedEndImageBase64 = endImageBase64;
+    try {
+      processedEndImageBase64 = await imageUrlToBase64(endImageBase64);
+      console.log('已将结束图片转换为Base64格式');
+    } catch (error) {
+      console.error('转换结束图片为Base64失败:', error);
+      // 转换失败时继续使用原始图片
+      processedEndImageBase64 = endImageBase64;
+    }
+
     let videoUrl: string;
 
     // 调用各个模型服务生成视频
     switch (provider) {
       case 'doubao':
-        videoUrl = await generateVideoDoubao(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        videoUrl = await generateVideoDoubao(prompt, processedStartImageBase64, processedEndImageBase64, duration,full_frame);
         break;
       case 'gemini':
-        videoUrl = await generateVideoGemini(prompt, startImageBase64, endImageBase64,full_frame);
+        videoUrl = await generateVideoGemini(prompt, processedStartImageBase64, processedEndImageBase64,full_frame);
         break;
       case 'yunwu':
-        videoUrl = await generateVideoYunwu(prompt, startImageBase64, endImageBase64, duration,full_frame);
+        videoUrl = await generateVideoYunwu(prompt, processedStartImageBase64, processedEndImageBase64, duration,full_frame);
         break;
       case 'minimax':
-        videoUrl = await generateVideoMinimax(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoMinimax(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);
         break;
       case 'kling':
-        videoUrl = await generateVideoKling(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoKling(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);
         break;
       case 'openai':
-        videoUrl = await generateVideoOpenai(prompt, startImageBase64, endImageBase64, duration, full_frame);
+        videoUrl = await generateVideoOpenai(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);
         break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的图生视频`);

@@ -355,7 +355,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-6">
             {project.scriptData.characters.map((char) => (
               <div key={char.id} className="bg-[#0c0c2d] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
                 <div className="aspect-[3/4] bg-slate-900 relative">
@@ -435,8 +435,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                 </div>
                 <div className="p-3 border-t border-slate-800 bg-[#0e1229]">
                   <div className="flex items-center justify-between mb-1">
+                    <div  className="flex items-center gap-2">
                   <h3 className="font-bold text-slate-200 truncate text-sm">{char.name}</h3>
-                     <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.gender}</span>
+                  <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.gender}</span>
+                  <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.age}</span>
+                  </div>
                      {char.variations && char.variations.length > 0 && (
                          <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
                              <Shirt className="w-2.5 h-2.5" /> +{char.variations.length}
@@ -474,7 +477,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {project.scriptData.scenes.map((scene) => (
               <div key={scene.id} className="bg-[#0c0c2d] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
                 <div className="aspect-[16/9] bg-slate-900 relative overflow-hidden">

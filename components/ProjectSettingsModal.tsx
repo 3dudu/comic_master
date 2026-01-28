@@ -1,6 +1,7 @@
 import { ChevronRight, Film, Image as ImageIcon, Settings, Sparkles, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { ModelService } from '../services/modelService';
+import { getAllModelConfigs } from '../services/storageService';
 
 const DURATION_OPTIONS = [
   { label: '30秒 (广告)', value: '30s' },
@@ -83,7 +84,6 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
 
   const loadModelConfigs = async () => {
     try {
-      const { getAllModelConfigs } = await import('../services/storageService');
       const configs = await getAllModelConfigs();
       setModelConfigs(configs);
     } catch (error) {

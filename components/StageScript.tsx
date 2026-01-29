@@ -573,6 +573,15 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
               <BookOpen className="w-5 h-5 text-indigo-500" />
               项目配置
             </h2>
+{isMobile && (
+            <button
+               onClick={() => setActiveTab('script')}
+               className="text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-lg transition-all"
+             >
+               <ArrowLeft className="w-3 h-3" />
+               分镜
+            </button>
+)}
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">

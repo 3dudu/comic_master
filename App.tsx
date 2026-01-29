@@ -224,7 +224,7 @@ function App() {
   // Workspace View
   return (
     <DialogProvider>
-      <div className="flex h-screen bg-[#0e1229] min-h-screen font-sans text-gray-100 selection:bg-indigo-500/30" style={{ paddingTop: 'env(safe-area-inset-top)'}}>
+      <div className={`${isMobile?'':'flex'} h-screen overflow-hidden bg-[#0e1229] min-h-screen font-sans text-gray-100 selection:bg-indigo-500/30`} style={{paddingTop: 'env(safe-area-inset-top)'}}>
         {isMobile ? (
           <SidebarMobile
             currentStage={project.stage}
@@ -248,8 +248,7 @@ function App() {
           />
         )}
 
-      <main className={`transition-all min-h-screen duration-300 ease-in-out ${isMobile ? 'pt-12 ml-0 pb-16' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}
-      style={{ paddingBottom: 'calc(64px + env(safe-area-inset-top))'}}>
+      <main className={`transition-allduration-300 ease-in-out ${isMobile ? 'ml-0 pb-28' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}>
         {renderStage()}
         {showSettings && (
           <>

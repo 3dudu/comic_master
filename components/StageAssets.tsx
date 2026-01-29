@@ -239,14 +239,13 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
         return (
           <div className="absolute inset-0 z-40 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in duration-200">
-            <div className="bg-[#0c0c2d] border border-slate-800 w-full max-w-2xl rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+            <div className="bg-[#0c0c2d] border border-slate-800 w-full max-h-[80vh] max-w-2xl rounded-2xl flex flex-col shadow-2xl overflow-hidden">
               {/* Modal Header */}
               <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#0e1230]">
                 <div className="flex items-center gap-4">
                   <MapPin className="w-10 h-10 rounded-full bg-slate-800 p-2.5 text-emerald-500" />
                   <div>
                     <h3 className="text-lg font-bold text-white">{selectedScene.location}</h3>
-                    <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">场景编辑（Scene Edit）</p>
                   </div>
                 </div>
                 <button onClick={() => setSelectedSceneId(null)} className="p-2 hover:bg-slate-800 rounded-full transition-colors">

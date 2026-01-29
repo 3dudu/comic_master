@@ -1262,7 +1262,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                     title="编辑场景"
                                  >
                                     <Edit className="w-3 h-3" />
-                                    <span>编辑场景</span>
+                                    <span>修改</span>
                                  </button>
                                  <button
                                     onClick={() => deleteScene(scene.id)}
@@ -1270,7 +1270,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                     title="删除场景"
                                  >
                                     <Trash className="w-3 h-3" />
-                                    <span>删除场景</span>
+                                    <span>删除</span>
                                  </button>
                                  <button
                                     onClick={() => startAddShot(scene.id)}
@@ -1278,7 +1278,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                     title="添加分镜"
                                  >
                                     <Plus className="w-3 h-3" />
-                                    <span>添加分镜</span>
+                                    <span>新增</span>
                                  </button>
                                  <button
                                     onClick={() => handleRegenerateSceneShots(scene.id, index)}
@@ -1287,7 +1287,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                     title="重新生成分镜"
                                  >
                                     <Wand2 className="w-3 h-3" />
-                                    <span>{regeneratingSceneId === scene.id ? '生成中...' : '重新生成分镜'}</span>
+                                    <span>{regeneratingSceneId === scene.id ? '生成中...' : '重新分镜'}</span>
                                  </button>
                               </div>
                            </div>
@@ -1311,17 +1311,17 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                          </div>
                                        )}
                                      </div>
-                                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                     <div className="flex gap-1 group-hover:opacity-100 transition-opacity">
                                        <button
                                          onClick={() => startEditShot(shot)}
-                                         className="p-1.5 hover:bg-slate-800 text-slate-600 hover:text-white rounded transition-colors"
+                                         className="p-1.5 hover:bg-slate-800 text-slate-600 group-hover:text-white rounded transition-colors"
                                          title="编辑"
                                        >
                                          <Edit className="w-3.5 h-3.5" />
                                        </button>
                                        <button
                                          onClick={() => deleteShot(shot.id)}
-                                         className="p-1.5 hover:bg-red-900/20 text-slate-600 hover:text-red-400 rounded transition-colors"
+                                         className="p-1.5 hover:bg-red-900/20 text-slate-600 group-hover:text-red-400 rounded transition-colors"
                                          title="删除"
                                        >
                                          <Trash className="w-3.5 h-3.5" />

@@ -121,7 +121,7 @@ const WardrobeModal: React.FC<Props> = ({
 
   return (
     <div className="absolute inset-0 z-40 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in duration-200">
-        <div className="bg-[#0c0c2d] border border-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+        <div className="bg-[#0c0c2d] border border-slate-800 w-full max-w-4xl max-h-[80vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Header */}
             <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#0e1230]">
                 <div className="flex items-center gap-4">
@@ -130,7 +130,7 @@ const WardrobeModal: React.FC<Props> = ({
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-white">{character.name}</h3>
-                        <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">服装造型（Wardrobe & Variations）</p>
+                        <p className="text-xs text-slate-500 font-mono uppercase tracking-wider">服装造型</p>
                     </div>
                 </div>
                 <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-full transition-colors">

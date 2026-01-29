@@ -248,7 +248,8 @@ function App() {
           />
         )}
 
-      <main className={`transition-all min-h-screen duration-300 ease-in-out ${isMobile ? 'pt-12 ml-0 pb-16' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}>
+      <main className={`transition-all min-h-screen duration-300 ease-in-out ${isMobile ? 'pt-12 ml-0 pb-16' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}
+      style={{ paddingBottom: 'calc(64px + env(safe-area-inset-top))'}}>
         {renderStage()}
         {showSettings && (
           <>

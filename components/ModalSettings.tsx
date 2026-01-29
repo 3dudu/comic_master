@@ -9,6 +9,7 @@ import { useDialog } from './dialog';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  isMobile?: boolean;
 }
 
 const PROVIDER_OPTIONS = [
@@ -78,7 +79,7 @@ const getModelTypeColorStyles = (modelType: AIModelConfig['modelType']) => {
   return colorMap[modelType] || colorMap.llm;
 };
 
-const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
+const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => {
   const dialog = useDialog();
   const [configs, setConfigs] = useState<AIModelConfig[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -526,21 +527,23 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
 
                   return (
                     <div key={config.id} className={`p-4 transition-colors ${config.enabled ? 'bg-[#141414]' : 'bg-transparent'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${config.enabled ? typeColors.bg + ' ring-1 ' + typeColors.border : 'bg-slate-900'}`}>
+                      {/* 移动端：纵向布局；桌面端：横向布局 */}
+                      <div className={`${isMobile ? 'flex-col' : 'flex-row'} flex items-start justify-between gap-4`}>
+                        {/* 左侧：图标和配置信息 */}
+                        <div className={`flex items-start gap-4 ${isMobile ? 'w-full flex-row' : 'flex-row'}`}>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${config.enabled ? typeColors.bg + ' ring-1 ' + typeColors.border : 'bg-slate-900'}`}>
                             <ModelIcon className={`w-5 h-5 ${config.enabled ? typeColors.text : 'text-slate-600'}`} />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
+                          <div className={`${isMobile ? 'flex-1' : ''}`}>
+                            <div className={`flex items-center gap-2 mb-1 ${isMobile ? 'flex-wrap' : ''}`}>
                               <span className="text-sm font-bold text-white">{providerOption?.label || config.provider}</span>
                               <span className={`text-[12px] ${getModelTypeColorStyles(config.modelType).text} ${getModelTypeColorStyles(config.modelType).bg} border ${getModelTypeColorStyles(config.modelType).border} px-1.5 py-0.5 rounded font-mono`}>
                                 {modelTypeOption?.label || config.modelType}
                               </span>
                               {config.description && (
-                              <span className="text-[12px] text-slate-400 bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded font-mono">
+                                <span className="text-[12px] text-slate-400 bg-slate-900 border border-slate-700 px-1.5 py-0.5 rounded font-mono">
                                   {config.description}
-                              </span>
+                                </span>
                               )}
                               {config.enabled && (
                                 <span className="text-[12px] text-yellow-500 bg-yellow-900/20 border border-yellow-500/30 px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex items-center gap-1">
@@ -549,7 +552,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                                 </span>
                               )}
                             </div>
-                            <div className="text-[12px] text-slate-600 font-mono flex items-center gap-2">
+                            <div className={`text-[12px] text-slate-600 font-mono flex items-center gap-2 ${isMobile ? 'flex-wrap' : ''}`}>
                               {config.apiKey && (
                                 <span className="text-green-500">● 已配置</span>
                               )}
@@ -558,13 +561,15 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                                   {config.model}
                                 </span>
                               )}
-                              <span className="truncate max-w-[300px]">
+                              {!isMobile && <span className="truncate max-w-[300px]">
                                 {config.apiUrl}
-                              </span>
+                              </span>}
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
+                        
+                        {/* 右侧：操作按钮 */}
+                        <div className={`flex items-center gap-2 ${isMobile ? 'w-full justify-between pt-2 border-t border-slate-800/50' : ''}`}>
                           <button
                             onClick={async () => {
                               if (!config.enabled && !config.apiKey) {
@@ -573,7 +578,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose }) => {
                               }
                               await toggleConfigEnabled(config.id);
                               await loadConfigs();
-                              triggerModelConfigChanged(); // 触发配置变更事件
+                              triggerModelConfigChanged();
                             }}
                             disabled={!config.enabled && !config.apiKey}
                             className={`p-2 transition-colors rounded-lg ${config.enabled ? 'text-indigo-400 hover:text-indigo-300 bg-indigo-900/20 hover:bg-indigo-900/30' : !config.apiKey ? 'text-slate-700 bg-transparent cursor-not-allowed' : 'text-slate-600 hover:text-slate-300 hover:bg-slate-800'}`}

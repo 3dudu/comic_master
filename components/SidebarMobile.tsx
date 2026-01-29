@@ -95,6 +95,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
       <ModalSettings
         isOpen={showModelSettings}
         onClose={() => setShowModelSettings(false)}
+        isMobile={true}
       />
 
       {/* Project Settings Modal */}

@@ -8,6 +8,7 @@
     "build": "vite build",
     "build:pages": "vite build -c vite.config.pages.ts", 
     "build:gitlab": "vite build -c vite.gitlab.ts", 
+    "build:fc": "vite build -c vite.config.cloudflare.js",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -323,7 +323,6 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Users className="w-5 h-5 text-indigo-500" />
                   角色与场景
-                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Scenes & Casting</span>
               </h2>
           </div>
           <div className="flex items-center gap-3">

@@ -11,6 +11,7 @@ import { useDialog } from './dialog';
 interface Props {
   project: ProjectState;
   updateProject: (updates: Partial<ProjectState>) => void;
+  isMobile: boolean;
 }
 
 type TabMode = 'story' | 'script';
@@ -75,7 +76,7 @@ const GENRE_OPTIONS = [
 /*
   */
 
-const StageScript: React.FC<Props> = ({ project, updateProject }) => {
+const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }) => {
   const dialog = useDialog();
   const [activeTab, setActiveTab] = useState<TabMode>(project.scriptData ? 'script' : 'story');
 
@@ -562,10 +563,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
   };
 
   const renderStoryInput = () => (
-    <div className="flex h-full bg-[#0e1229] text-slate-300">
+    <div className={`flex h-full bg-[#0e1229] text-slate-300 ${isMobile ? 'flex-col overflow-y-auto' : 'flex-row'}`}>
       
       {/* Middle Column: Config Panel - Adjusted Width to w-96 */}
-      <div className="w-96 border-r border-slate-800 flex flex-col bg-[#0e1230]">
+      <div className={`${isMobile ? 'w-full' : 'w-96'} border-r border-slate-800 flex flex-col bg-[#0e1230]`}>
         {/* Header - Fixed Height 56px */}
         <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between shrink-0">
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-3">
@@ -891,7 +892,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
         </div>
 
         <div className="flex-1 overflow-y-auto">
-           <div className="max-w-3xl mx-auto h-full flex flex-col py-2">
+           <div className={`max-w-3xl mx-auto ${isMobile ? 'px-4 h-[600px]' : 'h-full'} flex flex-col py-2`}>
               <textarea
                   value={localScript}
                   onChange={(e) => setLocalScript(e.target.value)}
@@ -935,7 +936,6 @@ const StageScript: React.FC<Props> = ({ project, updateProject }) => {
               <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-3">
                  <List className="w-5 h-5 text-indigo-500" />
                  拍摄清单
-                 <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-1 py-1 rounded">Script Manifest</span>
               </h2>
               
               <div className="flex items-center gap-4">

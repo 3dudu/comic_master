@@ -21,7 +21,7 @@ interface SidebarProps {
   updateProject?: (updates: Partial<ProjectState>) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpenSettings, onToggleSidebar, collapsed = false, projectName,project,updateProject }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpenSettings, onToggleSidebar, collapsed = false, projectName, project, updateProject }) => {
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [showProjectSettings, setShowProjectSettings] = useState(false);
 
@@ -31,7 +31,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
     { id: 'director', label: '导演工作台', icon: Clapperboard, sub: '拍摄制作' },
     { id: 'export', label: '成片与导出', icon: Film, sub: '剪辑合成' },
   ];
-
 
   return (
     <aside className={`${collapsed ? 'w-20' : 'xl:w-72 md:w-20'} bg-[#0e1229] border-r border-slate-800 h-screen fixed left-0 top-0 flex flex-col z-50 select-none transition-all duration-300 ease-in-out`}>
@@ -195,7 +194,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
         isOpen={showModelSettings}
         onClose={() => setShowModelSettings(false)}
       />
-      
+
       {/* Project Settings Modal */}
       <ProjectSettingsModal
         isOpen={showProjectSettings}

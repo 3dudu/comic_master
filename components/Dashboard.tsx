@@ -1,15 +1,16 @@
 import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Settings, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import ApiKeyModal from './ApiKeyModal';
 import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 import { ProjectState } from '../types';
+import ApiKeyModal from './ApiKeyModal';
 import { useDialog } from './dialog';
 
 interface Props {
   onOpenProject: (project: ProjectState) => void;
+  isMobile: boolean;
 }
 
-const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
+const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
   const dialog = useDialog();
   const [projects, setProjects] = useState<ProjectState[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -264,7 +265,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
   return (
     <div className="min-h-screen bg-[#0e1229] text-slate-300 p-8 md:p-12 font-sans selection:bg-white/20">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-16 border-b border-slate-900 pb-8 flex items-end justify-between">
+        <header className={`border-b border-slate-900 pb-8 ${isMobile ? '' : 'mb-16 flex items-end'} justify-between`}>
           <div>
             <h1 className="text-3xl font-light text-white tracking-tight mb-2 flex items-center gap-3">
               项目库
@@ -272,14 +273,14 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
               <span className="text-slate-600 text-sm font-mono tracking-widest uppercase">Projects Database</span>
             </h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-end justify-end">
             <button
               onClick={() => setApiKeyModalOpen(true)}
               className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
               title="系统设置"
             >
               <Settings className="w-4 h-4" />
-              <span className="font-bold text-xs tracking-widest uppercase">设置</span>
+              {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">设置</span>}
             </button>
             <button
               onClick={handleImport}
@@ -287,14 +288,14 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
               className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload className="w-4 h-4" />
-              <span className="font-bold text-xs tracking-widest uppercase">{importing ? '导入中...' : '导入项目'}</span>
+              {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">{importing ? '导入中...' : '导入项目'}</span>}
             </button>
             <button
               onClick={handleCreate}
               className="group flex items-center gap-3 px-6 py-3 bg-white text-black hover:bg-slate-200 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span className="font-bold text-xs tracking-widest uppercase">新建项目</span>
+              {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">新建项目</span>}
             </button>
           </div>
         </header>
@@ -307,6 +308,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             
             {/* Create New Card */}
+            {!isMobile && 
             <div 
               onClick={handleCreate}
               className="group cursor-pointer border border-slate-800 hover:border-slate-500 bg-[#0e0e28] flex flex-col items-center justify-center min-h-[280px] transition-all"
@@ -316,7 +318,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
               </div>
               <span className="text-slate-600 font-mono text-[12px] uppercase tracking-widest group-hover:text-slate-300">新建项目</span>
             </div>
-
+          }
             {/* Project List */}
             {projects.map((proj) => (
               <div 
@@ -360,7 +362,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                      {editingProjectId !== proj.id ? (
                      <button
                         onClick={(e) => startEditing(e, proj)}
-                        className="absolute top-4 right-20 opacity-0 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
+                        className="absolute top-4 right-20 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
                         title="编辑项目名"
                      >
                         <Edit className="w-4 h-4" />
@@ -371,7 +373,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => handleDuplicate(e, proj)}
-                        className="absolute top-4 right-28 opacity-0 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
+                        className="absolute top-4 right-28 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
                         title="复制项目"
                      >
                         <Copy className="w-4 h-4" />
@@ -382,7 +384,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => handleExport(e, proj)}
-                        className="absolute top-4 right-12 opacity-0 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
+                        className="absolute top-4 right-12 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-indigo-400 transition-all rounded-sm z-10"
                         title="导出项目"
                      >
                         <Download className="w-4 h-4" />
@@ -393,7 +395,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject }) => {
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => requestDelete(e, proj.id)}
-                        className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-red-400 transition-all rounded-sm z-10"
+                        className="absolute top-4 right-4 group-hover:opacity-100 p-2 hover:bg-slate-800 text-slate-600 hover:text-red-400 transition-all rounded-sm z-10"
                         title="删除项目"
                      >
                         <Trash2 className="w-4 h-4" />

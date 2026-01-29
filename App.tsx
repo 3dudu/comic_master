@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import ApiKeyModal from './components/ApiKeyModal'; // 新增
 import Dashboard from './components/Dashboard';
 import Sidebar from './components/Sidebar';
+import SidebarMobile from './components/SidebarMobile';
 import StageAssets from './components/StageAssets';
 import StageDirector from './components/StageDirector';
 import StageExport from './components/StageExport';
@@ -26,6 +27,7 @@ function App() {
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'unsaved'>('saved');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMd, setIsMd] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Ref to hold debounce timer
   const saveTimeoutRef = useRef<any>(null);
@@ -69,6 +71,7 @@ function App() {
 
     // 更新状态的函数
     const updateBreakpoints = () => {
+      setIsMobile(mdQuery.matches);
       setIsMd(!lgQuery.matches);
     };
 
@@ -163,11 +166,11 @@ function App() {
     if (!project) return null;
     switch (project.stage) {
       case 'script':
-        return <StageScript project={project} updateProject={updateProject} />;
+        return <StageScript project={project} updateProject={updateProject} isMobile={isMobile} />;
       case 'assets':
         return <StageAssets project={project} updateProject={updateProject} />;
       case 'director':
-        return <StageDirector project={project} updateProject={updateProject} />;
+        return <StageDirector project={project} updateProject={updateProject} isMobile={isMobile} />;
       case 'export':
         return <StageExport project={project} updateProject={updateProject} />;
       default:
@@ -210,7 +213,7 @@ function App() {
           <button onClick={handleClearKey} className="fixed top-4 right-4 z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
             Sign Out
           </button>
-          <Dashboard onOpenProject={handleOpenProject} />
+          <Dashboard onOpenProject={handleOpenProject} isMobile={isMobile} />
         </>
       </DialogProvider>
     );
@@ -220,19 +223,30 @@ function App() {
   return (
     <DialogProvider>
       <div className="flex h-screen bg-[#0e1229] font-sans text-gray-100 selection:bg-indigo-500/30">
-        <Sidebar
-          currentStage={project.stage}
-          setStage={setStage}
-          onExit={handleExitProject}
-          onOpenSettings={() => setShowSettings(true)}
-          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-          collapsed={isMd||sidebarCollapsed}
-          projectName={project.title}
-          project={project}
-          updateProject={updateProject}
-        />
+        {isMobile ? (
+          <SidebarMobile
+            currentStage={project.stage}
+            setStage={setStage}
+            onExit={handleExitProject}
+            projectName={project.title}
+            project={project}
+            updateProject={updateProject}
+          />
+        ) : (
+          <Sidebar
+            currentStage={project.stage}
+            setStage={setStage}
+            onExit={handleExitProject}
+            onOpenSettings={() => setShowSettings(true)}
+            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+            collapsed={isMd||sidebarCollapsed}
+            projectName={project.title}
+            project={project}
+            updateProject={updateProject}
+          />
+        )}
 
-      <main className={`transition-all duration-300 ease-in-out ${sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20'} flex-1 h-screen overflow-hidden relative`}>
+      <main className={`transition-all duration-300 ease-in-out ${isMobile ? 'pt-32 ml-0' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}>
         {renderStage()}
         {showSettings && (
   <ApiKeyModal

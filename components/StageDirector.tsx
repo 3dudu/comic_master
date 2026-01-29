@@ -13,9 +13,10 @@ import { useDialog } from './dialog';
 interface Props {
   project: ProjectState;
   updateProject: (updates: Partial<ProjectState>) => void;
+  isMobile: boolean;
 }
 
-const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
+const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false  }) => {
   const dialog = useDialog();
   const [wardProcessingState, setWardProcessingState] = useState<{id: string, type: 'character'|'scene'}|null>(null);
   const [activeShotId, setActiveShotId] = useState<string | null>(null);
@@ -749,15 +750,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <LayoutGrid className="w-5 h-5 text-indigo-500" />
-                  导演工作台
-                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Director Workbench</span>
+                  导演台
               </h2>
           </div>
 
           <div className="flex items-center gap-3">
+            {!isMobile &&
               <span className="text-xs text-slate-500 mr-4 font-mono">
                   {project.shots.filter(s => s.interval?.videoUrl).length} / {project.shots.length} 完成
               </span>
+          }
               <button
                   onClick={handleBatchGenerateImages}
                   disabled={!!batchProgress || !!batchVideoProgress}
@@ -785,8 +787,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
       <div className="flex-1 overflow-hidden flex">
 
           {/* Grid View - Responsive Logic */}
-          <div className={`flex-1 overflow-y-auto p-6 transition-all duration-500 ease-in-out ${activeShotId ? 'border-r border-slate-800' : ''}`}>
-              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
+          <div className={`flex-1 overflow-y-auto transition-all duration-500 ease-in-out ${activeShotId ? (isMobile?'hidden':'p-6 border-r border-slate-800') : 'p-6'}`}>
+              <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4': 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
                   {project.shots.map((shot, idx) => {
                       const sKf = shot.keyframes?.find(k => k.type === 'start');
                       const fKf = shot.keyframes?.find(k => k.type === 'full');
@@ -904,7 +906,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject }) => {
 
           {/* Right Workbench - Optimized Interaction */}
           {activeShotId && activeShot && (
-              <div className="2xl:w-[640px] md:w-[460px] xl:w-[460px] bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20">
+              <div className={`${isMobile ? 'w-full' : '2xl:w-[640px] md:w-[460px] xl:w-[460px]'} bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20`}>
                   
                   {/* Workbench Header */}
                   <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between bg-[#0c0c2d] shrink-0">

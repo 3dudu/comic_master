@@ -128,7 +128,6 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Film className="w-5 h-5 text-indigo-500" />
                   成片与导出
-                  <span className="text-xs text-slate-600 font-mono font-normal uppercase tracking-wider bg-black/30 px-2 py-1 rounded">Rendering & Export</span>
               </h2>
           </div>
           <div className="flex items-center gap-2">

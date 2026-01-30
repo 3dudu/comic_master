@@ -228,7 +228,7 @@ function App() {
   // Workspace View
   return (
     <DialogProvider>
-      <div className={`${isMobile?'':'flex'} h-screen overflow-hidden bg-[#0e1229] min-h-screen font-sans text-gray-100 selection:bg-indigo-500/30`} style={{paddingTop: 'env(safe-area-inset-top)'}}>
+      <div className={`${isMobile?'':'flex'} h-screen overflow-hidden bg-[#0c1022] min-h-screen font-sans text-gray-100 selection:bg-indigo-500/30`} style={{paddingTop: 'env(safe-area-inset-top)'}}>
         {isMobile ? (
           <SidebarMobile
             currentStage={project.stage}

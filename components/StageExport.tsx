@@ -1,4 +1,4 @@
-import { AlertCircle, BarChart3, Check, CheckCircle, Clock, Download, Film, Layers, Loader2, Share2, X } from 'lucide-react';
+import { AlertCircle, BarChart3, Check, CheckCircle, Download, Film, Loader2, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { initializeCozeConfig, submitWorkflow } from '../services/cozeService';
 import { ProjectState } from '../types';
@@ -13,6 +13,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   const [isMerging, setIsMerging] = useState(false);
   const [mergeError, setMergeError] = useState<string | null>(null);
   const [selectedShotIds, setSelectedShotIds] = useState<Set<string>>(new Set());
+  const [focusedShot, setFocusedShot] = useState<{ shot: typeof project.shots[0], index: number } | null>(null);
 
   const completedShots = project.shots.filter(s => s.interval?.videoUrl);
   const totalShots = project.shots.length;
@@ -146,19 +147,19 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              <div className="absolute top-0 right-0 p-48 bg-indigo-900/5 blur-[120px] rounded-full pointer-events-none"></div>
              <div className="absolute bottom-0 left-0 p-32 bg-emerald-900/5 blur-[100px] rounded-full pointer-events-none"></div>
 
-             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 relative z-10 gap-6">
-               <div>
+             <div className="flex flex-row md:flex-row justify-between items-start md:items-center mb-4 relative z-10 gap-6">
+               <div className='flex-1'>
                  <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-2xl md:text-3xl font-bold text-white tracking-tight">{project?.title || '未命名项目'}</h3>
                  </div>
-                 <div className="flex items-center gap-6 mt-3">
+                 <div className="flex items-center gap-4 mt-3">
                     <div className="flex flex-col">
-                        <span className="text-[11px] text-slate-600 uppercase tracking-widest font-bold mb-0.5">场景</span>
+                        <span className="text-[11px] text-slate-600 uppercase tracking-widest font-bold mb-0.5">镜头</span>
                         <span className="text-sm font-mono text-slate-300">{project.shots.length}</span>
                     </div>
                     <div className="w-px h-6 bg-slate-800"></div>
                     <div className="flex flex-col">
-                        <span className="text-[11px] text-slate-600 uppercase tracking-widest font-bold mb-0.5">总时长</span>
+                        <span className="text-[11px] text-slate-600 uppercase tracking-widest font-bold mb-0.5">累计时长</span>
                         <span className="text-sm font-mono text-slate-300">~{estimatedDuration}s</span>
                     </div>
                     <div className="w-px h-6 bg-slate-800"></div>
@@ -168,21 +169,21 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                     </div>
                  </div>
                </div>
-               
-               <div className="text-right bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm min-w-[160px]">
-                 <div className="flex items-baseline justify-end gap-1 mb-1">
-                     <span className="text-3xl font-mono font-bold text-indigo-400">{progress}</span>
-                     <span className="text-sm text-slate-500">%</span>
-                 </div>
-                 <div className="text-[12px] text-slate-500 uppercase tracking-widest flex items-center justify-end gap-2">
-                    {progress === 100 ? <CheckCircle className="w-3 h-3 text-green-500" /> : <BarChart3 className="w-3 h-3" />}
-                    进度
-                 </div>
-               </div>
+
+               <div className="text-right bg-black/20 p-4 rounded-lg border border-white/5 backdrop-blur-sm min-w-[60px]">
+                  <div className="flex items-baseline justify-end gap-1 mb-1">
+                      <span className="text-3xl font-mono font-bold text-indigo-400">{progress}</span>
+                      <span className="text-sm text-slate-500">%</span>
+                  </div>
+                  <div className="text-[12px] text-slate-500 uppercase tracking-widest flex items-center justify-end gap-2">
+                      {progress === 100 ? <CheckCircle className="w-3 h-3 text-green-500" /> : <BarChart3 className="w-3 h-3" />}
+                      进度
+                  </div>
+                </div>
              </div>
 
              {/* Timeline Visualizer Strip */}
-             <div className="mb-10">
+             <div className="mb-4">
                 <div className="flex justify-between items-center text-[12px] text-slate-600 font-mono uppercase tracking-widest mb-2 px-1">
                     <span>分镜序列图</span>
                     <span>~{selectedDuration}s</span>
@@ -229,7 +230,9 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                           <div
                             key={shot.id}
                             onClick={() => isDone && toggleShotSelection(shot.id)}
-                            className={`h-14 min-w-[28px] flex-1 rounded-[2px] transition-all relative group flex flex-col justify-end overflow-hidden cursor-pointer ${
+                            onMouseEnter={() => setFocusedShot({ shot, index: idx })}
+                            onMouseLeave={() => setFocusedShot(null)}
+                            className={`h-14 min-w-[18px] flex-1 rounded-[2px] transition-all relative group flex flex-col justify-end overflow-hidden cursor-pointer ${
                               isSelected
                                 ? 'bg-indigo-600/60 border-2 border-indigo-400'
                                 : isDone
@@ -259,7 +262,75 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                       })
                    )}
                 </div>
+
+                {/* Shot Summary Display */}
+                <div className="mt-3 bg-[#090923] rounded-lg border border-slate-800 p-4 min-h-[80px] flex items-center justify-center">
+                  {(() => {
+                    const displayShot = focusedShot || (() => {
+                      const firstSelectedShotId = Array.from(selectedShotIds)[0];
+                      if (!firstSelectedShotId) return null;
+                      const shot = project.shots.find(s => s.id === firstSelectedShotId);
+                      if (!shot) return null;
+                      const idx = project.shots.indexOf(shot);
+                      return { shot, index: idx };
+                    })();
+
+                    if (!displayShot) {
+                      return (
+                        <div className="flex items-center gap-2 text-slate-700 text-xs font-mono uppercase tracking-widest">
+                          <Film className="w-4 h-4" />
+                          鼠标悬停或选中镜头查看详情
+                        </div>
+                      );
+                    }
+
+                    const isSelected = selectedShotIds.has(displayShot.shot.id);
+                    return (
+                      <div className="w-full text-center">
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <Film className="w-4 h-4 text-indigo-400" />
+                          <span className="text-xs font-bold text-indigo-400 font-mono uppercase tracking-widest">
+                            镜头 {displayShot.index + 1}
+                          </span>
+                          {isSelected && (
+                            <Check className="w-3 h-3 text-green-400" />
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-300 leading-relaxed line-clamp-2">
+                          {displayShot.shot.actionSummary}
+                        </p>
+                      </div>
+                    );
+                  })()}
+                </div>
              </div>
+
+             {/* Video Preview */}
+             {project.mergedVideoUrl && (
+               <div className="mb-4">
+                 <div className="flex justify-between items-center mb-2 px-1">
+                   <span className="text-[12px] text-slate-600 font-bold uppercase tracking-widest">成片预览</span>
+                   <span className="text-[12px] text-slate-500 font-mono">准备导出</span>
+                 </div>
+                 <div className="w-full bg-black rounded-lg overflow-hidden border border-slate-800">
+                   <video
+                     controls
+                     className="w-full"
+                     src={project.mergedVideoUrl}
+                   >
+                     您的浏览器不支持视频播放。
+                   </video>
+                 </div>
+               </div>
+             )}
+
+             {/* Merge Error Message */}
+             {mergeError && (
+               <div className="bg-red-900/10 border border-red-900/50 text-red-500 text-xs rounded p-3 flex items-center gap-2">
+                 <BarChart3 className="w-4 h-4" />
+                 {mergeError}
+               </div>
+             )}
 
              {/* Action Buttons */}
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -299,33 +370,6 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                  下载视频 (.mp4)
                </button>
              </div>
-
-             {/* Video Preview */}
-             {project.mergedVideoUrl && (
-               <div className="mt-8">
-                 <div className="flex justify-between items-center mb-2 px-1">
-                   <span className="text-[12px] text-slate-600 font-bold uppercase tracking-widest">Video Preview</span>
-                   <span className="text-[12px] text-slate-500 font-mono">Ready to download</span>
-                 </div>
-                 <div className="w-full bg-black rounded-lg overflow-hidden border border-slate-800">
-                   <video
-                     controls
-                     className="w-full"
-                     src={project.mergedVideoUrl}
-                   >
-                     您的浏览器不支持视频播放。
-                   </video>
-                 </div>
-               </div>
-             )}
-
-             {/* Merge Error Message */}
-             {mergeError && (
-               <div className="bg-red-900/10 border border-red-900/50 text-red-500 text-xs rounded p-3 flex items-center gap-2">
-                 <BarChart3 className="w-4 h-4" />
-                 {mergeError}
-               </div>
-             )}
           </div>
         </div>
       </div>

@@ -357,7 +357,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               }`}
             >
               {allCharactersReady ? <RefreshCw className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
-              {allCharactersReady ? '重新生成所有角色' : '生成所有角色'}
+              {allCharactersReady ? '重新批量生成' : '生成所有角色'}
             </button>
           </div>
 
@@ -443,8 +443,8 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                   <div className="flex items-center justify-between mb-1">
                     <div  className="flex items-center gap-2">
                   <h3 className="font-bold text-slate-200 truncate text-sm">{char.name}</h3>
-                  <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.gender}</span>
-                  <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.age}</span>
+                  {char.gender!='未指定' && <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.gender}</span>}
+                  {char.age!='未指定' && <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.age}</span>}
                   </div>
                      {char.variations && char.variations.length > 0 && (
                          <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
@@ -479,7 +479,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               }`}
             >
               {allScenesReady ? <RefreshCw className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
-              {allScenesReady ? '重新生成所有场景' : '生成所有场景'}
+              {allScenesReady ? '重新批量生成' : '生成所有场景'}
             </button>
           </div>
 

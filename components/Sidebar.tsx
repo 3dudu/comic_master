@@ -183,7 +183,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
       {/* Collapse Toggle Button */}
       <button
         onClick={onToggleSidebar}
-        className="md:hidden lg:block absolute -right-3 top-20 bg-[#1a1a3e] border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700 transition-all rounded-full p-1.5 z-50"
+        className="md:hidden lg:hidden xl:block absolute -right-3 top-20 bg-[#1a1a3e] border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-700 transition-all rounded-full p-1.5 z-50"
         title={collapsed ? '展开侧边栏' : '折叠侧边栏'}
       >
         {collapsed ? <PanelRight className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}

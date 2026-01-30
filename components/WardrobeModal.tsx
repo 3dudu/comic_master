@@ -121,7 +121,7 @@ const WardrobeModal: React.FC<Props> = ({
 
   return (
     <div className="absolute inset-0 z-40 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in duration-200">
-        <div className="bg-[#0c0c2d] border border-slate-800 w-full max-w-4xl max-h-[80vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+        <div className="bg-[#0f0f23] border border-slate-800 w-full max-w-4xl max-h-[80vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Header */}
             <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#0e1230]">
                 <div className="flex items-center gap-4">
@@ -167,7 +167,7 @@ const WardrobeModal: React.FC<Props> = ({
                                     onChange={(e) => setEditingVisualPrompt(e.target.value)}
                                     onBlur={handleSaveVisualPrompt}
                                     placeholder="输入角色的视觉描述..."
-                                    className="w-full bg-[#0c0c2d] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors resize-none h-24 font-mono"
+                                    className="w-full bg-[#0f0f23] border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-colors resize-none h-24 font-mono"
                                 />
                             </div>
                         </div>
@@ -230,13 +230,13 @@ const WardrobeModal: React.FC<Props> = ({
                                         placeholder="造型名称（示例：穿校服）" 
                                         value={newVarName}
                                         onChange={e => setNewVarName(e.target.value)}
-                                        className="w-full bg-[#0c0c2d] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600"
+                                        className="w-full bg-[#0f0f23] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600"
                                     />
                                     <textarea 
                                         placeholder="服饰 / 状态的视觉描述……"
                                         value={newVarPrompt}
                                         onChange={e => setNewVarPrompt(e.target.value)}
-                                        className="w-full bg-[#0c0c2d] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600 resize-none h-16"
+                                        className="w-full bg-[#0f0f23] border border-slate-800 rounded px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-slate-600 resize-none h-16"
                                     />
                                     <button 
                                         onClick={handleAddVariation}

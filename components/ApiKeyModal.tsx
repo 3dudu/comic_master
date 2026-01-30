@@ -100,7 +100,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                value={inputKey}
                onChange={(e) => setInputKey(e.target.value)}
                placeholder="Enter your API Key..."
-               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+               className="w-full bg-[#0f0f23] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
              />
              <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                {providerDescription}
@@ -124,7 +124,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                value={inputCozeWorkflowId}
                onChange={(e) => setInputCozeWorkflowId(e.target.value)}
                placeholder="Enter Coze Workflow ID..."
-               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+               className="w-full bg-[#0f0f23] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
              />
              <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                配置 Coze 工作流 ID 用于智能剧本分析等功能。
@@ -140,7 +140,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                value={inputCozeApiKey}
                onChange={(e) => setInputCozeApiKey(e.target.value)}
                placeholder="Enter Coze API Key..."
-               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+               className="w-full bg-[#0f0f23] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
              />
              <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                本应用需要 Coze 的 API 访问权限。
@@ -164,7 +164,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                value={inputFileUploadServiceUrl}
                onChange={(e) => setInputFileUploadServiceUrl(e.target.value)}
                placeholder="https://apppub.good365.net:6443/apppub_api/thirdparty/upload"
-               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+               className="w-full bg-[#0f0f23] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
              />
              <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                配置后，AI 生成的图片和视频将上传到此服务。
@@ -181,7 +181,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
                value={inputFileAccessDomain}
                onChange={(e) => setInputFileAccessDomain(e.target.value)}
                placeholder="ofs.good365.net:6443"
-               className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
+               className="w-full bg-[#0f0f23] border border-slate-800 text-white px-4 py-3 text-sm rounded-lg focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-900 transition-all font-mono placeholder:text-slate-700"
              />
              <p className="mt-3 text-[12px] text-slate-600 leading-relaxed">
                上传后的文件将使用此域名访问，不包含协议头。

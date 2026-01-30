@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Download, Expand, Loader2, MapPin, RefreshCw, Shirt, Sparkles, Upload, User, Group, X } from 'lucide-react';
+import { AlertCircle, Check, Download, Expand, Group, Loader2, MapPin, RefreshCw, Shirt, Sparkles, Upload, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { ModelService } from '../services/modelService';
 import { ProjectState } from '../types';
@@ -239,9 +239,9 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
         return (
           <div className="absolute inset-0 z-40 bg-black/90 backdrop-blur-sm flex items-center justify-center p-8 animate-in fade-in duration-200">
-            <div className="bg-[#0c0c2d] border border-slate-800 w-full max-h-[80vh] max-w-2xl rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+            <div className="bg-[#0e1229] border border-slate-800 w-full max-h-[80vh] max-w-2xl rounded-2xl flex flex-col shadow-2xl overflow-hidden">
               {/* Modal Header */}
-              <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#0a0f29]">
+              <div className="h-16 px-8 border-b border-slate-800 flex items-center justify-between shrink-0 bg-[#101326]">
                 <div className="flex items-center gap-4">
                   <MapPin className="w-10 h-10 rounded-full bg-slate-800 p-2.5 text-emerald-500" />
                   <div>
@@ -306,7 +306,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       onChange={(e) => setEditingSceneVisualPrompt(e.target.value)}
                       onBlur={handleSaveSceneVisualPrompt}
                       placeholder="输入场景的视觉描述..."
-                      className="w-full bg-[#0c0c2d] border border-slate-800 rounded-lg px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 transition-colors resize-none h-32 font-mono"
+                      className="w-full bg-[#0e1229] border border-slate-800 rounded-lg px-4 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 transition-colors resize-none h-32 font-mono"
                     />
                   </div>
                 </div>
@@ -317,7 +317,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       })()}
 
       {/* Header - Consistent with Director */}
-      <div className="h-16 border-b border-slate-800 bg-[#0a0f29] px-6 flex items-center justify-between shrink-0">
+      <div className="h-16 border-b border-slate-800 bg-[#101326] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Group className="w-5 h-5 text-indigo-500" />
@@ -352,7 +352,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               disabled={!!batchProgress}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allCharactersReady
-                    ? 'bg-[#0c0c2d] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
+                    ? 'bg-[#0e1229] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
                     : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
               }`}
             >
@@ -363,11 +363,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-6">
             {project.scriptData.characters.map((char) => (
-              <div key={char.id} className="bg-[#0c0c2d] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
+              <div key={char.id} className="bg-[#0e1229] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
                 <div className="aspect-[3/4] bg-slate-900 relative overflow-hidden">
                   {char.referenceImage ? (
                     <>
-                      <img src={char.referenceImage} alt={char.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <img src={char.referenceImage} alt={char.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       {processingState?.type === 'character' && processingState?.id === char.id ? (
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center backdrop-blur-sm">
                           <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -474,7 +474,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               disabled={!!batchProgress}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allScenesReady
-                    ? 'bg-[#0c0c2d] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
+                    ? 'bg-[#0e1229] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
                     : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
               }`}
             >
@@ -485,11 +485,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {project.scriptData.scenes.map((scene) => (
-              <div key={scene.id} className="bg-[#0c0c2d] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
+              <div key={scene.id} className="bg-[#0e1229] border border-slate-800 rounded-xl overflow-hidden flex flex-col group hover:border-slate-600 transition-all hover:shadow-lg">
                 <div className="aspect-[16/9] bg-slate-900 relative overflow-hidden">
                   {scene.referenceImage ? (
                     <>
-                      <img src={scene.referenceImage} alt={scene.location} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <img src={scene.referenceImage} alt={scene.location} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       {processingState?.type === 'scene' && processingState?.id === scene.id ? (
                         <div className="absolute inset-0 bg-black/70 flex items-center justify-center backdrop-blur-sm">
                           <Loader2 className="w-8 h-8 text-white animate-spin" />

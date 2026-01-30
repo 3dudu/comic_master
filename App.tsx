@@ -62,15 +62,17 @@ function App() {
       console.error('ModelService初始化失败:', err);
     });
 
-      // 定义媒体查询
-    const mdQuery = window.matchMedia('(max-width: 768px)');
-    console.log('width:'+mdQuery.matches);
-    const lgQuery = window.matchMedia('(min-width: 1280px)');
-    console.log('width:'+lgQuery.matches);
-
-
+    // 定义媒体查询
+    let mdQuery = window.matchMedia('(max-width: 768px)');
+    let lgQuery = window.matchMedia('(min-width: 1280px)');
     // 更新状态的函数
     const updateBreakpoints = () => {
+
+      // 定义媒体查询
+      mdQuery = window.matchMedia('(max-width: 768px)');
+      lgQuery = window.matchMedia('(min-width: 1280px)');
+      console.log('md (mobile):', mdQuery.matches);
+      console.log('lg (desktop):', lgQuery.matches);
       setIsMobile(mdQuery.matches);
       setIsMd(!lgQuery.matches);
     };
@@ -78,10 +80,12 @@ function App() {
     // 初始化执行+添加监听
     updateBreakpoints();
     mdQuery.addListener(updateBreakpoints);
+    lgQuery.addListener(updateBreakpoints);
 
     // 卸载移除监听
     return () => {
       mdQuery.removeListener(updateBreakpoints);
+      lgQuery.removeListener(updateBreakpoints);
     };
   }, []);
 

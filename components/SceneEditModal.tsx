@@ -80,7 +80,7 @@ const SceneEditModal: React.FC<Props> = ({ scene, storyParagraphs, onSave, onClo
               type="text"
               value={tempScene.location || ''}
               onChange={(e) => setTempScene({ ...tempScene, location: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
               placeholder="输入场景名称..."
             />
           </div>
@@ -92,7 +92,7 @@ const SceneEditModal: React.FC<Props> = ({ scene, storyParagraphs, onSave, onClo
               type="text"
               value={tempScene.time || ''}
               onChange={(e) => setTempScene({ ...tempScene, time: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
               placeholder="输入时间（如：日间、夜间、黄昏）..."
             />
           </div>
@@ -104,7 +104,7 @@ const SceneEditModal: React.FC<Props> = ({ scene, storyParagraphs, onSave, onClo
               type="text"
               value={tempScene.atmosphere || ''}
               onChange={(e) => setTempScene({ ...tempScene, atmosphere: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
               placeholder="输入场景氛围..."
             />
           </div>
@@ -115,7 +115,7 @@ const SceneEditModal: React.FC<Props> = ({ scene, storyParagraphs, onSave, onClo
             <textarea
               value={tempStoryParagraph}
               onChange={(e) => setTempStoryParagraph(e.target.value)}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
               rows={6}
               placeholder="输入该场景的剧本段落内容..."
             />

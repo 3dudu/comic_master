@@ -1,4 +1,4 @@
-import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clock, Edit, Film, Image as ImageIcon, Clapperboard, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
+import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clapperboard, Clock, Edit, Film, Image as ImageIcon, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { modelConfigEventBus } from '../services/modelConfigEvents';
 import { ModelService } from '../services/modelService';
@@ -622,7 +622,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       const activeCharacters = project.scriptData.characters.filter(c => activeShot.characters.includes(c.name));
 
       return (
-          <div className="bg-[#0c0c2d] p-5 rounded-xl border border-slate-800 mb-6 space-y-4">
+          <div className="bg-[#0f0f23] p-5 rounded-xl border border-slate-800 mb-6 space-y-4">
               <div className="flex items-center justify-between mb-2">
                  <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-slate-500" />
@@ -746,7 +746,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       )}
 
       {/* Toolbar */}
-      <div className="h-16 border-b border-slate-800 bg-[#0a0f29] px-6 flex items-center justify-between shrink-0">
+      <div className="h-16 border-b border-slate-800 bg-[#101326] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Clapperboard className="w-5 h-5 text-indigo-500" />
@@ -765,7 +765,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                   disabled={!!batchProgress || !!batchVideoProgress}
                   className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                       allStartFramesGenerated
-                        ? 'bg-[#0c0c2d] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
+                        ? 'bg-[#0f0f23] text-slate-400 border border-slate-700 hover:text-white hover:border-slate-500'
                         : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
                   }`}
               >
@@ -801,7 +801,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                               key={shot.id}
                               onClick={() => setActiveShotId(shot.id)}
                               className={`
-                                  group relative flex flex-col bg-[#0a0f29] border rounded-xl overflow-hidden cursor-pointer transition-all duration-200
+                                  group relative flex flex-col bg-[#101326] border rounded-xl overflow-hidden cursor-pointer transition-all duration-200
                                   ${isActive ? 'border-indigo-500 ring-1 ring-indigo-500/50 shadow-xl scale-[1.02]' : 'border-slate-800 hover:border-slate-600 hover:shadow-lg'}
                               `}
                           >
@@ -909,7 +909,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               <div className={`${isMobile ? 'w-full' : '2xl:w-[640px] md:w-[460px] xl:w-[460px]'} bg-[#0f1225] flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20`}>
                   
                   {/* Workbench Header */}
-                  <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between bg-[#0c0c2d] shrink-0">
+                  <div className="h-16 px-6 border-b border-slate-800 flex items-center justify-between bg-[#0f0f23] shrink-0">
                        <div className="flex items-center gap-3">
                            <span className="w-8 h-8 bg-indigo-900/30 text-indigo-400 rounded-lg flex items-center justify-center font-bold font-mono text-sm border border-indigo-500/20">
                               {String(activeShotIndex + 1).padStart(2, '0')}
@@ -957,12 +957,12 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               </div>
                            
                            <div className="space-y-3">
-                               <div className="bg-[#0c0c2d] p-4 rounded-lg border border-slate-800">
+                               <div className="bg-[#0f0f23] p-4 rounded-lg border border-slate-800">
                                    <p className="text-slate-200 text-sm leading-relaxed">{activeShot.actionSummary}</p>
                                </div>
                                
                                {activeShot.dialogue && (
-                                  <div className="bg-[#0c0c2d] p-4 rounded-lg border border-slate-800 flex gap-3">
+                                  <div className="bg-[#0f0f23] p-4 rounded-lg border border-slate-800 flex gap-3">
                                       <MessageSquare className="w-4 h-4 text-slate-600 mt-0.5" />
                                       <div>
                                           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">对白</p>
@@ -1014,7 +1014,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                                    }
                                                }));
                                            }}
-                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                                           className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                                        >
                                            <option value="">使用项目默认</option>
                                            {modelConfigs
@@ -1047,7 +1047,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                                    }
                                                }));
                                            }}
-                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                                           className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                                        >
                                            <option value="">使用项目默认</option>
                                            {modelConfigs
@@ -1148,7 +1148,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                        <textarea
                                            value={fullKf.visualPrompt || ''}
                                            onChange={(e) => updateKeyframePrompt(activeShot.id, 'full', e.target.value)}
-                                           className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                           className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
                                            placeholder="输入宫格图画面描述..."
                                            rows={3}
                                        />
@@ -1212,7 +1212,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                            <textarea
                                                value={startKf.visualPrompt || ''}
                                                onChange={(e) => updateKeyframePrompt(activeShot.id, 'start', e.target.value)}
-                                               className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
                                                placeholder="输入起始帧画面描述..."
                                                rows={3}
                                            />
@@ -1275,7 +1275,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                            <textarea
                                                value={endKf.visualPrompt || ''}
                                                onChange={(e) => updateKeyframePrompt(activeShot.id, 'end', e.target.value)}
-                                               className="w-full bg-[#0c0c2d] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
                                                placeholder="输入结束帧画面描述..."
                                                rows={3}
                                            />
@@ -1287,7 +1287,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                            </div>
 
                            {/* Section 4: Video Generation */}
-                       <div className="bg-[#0c0c2d] rounded-xl p-5 border border-slate-800 space-y-4">
+                       <div className="bg-[#0f0f23] rounded-xl p-5 border border-slate-800 space-y-4">
                            <div className="flex items-center justify-between">
                                <h4 className="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
                                   <Video className="w-3 h-3 text-indigo-500" />

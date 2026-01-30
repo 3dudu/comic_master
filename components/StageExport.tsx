@@ -124,7 +124,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
     <div className="flex flex-col h-full bg-[#0e1229] overflow-hidden">
       
       {/* Header - Consistent with Director */}
-      <div className="h-16 border-b border-slate-800 bg-[#0a0f29] px-6 flex items-center justify-between shrink-0">
+      <div className="h-16 border-b border-slate-800 bg-[#101326] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
                   <Film className="w-5 h-5 text-indigo-500" />
@@ -142,7 +142,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Main Status Panel */}
-          <div className="bg-[#0c0c2d] border border-slate-800 rounded-xl p-6 sm:p-6 shadow-2xl relative overflow-hidden group">
+          <div className="bg-[#0f0f23] border border-slate-800 rounded-xl p-6 sm:p-6 shadow-2xl relative overflow-hidden group">
              {/* Background Decoration */}
              <div className="absolute top-0 right-0 p-48 bg-indigo-900/5 blur-[120px] rounded-full pointer-events-none"></div>
              <div className="absolute bottom-0 left-0 p-32 bg-emerald-900/5 blur-[100px] rounded-full pointer-events-none"></div>
@@ -363,7 +363,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                <button
                   onClick={handleDownload}
                   disabled={!project.mergedVideoUrl}
-                  className={`h-12 bg-[#0a0f29] hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                  className={`h-12 bg-[#101326] hover:bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
                     !project.mergedVideoUrl ? 'cursor-not-allowed opacity-50' : ''
                   }`}>
                  <Download className="w-4 h-4" />

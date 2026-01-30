@@ -140,7 +140,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
             <textarea
               value={tempShot.actionSummary || ''}
               onChange={(e) => setTempShot({ ...tempShot, actionSummary: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
               rows={2}
               placeholder="描述镜头中的动作..."
             />
@@ -152,7 +152,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
             <textarea
               value={tempShot.dialogue || ''}
               onChange={(e) => setTempShot({ ...tempShot, dialogue: e.target.value })}
-              className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
+              className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md focus:border-slate-600 focus:outline-none transition-all resize-none"
               rows={2}
               placeholder="镜头中的对白..."
             />
@@ -166,7 +166,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <select
                   value={tempShot.shotSize || 'MED'}
                   onChange={(e) => setTempShot({ ...tempShot, shotSize: e.target.value })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="特写">特写</option>
                   <option value="大特写">大特写</option>
@@ -188,7 +188,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                 <select
                   value={tempShot.cameraMovement || '固定'}
                   onChange={(e) => setTempShot({ ...tempShot, cameraMovement: e.target.value })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   <option value="固定">固定</option>
                   <option value="前推">前推</option>
@@ -218,7 +218,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                       duration: Number(e.target.value)
                     } as any
                   })}
-                  className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                  className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2.5 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                 >
                   {Array.from({ length: 30 }, (_, i) => i + 1).map(sec => (
                     <option key={sec} value={sec}>{sec} 秒</option>
@@ -292,7 +292,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
 
             <div className="space-y-3">
               {(tempShot.keyframes || []).map((kf: Keyframe, kfIdx: number) => (
-                <div key={kf.id || kfIdx} className="bg-[#0c0c2d] border border-slate-800 rounded-lg p-4 space-y-3">
+                <div key={kf.id || kfIdx} className="bg-[#0f0f23] border border-slate-800 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex gap-2">
                       <select
@@ -371,7 +371,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                         text2image: e.target.value || undefined
                       }
                     })}
-                    className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     <option value="">使用项目默认</option>
                     {modelConfigs
@@ -401,7 +401,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                         image2video: e.target.value || undefined
                       }
                     })}
-                    className="w-full bg-[#0c0c2d] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-[#0f0f23] border border-slate-800 text-white px-3 py-2 text-xs rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     <option value="">使用项目默认</option>
                     {modelConfigs

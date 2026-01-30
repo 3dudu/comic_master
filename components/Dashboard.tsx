@@ -533,7 +533,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
       <ModalSettings
         isOpen={showModelSettings}
         onClose={() => setShowModelSettings(false)}
-        isMobile={true}
+        isMobile={isMobile}
       />
 
       {/* API Key Modal */}

@@ -1,14 +1,20 @@
+
 // 百度语音合成服务
+const TTS_URL = 'https://tsn.baidu.com';
 
 let runtimeApiKey: string = '';
+let runtimeApiUrl: string = TTS_URL;
 
-const TTS_URL = 'http://tsn.baidu.com/text2audio';
 
 /**
  * 设置 API Key 和 Secret Key
  */
 export function setApiKey(apiKeyParam: string) {
   runtimeApiKey = apiKeyParam;
+}
+
+export function setApiUrl(url: string): void {
+  runtimeApiUrl = url || TTS_URL;
 }
 
 /**
@@ -19,6 +25,74 @@ function encodeURIComponentRFC3986(str: string): string {
     return '%' + c.charCodeAt(0).toString(16).toUpperCase();
   });
 }
+
+
+// Helper for retry logic
+const retryOperation = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 2000
+): Promise<T> => {
+  let lastError: Error | null = null;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await operation();
+    } catch (e: any) {
+      lastError = e;
+      // Check for quota/rate limit errors (429)
+      if (
+        e.status === 429 ||
+        e.code === 429 ||
+        e.message?.includes("429") ||
+        e.message?.includes("quota") ||
+        e.message?.includes("RATE_LIMIT")
+      ) {
+        const delay = baseDelay * Math.pow(2, i);
+        console.warn(
+          `Hit rate limit, retrying in ${delay}ms... (Attempt ${
+            i + 1
+          }/${maxRetries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw lastError;
+};
+
+const getAuthHeaders = () => {
+  return {
+    "Authorization": `Bearer ${runtimeApiKey}`,
+    "Content-Type": "application/json",
+  };
+};
+
+const fetchWithRetry = async (
+  endpoint: string,
+  options: RequestInit,
+  retries: number = 3
+): Promise<any> => {
+  return retryOperation(async () => {
+    const response = await fetch(endpoint, {
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        `API Error (${response.status}): ${error.error?.message || error.message}`
+      );
+    }
+
+    return response.json();
+  }, retries);
+};
 
 /**
  * 文本转语音
@@ -60,7 +134,7 @@ export async function textToSpeech(
     };
 
     // 对 tex 进行2次 URL 编码
-    const encodedText = encodeURIComponentRFC3986(encodeURIComponentRFC3986(params.tex));
+    const encodedText = params.tex;
 
     // 构建 form data
     const formData = new URLSearchParams();
@@ -76,8 +150,9 @@ export async function textToSpeech(
     formData.append('aue', params.aue.toString());
 
     // 发送请求
-    const response = await fetch(TTS_URL, {
-      method: 'POST',
+    const endpoint = `${runtimeApiUrl}/text2audio`;
+    const response = await fetch(endpoint, {
+      method: "POST",
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         'cuid': params.cuid,
@@ -85,7 +160,6 @@ export async function textToSpeech(
       },
       body: formData.toString(),
     });
-
     // 检查 Content-Type
     const contentType = response.headers.get('Content-Type');
 

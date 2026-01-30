@@ -872,7 +872,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <div className="bg-slate-900/50 rounded-lg pr-3 w-full">
                             <audio
                               controls
-                              className="w-full h-10"
+                              className="w-full h-6"
                               src={shot.audioUrl}
                             />
                           </div>

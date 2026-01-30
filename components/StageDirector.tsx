@@ -964,9 +964,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                {activeShot.dialogue && (
                                   <div className="bg-[#0f0f23] p-4 rounded-lg border border-slate-800 flex gap-3">
                                       <MessageSquare className="w-4 h-4 text-slate-600 mt-0.5" />
-                                      <div>
+                                      <div className="flex-1">
                                           <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">对白</p>
-                                          <p className="text-indigo-200 font-serif italic text-sm">"{activeShot.dialogue}"</p>
+                                          <p className="text-indigo-200 font-serif italic text-sm mb-2">"{activeShot.dialogue}"</p>
+                                          {activeShot.audioUrl && (
+                                              <audio
+                                                  controls
+                                                  className="w-full h-7 rounded bg-[#1a1d2d] border border-slate-700/50"
+                                                  src={activeShot.audioUrl}
+                                              />
+                                          )}
                                       </div>
                                   </div>
                                )}

@@ -91,7 +91,9 @@ import {
 
 // Baidu TTS 方法
 import {
+  blobToBase64,
   setApiKey as setBaiduApiKey,
+  setApiUrl as setBaiduApiUrl,
   textToSpeech as textToSpeechBaidu
 } from "./baiduTtsService";
 
@@ -248,6 +250,9 @@ export class ModelService {
           if (config.modelType === 'tts') {
             // 对于百度 TTS，apiKey 是 API Key，apiUrl 是 Secret Key
             setBaiduApiKey(config.apiKey);
+          }
+          if (config.apiUrl) {
+            setBaiduApiUrl(config.apiUrl);
           }
           console.log(`已更新 Baidu ${config.modelType} 配置`);
           break;
@@ -624,7 +629,7 @@ export class ModelService {
       const provider = await this.getEnabledAudioProvider(shotprovider || this.currentProjectModelProviders);
       console.log(`使用 ${provider} 合成语音`);
 
-      let audioBlob: any;
+      let audioBlob: Blob;
 
       switch (provider) {
         case 'baidu':
@@ -635,14 +640,13 @@ export class ModelService {
     }
 
       // 将 Blob 转换为 Base64 格式以便上传
-      //const audioBase64 = await blobToBase64(audioBlob);
-      //const audioDataUrl = `data:audio/mp3;base64,${audioBase64}`;
-
+      const audioBase64 = await blobToBase64(audioBlob);
+      const audioDataUrl = `data:audio/mp3;base64,${audioBase64}`;
+      console.log('audioDataUrl:', audioDataUrl);
       // 上传到文件服务器
-      /*
       const uploadResponse = await uploadFileToService({
         fileType: projectId + '_audio_tts',
-        fileUrl: audioBlob,
+        base64Data: audioBase64,
         fileName: 's.mp3'
       });
 
@@ -652,16 +656,13 @@ export class ModelService {
       } else {
         console.error(`音频上传失败: ${uploadResponse.error}`);
         // 上传失败时，返回 Base64 data URL
-        return audioBlob;
-        }
-        */
-     return audioBlob;
+        return audioDataUrl;
+      }
     } catch (error) {
       console.error('语音合成失败:', error);
       throw error;
     }
   }
-
   /**
    * 获取当前使用的提供商信息
    */

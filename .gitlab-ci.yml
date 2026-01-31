@@ -23,6 +23,7 @@ pages:
   script:
     - npm install
     - npm run build:gitlab
+    - rm -rf public
     - mv dist public
 
   artifacts:

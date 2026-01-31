@@ -114,10 +114,3 @@ export interface AIModelConfig {
   enabled: boolean;
   description: string;
 }
-
-export interface DriveFileMetadata {
-  id: string;
-  name: string;
-  mimeType: string;
-  modifiedTime: string;
-}

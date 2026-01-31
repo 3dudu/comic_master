@@ -1,10 +1,8 @@
-import { AlertTriangle, Calendar, Check, ChevronRight, Cloud, Copy, Download, Edit, Loader2, Plus, Settings, Sparkles, Trash2, Upload } from 'lucide-react';
+import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Settings, Sparkles, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { initCloudSync } from '../services/cloudSyncService';
 import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 import { ProjectState } from '../types';
 import ApiKeyModal from './ApiKeyModal';
-import CloudSyncSettings from './CloudSyncSettings';
 import { useDialog } from './dialog';
 import ModalSettings from './ModalSettings';
 import ProjectSettingsModal from './ProjectSettingsModal';
@@ -30,7 +28,6 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
   const [currentFileAccessDomain, setCurrentFileAccessDomain] = useState('');
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [showProjectSettings, setShowProjectSettings] = useState(false);
-  const [showCloudSync, setShowCloudSync] = useState(false);
   const [currentProject, setCurrentProject] = useState<ProjectState | null>(null);
 
   const loadProjects = async () => {
@@ -47,7 +44,6 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
 
   useEffect(() => {
     loadProjects();
-    initCloudSync();
   }, []);
 
   // 加载保存的 API 配置
@@ -309,7 +305,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
           <div className="flex gap-3 flex-end justify-end">
             <button
               onClick={handleCreate}
-              className="group flex items-center gap-3 px-3 py-2 lg:px-6 lg:py-3 bg-white text-black hover:bg-slate-200 transition-colors"
+              className="group flex items-center gap-3 px-6 py-3 bg-white text-black hover:bg-slate-200 transition-colors"
             >
               <Plus className="w-4 h-4" />
               {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">新建项目</span>}
@@ -317,22 +313,14 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
             <button
               onClick={handleImport}
               disabled={importing}
-              className="group flex items-center gap-3 px-3 py-2 lg:px-6 lg:py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload className="w-4 h-4" />
               {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">{importing ? '导入中...' : '导入项目'}</span>}
             </button>
             <button
-              onClick={() => setShowCloudSync(true)}
-              className="group flex items-center gap-3 px-3 py-2 lg:px-6 lg:py-3 bg-blue-900/50 hover:bg-blue-900/80 text-blue-300 hover:text-blue-200 transition-colors"
-              title="云同步设置"
-            >
-              <Cloud className="w-4 h-4" />
-              {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">云同步</span>}
-            </button>
-            <button
               onClick={() => setShowModelSettings(true)}
-              className="group flex items-center gap-3 px-3 py-2 lg:px-6 lg:py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
               title="模型管理"
             >
               <Sparkles className="w-4 h-4" />
@@ -340,7 +328,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
             </button>
             <button
               onClick={() => setApiKeyModalOpen(true)}
-              className="group flex items-center gap-3 px-3 py-2 lg:px-6 lg:py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
               title="系统设置"
             >
               <Settings className="w-4 h-4" />
@@ -460,7 +448,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
                               onChange={(e) => setEditingTitle(e.target.value)}
                               onKeyDown={(e) => handleKeyDown(e, proj)}
                               onClick={(e) => e.stopPropagation()}
-                              className="flex-1 bg-slate-900 border border-slate-700 text-white text-sm px-3 py-2 focus:outline-none focus:border-indigo-500"
+                              className="flex-1 bg-slate-900 border border-slate-700 text-white text-sm px-2 py-1 focus:outline-none focus:border-indigo-500"
                               autoFocus
                             />
                             <button
@@ -529,7 +517,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
                      </div>
                   </div>
 
-                  <div className="px-3 py-2 lg:px-6 lg:py-3 border-t border-slate-900 flex items-center justify-between bg-[#090923]">
+                  <div className="px-6 py-3 border-t border-slate-900 flex items-center justify-between bg-[#090923]">
                     <div className="flex items-center gap-2 text-[11px] text-slate-600 font-mono uppercase tracking-widest">
                         <Calendar className="w-3 h-3" />
                         {formatDate(proj.lastModified)}
@@ -566,20 +554,6 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
         onClose={closeProjectSettings}
         project={currentProject}
         updateProject={handleUpdateProject}
-      />
-
-      {/* Cloud Sync Settings Modal */}
-      <CloudSyncSettings
-        isOpen={showCloudSync}
-        onClose={() => setShowCloudSync(false)}
-        onSyncComplete={async () => {
-          await loadProjects();
-          await dialog.alert({ title: '成功', message: '同步完成', type: 'success' });
-        }}
-        onSyncError={(error) => {
-          console.error('同步错误:', error);
-          dialog.alert({ title: '错误', message: error.message || '同步失败', type: 'error' });
-        }}
       />
     </div>
   );

@@ -46,10 +46,10 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
               <h1 className="text-xs font-bold text-white tracking-wider uppercase">{projectName || '未命名项目'}</h1>
           <button
             onClick={() => setShowProjectSettings(true)}
-            className="text-xs font-bold  text-slate-400 hover:text-white  items-center"
+            className="text-[11px] font-medium font-bold text-slate-400 hover:text-white items-center"
             title="项目设置"
           >
-            <Edit className="w-4 h-4" />
+            <Edit className="w-3.5 h-3.5" />
           </button>
               </div>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest">AI漫剧工场</p>

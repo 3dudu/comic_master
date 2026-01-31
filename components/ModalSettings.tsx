@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Plus, Sparkles, Trash2, Upload, X } from 'lucide-react';
+import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Plus, Sparkles, Trash2, Upload, X, Tags } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { triggerModelConfigChanged } from '../services/modelConfigEvents';
 import { createDefaultModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
@@ -458,7 +458,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
               {/* description */}
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                  <Globe className="w-3 h-3" />
+                  <Tags className="w-3 h-3" />
                   备注 <span className="text-slate-700 font-normal">(可选)</span>
                 </label>
                 <input

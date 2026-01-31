@@ -539,7 +539,8 @@ export const generateVideo = async (
   startImageBase64?: string,
   endImageBase64?: string,
   duration: number = 5,
-  full_frame: boolean = false
+  full_frame: boolean = false,
+  generate_audio: boolean = false
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/contents/generations/tasks`;
 
@@ -553,9 +554,7 @@ export const generateVideo = async (
     }]
   };
 
-  if(runtimeVideoModel.indexOf("1-5")>0){
-    requestBody.generate_audio = true;
-  }
+  requestBody.generate_audio = generate_audio;
   // 处理起始图片
   if (startImageBase64) {
     requestBody.content.push({

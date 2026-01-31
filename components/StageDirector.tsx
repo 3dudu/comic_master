@@ -622,20 +622,21 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       const activeCharacters = project.scriptData.characters.filter(c => activeShot.characters.includes(c.name));
 
       return (
-          <div className="bg-[#0f0f23] p-5 rounded-xl border border-slate-800 mb-6 space-y-4">
+          <div className="bg-[#0f0f23] p-5 rounded-xl border border-slate-800 mb-4 space-y-4">
               <div className="flex items-center justify-between mb-2">
                  <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-slate-500" />
-                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景环境</h4>
-                 </div>
-                 <button
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景环境
+                    </span>
+                     <button
                     onClick={() => setEditingSceneInMain(scene!)}
-                    className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded transition-all flex items-center justify-center gap-1.5"
+                    className="text-[11px] font-medium text-slate-400 hover:text-white rounded transition-all"
                     title="编辑场景"
                  >
-                    <Edit className="w-3 h-3" />
-                    <span>编辑场景</span>
+                    <Edit className="w-3.5 h-3.5" />
                  </button>
+                 </div>
+
               </div>
               
               <div className="flex gap-4">
@@ -684,9 +685,9 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                              <select
                                                 value={activeShot.characterVariations?.[String(char.id)] || ""}
                                                 onChange={(e) => handleVariationChange(activeShot.id, String(char.id), e.target.value)}
-                                                className="bg-black text-[12px] text-slate-400 border border-slate-700 rounded px-1.5 py-0.5 max-w-[100px] outline-none focus:border-indigo-500"
+                                                className="bg-black text-[12px] text-slate-400 border border-slate-700 rounded px-1.5 py-0.5 max-w-[60px] outline-none focus:border-indigo-500"
                                              >
-                                                 <option value="">默认造型</option>
+                                                 <option value="">默认</option>
                                                  {char.variations.map(v => (
                                                      <option key={v.id} value={v.id}>{v.name}</option>
                                                  ))}
@@ -746,6 +747,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       )}
 
       {/* Toolbar */}
+      {!activeShotId && isMobile && (
       <div className="h-16 border-b border-slate-800 bg-[#101326] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">
@@ -782,10 +784,10 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               </button>
           </div>
       </div>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-hidden flex">
-
           {/* Grid View - Responsive Logic */}
           <div className={`flex-1 overflow-y-auto transition-all duration-500 ease-in-out ${activeShotId ? (isMobile?'hidden':'p-6 border-r border-slate-800') : 'p-6'}`}>
               <div className={`grid gap-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4': 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'}`}>
@@ -915,7 +917,15 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                               {String(activeShotIndex + 1).padStart(2, '0')}
                            </span>
                            <div>
-                               <span className="text-[16px] text-white font-bold text-sm">镜头详情</span>
+                               <span className="text-[16px] text-white font-bold text-sm">镜头详情
+                            <button
+                                onClick={(e) => { e.stopPropagation(); startEditShot(activeShot); }}
+                            className="px-2.5 py-2 text-[11px] font-medium text-slate-400 hover:text-white rounded transition-all "
+                            title="修改镜头"
+                            >
+                            <Edit className="w-3.5 h-3.5" />
+                            </button>
+                               </span>
                                <p className="text-[12px] text-slate-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
                            </div>
                        </div>
@@ -935,26 +945,15 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                   </div>
 
                   {/* Workbench Content */}
-                  <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                       
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6">
                        {/* Section 1: Context */}
                        {renderSceneContext()}
-
                        {/* Section 2: Narrative */}
                        <div className="space-y-4">
-                           <div className="flex items-center justify-between mb-2">
                            <div className="flex items-center gap-2 border-b border-slate-800 pb-2">
                                <Film className="w-4 h-4 text-slate-500" />
                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">叙事动作</h4>
-                           </div>
-                            <button
-                                onClick={(e) => { e.stopPropagation(); startEditShot(activeShot); }}
-                            className="px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 hover:border-slate-600 rounded transition-all flex items-center justify-center gap-1.5"
-                            title="修改镜头"
-                             >
-                            <Edit className="w-3 h-3" />修改镜头
-                            </button>
-              </div>
+                        </div>
                            
                            <div className="space-y-3">
                                <div className="bg-[#0f0f23] p-4 rounded-lg border border-slate-800">
@@ -1155,7 +1154,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                        <textarea
                                            value={fullKf.visualPrompt || ''}
                                            onChange={(e) => updateKeyframePrompt(activeShot.id, 'full', e.target.value)}
-                                           className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                           className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-18 transition-colors"
                                            placeholder="输入宫格图画面描述..."
                                            rows={3}
                                        />
@@ -1219,7 +1218,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                            <textarea
                                                value={startKf.visualPrompt || ''}
                                                onChange={(e) => updateKeyframePrompt(activeShot.id, 'start', e.target.value)}
-                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-18 transition-colors"
                                                placeholder="输入起始帧画面描述..."
                                                rows={3}
                                            />
@@ -1282,7 +1281,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                            <textarea
                                                value={endKf.visualPrompt || ''}
                                                onChange={(e) => updateKeyframePrompt(activeShot.id, 'end', e.target.value)}
-                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-20 transition-colors"
+                                               className="w-full bg-[#0f0f23] border border-slate-800 text-slate-300 text-xs rounded p-2 focus:border-indigo-500 focus:outline-none resize-none h-18 transition-colors"
                                                placeholder="输入结束帧画面描述..."
                                                rows={3}
                                            />

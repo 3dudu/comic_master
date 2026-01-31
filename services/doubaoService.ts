@@ -90,6 +90,10 @@ export const initializeDoubaoConfig = async () => {
 
 // Helper for authentication headers
 const getAuthHeaders = () => {
+  if (!runtimeApiKey || runtimeApiKey.trim() === "") {
+    throw new Error("API Key 未配置或为空，请先设置有效的 API Key");
+  }
+  
   return {
     "Authorization": `Bearer ${runtimeApiKey}`,
     "Content-Type": "application/json",
@@ -177,27 +181,25 @@ export const parseScriptToData = async (
 
   const prompt = PROMPT_TEMPLATES.PARSE_SCRIPT(rawText, language);
 
-  const response = await retryOperation(async () => {
-    return await fetchWithRetry(endpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        model: runtimeTextModel,
-        messages: [
-          {
-            role: "system",
-            content:
-              PROMPT_TEMPLATES.SYSTEM_SCRIPT_ANALYZER,
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 8192,
-        response_format: { type: "json_object" }, // 结构化输出
-      }),
-    });
+    const response = await fetchWithRetry(endpoint, {
+    method: "POST",
+    body: JSON.stringify({
+      model: runtimeTextModel,
+      messages: [
+        {
+          role: "system",
+          content:
+            PROMPT_TEMPLATES.SYSTEM_SCRIPT_ANALYZER,
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 8192,
+      response_format: { type: "json_object" }, // 结构化输出
+    }),
   });
 
   const content = response.choices?.[0]?.message?.content || "{}";
@@ -360,7 +362,7 @@ export const generateScript = async (
   const response = await fetchWithRetry(endpoint, {
     method: "POST",
     body: JSON.stringify({
-      model: DOUBAO_CONFIG.TEXT_MODEL,
+      model: runtimeTextModel,
       messages: [
         {
           role: "system",
@@ -394,7 +396,7 @@ export const generateVisualPrompts = async (
   const response = await fetchWithRetry(endpoint, {
     method: "POST",
     body: JSON.stringify({
-      model: DOUBAO_CONFIG.TEXT_MODEL,
+      model: runtimeTextModel,
       messages: [
         {
           role: "user",
@@ -453,18 +455,25 @@ export const generateImage = async (
   });
 
   // 提取图片 URL 或 base64 数据
-  if(response.data){
-    if(response.data.length>1){
-      let imagesGroup = [];
-      for(let i=0;i<response.data.length;i++){
-        imagesGroup.push(response.data[i].url)
-      }
-      return joinImage(imagesGroup,imageSize,imageCount)
-    }else{
-      return response.data[0].url;
+  if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+    throw new Error("图片生成失败: 无效的响应数据");
+  }
+
+  if (response.data.length > 1) {
+    const imagesGroup = response.data
+      .filter((item: any) => item && item.url)
+      .map((item: any) => item.url);
+    
+    if (imagesGroup.length === 0) {
+      throw new Error("图片生成失败: 没有有效的图片URL");
     }
-  }else{
-    throw new Error("图片生成失败");
+    
+    return joinImage(imagesGroup, imageSize, imageCount);
+  } else {
+    if (!response.data[0] || !response.data[0].url) {
+      throw new Error("图片生成失败: 缺少图片URL");
+    }
+    return response.data[0].url;
   }
 };
 
@@ -480,8 +489,18 @@ export const joinImage = async (
   imageCount: number = 1
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/images/generations`;
-  if(imageCount==1){
-    return referenceImages[0];
+  
+  // 验证输入参数
+  if (!Array.isArray(referenceImages) || referenceImages.length === 0) {
+    throw new Error("参考图片列表不能为空");
+  }
+  
+  if (imageCount === 1) {
+    const url = referenceImages[0];
+    if (!url || typeof url !== 'string') {
+      throw new Error("无效的图片URL");
+    }
+    return url;
   }
   const requestBody: any = {
     model: runtimeImageModel,

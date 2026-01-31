@@ -1,5 +1,6 @@
-import { AlertCircle, Check, Download, Expand, Group, Loader2, MapPin, RefreshCw, Shirt, Sparkles, Upload, User, X } from 'lucide-react';
+import { AlertCircle, AudioLines, Check, Download, Expand, FileMusic, Group, Loader2, MapPin, Mic, RefreshCw, Shirt, Sparkles, Speaker, Speech, Upload, User, Waves, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { VOICE_LIBRARY } from '../config/voiceLibrary';
 import { ModelService } from '../services/modelService';
 import { ProjectState } from '../types';
 import FileUploadModal from './FileUploadModal';
@@ -26,6 +27,18 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
   // Variation Form State
   const [editingSceneVisualPrompt, setEditingSceneVisualPrompt] = useState("");
+  const [editingShotDialogue, setEditingShotDialogue] = useState<{shotId: string, dialogue: string} | null>(null);
+  const [generatingAudio, setGeneratingAudio] = useState<{shotId: string} | null>(null);
+  const [audioUrl, setAudioUrl] = useState<{shotId: string, url: string} | null>(null);
+
+  // TTS Parameters
+  const [ttsParams, setTtsParams] = useState({
+    spd: 5,      // 语速 0-15，默认5
+    pit: 5,      // 音调 0-15，默认5
+    vol: 5,      // 音量，基础音库0-9，精品音库0-15，默认5
+    per: 0,      // 发音人，默认0（度小美）
+    aue: 3       // 音频格式，3=mp3(默认)，4=pcm-16k，5=pcm-8k，6=wav
+  });
 
   // Sync local state with project settings
   useEffect(() => {
@@ -42,6 +55,53 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       }
     }
   }, [selectedSceneId, project.scriptData]);
+
+  const handleEditDialogue = (shotId: string, dialogue: string) => {
+    setEditingShotDialogue({ shotId, dialogue });
+  };
+
+  const handleSaveDialogue = () => {
+    if (!editingShotDialogue) return;
+
+    const updatedShots = project.shots.map(shot =>
+      shot.id === editingShotDialogue.shotId
+        ? { ...shot, dialogue: editingShotDialogue.dialogue }
+        : shot
+    );
+
+    updateProject({ shots: updatedShots });
+    setEditingShotDialogue(null);
+  };
+
+  const handleCancelEditDialogue = () => {
+    setEditingShotDialogue(null);
+  };
+
+  const handleGenerateAudio = async (shotId: string, text: string) => {
+    if (!text.trim()) return;
+
+    setGeneratingAudio({ shotId });
+
+    try {
+      const audioUrl = await ModelService.generateSpeechUrl(text, {}, ttsParams, project.id);
+
+      setAudioUrl({ shotId, url: audioUrl });
+
+      // 保存音频 URL 到 shot
+      const updatedShots = project.shots.map(shot =>
+        shot.id === shotId
+          ? { ...shot, audioUrl }
+          : shot
+      );
+      updateProject({ shots: updatedShots });
+
+    } catch (error) {
+      console.error('语音合成失败:', error);
+      await dialog.alert({ title: '错误', message: '语音合成失败，请重试', type: 'error' });
+    } finally {
+      setGeneratingAudio(null);
+    }
+  };
 
   const handleGenerateAsset = async (type: 'character' | 'scene', id: string) => {
     setProcessingState({ id, type });
@@ -589,6 +649,248 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
             ))}
           </div>
         </section>
+
+        {/* Dialogue Synthesis Section */}
+        {project.shots.length > 0 && (
+          <section>
+            <div className="flex items-end justify-between mb-6 border-b border-slate-800 pb-4">
+              <div>
+                <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                  对话合成
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 pl-3.5">为镜头对话生成语音并编辑</p>
+              </div>
+              <div className="flex gap-2">
+                <span className="px-2 py-1 bg-slate-900 border border-slate-800 rounded text-[12px] text-slate-400 font-mono uppercase">
+                  {project.shots.filter(s => s.dialogue).length} / {project.shots.length} 对话
+                </span>
+                <span className="px-2 py-1 bg-slate-900 border border-slate-800 rounded text-[12px] text-slate-400 font-mono uppercase">
+                  {project.shots.filter(s => s.audioUrl).length} 音频
+                </span>
+              </div>
+            </div>
+
+            {/* TTS Parameters Configuration */}
+            <div className="bg-[#0e1229] border border-slate-800 rounded-xl p-5 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                  <AudioLines className="w-3.5 h-3.5 text-amber-400" />
+                  语音合成参数
+                </h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                {/* SPD - 语速 */}
+                <div className="space-y-2">
+                  <label className="text-[11px] text-slate-500 uppercase tracking-wider font-bold block">语速 (SPD)</label>
+                  <div className="relative">
+                    <select
+                      value={ttsParams.spd}
+                      onChange={(e) => setTtsParams({ ...ttsParams, spd: parseInt(e.target.value) })}
+                      className="w-full bg-[#0e1229] border border-slate-700 text-white px-3 py-2.5 text-sm rounded-lg appearance-none focus:border-emerald-500 focus:outline-none transition-all cursor-pointer"
+                    >
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(val => (
+                        <option key={val} value={val}>{val}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <Waves className="w-4 h-4 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* PIT - 音调 */}
+                <div className="space-y-2">
+                  <label className="text-[11px] text-slate-500 uppercase tracking-wider font-bold block">音调 (PIT)</label>
+                  <div className="relative">
+                    <select
+                      value={ttsParams.pit}
+                      onChange={(e) => setTtsParams({ ...ttsParams, pit: parseInt(e.target.value) })}
+                      className="w-full bg-[#0e1229] border border-slate-700 text-white px-3 py-2.5 text-sm rounded-lg appearance-none focus:border-emerald-500 focus:outline-none transition-all cursor-pointer"
+                    >
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(val => (
+                        <option key={val} value={val}>{val}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <Mic className="w-4 h-4 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* VOL - 音量 */}
+                <div className="space-y-2">
+                  <label className="text-[11px] text-slate-500 uppercase tracking-wider font-bold block">音量 (VOL)</label>
+                  <div className="relative">
+                    <select
+                      value={ttsParams.vol}
+                      onChange={(e) => setTtsParams({ ...ttsParams, vol: parseInt(e.target.value) })}
+                      className="w-full bg-[#0e1229] border border-slate-700 text-white px-3 py-2.5 text-sm rounded-lg appearance-none focus:border-emerald-500 focus:outline-none transition-all cursor-pointer"
+                    >
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(val => (
+                        <option key={val} value={val}>{val}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <Speaker className="w-4 h-4 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* PER - 发音人 */}
+                <div className="space-y-2">
+                  <label className="text-[11px] text-slate-500 uppercase tracking-wider font-bold block">发音人 (PER)</label>
+                  <div className="relative">
+                    <select
+                      value={ttsParams.per}
+                      onChange={(e) => setTtsParams({ ...ttsParams, per: parseInt(e.target.value) })}
+                      className="w-full bg-[#0e1229] border border-slate-700 text-white px-3 py-2.5 text-sm rounded-lg appearance-none focus:border-emerald-500 focus:outline-none transition-all cursor-pointer"
+                    >
+                      {VOICE_LIBRARY.map(voice => (
+                        <option key={voice.per} value={voice.per}>{voice.name}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <Speech className="w-4 h-4 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+
+
+                {/* AUE - 音频格式 */}
+                <div className="space-y-2">
+                  <label className="text-[11px] text-slate-500 uppercase tracking-wider font-bold block">音频格式 (AUE)</label>
+                  <div className="relative">
+                    <select
+                      value={ttsParams.aue}
+                      onChange={(e) => setTtsParams({ ...ttsParams, aue: parseInt(e.target.value) })}
+                      className="w-full bg-[#0e1229] border border-slate-700 text-white px-3 py-2.5 text-sm rounded-lg appearance-none focus:border-emerald-500 focus:outline-none transition-all cursor-pointer"
+                    >
+                      <option value={3}>MP3</option>
+                      <option value={4}>PCM-16k</option>
+                      <option value={5}>PCM-8k</option>
+                      <option value={6}>WAV</option>
+                    </select>
+                    <div className="absolute right-3 top-3 pointer-events-none">
+                      <FileMusic className="w-4 h-4 text-slate-600" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {project.shots.map((shot, shotIndex) => (
+                <div key={shot.id} className="bg-[#0e1229] border border-slate-800 rounded-xl overflow-hidden hover:border-slate-600 transition-all flex flex-col">
+                  <div className="p-4 space-y-3">
+                    {/* Shot Info */}
+                    <div className="flex items-start gap-3 pb-3 border-b border-slate-800/50">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-900/50 text-indigo-400 flex items-center justify-center font-mono text-sm font-bold">
+                        {shotIndex + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-white font-medium truncate mb-1">{shot.actionSummary}</p>
+                        <div className="flex items-center gap-2">
+                          {shot.sceneId && (
+                            <span className="px-2 py-0.5 bg-slate-900/50 text-slate-400 text-[11px] rounded border border-slate-700/50">
+                              {project.scriptData?.scenes.find(s => s.id === shot.sceneId)?.location || '未知场景'}
+                            </span>
+                          )}
+                          {shot.cameraMovement && (
+                            <span className="px-2 py-0.5 bg-slate-900/50 text-slate-400 text-[11px] rounded border border-slate-700/50">
+                              {shot.cameraMovement}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dialogue Content */}
+                    <div className="space-y-2">
+                      {editingShotDialogue?.shotId === shot.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={editingShotDialogue.dialogue}
+                            onChange={(e) => setEditingShotDialogue({ ...editingShotDialogue, dialogue: e.target.value })}
+                            placeholder="输入对话内容..."
+                            className="w-full bg-[#0e1229] border border-slate-700 rounded-lg px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-500 transition-colors resize-none h-14 font-mono"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleSaveDialogue}
+                              className="flex-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-[12px] font-bold uppercase tracking-wide rounded transition-colors"
+                            >
+                              保存
+                            </button>
+                            <button
+                              onClick={handleCancelEditDialogue}
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[12px] font-bold uppercase tracking-wide rounded transition-colors"
+                            >
+                              取消
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-slate-900/30 border border-slate-700/50 rounded-lg p-3">
+                          {shot.dialogue ? (
+                            <p className="text-sm text-slate-300 h-12 font-mono leading-relaxed">{shot.dialogue}</p>
+                          ) : (
+                            <div className="text-center py-4 text-slate-600">
+                              <p className="text-xs text-slate-500 mb-2">暂无对话</p>
+                              <button
+                                onClick={() => handleEditDialogue(shot.id, '')}
+                                className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-wider"
+                              >
+                                + 添加对话
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between mb-2 gap-2">
+                        {editingShotDialogue?.shotId !== shot.id && shot.dialogue && (
+                          <button
+                            onClick={() => handleEditDialogue(shot.id, shot.dialogue || '')}
+                            className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-wider flex-shrink-0"
+                          >
+                            编辑
+                          </button>
+                        )}
+                          {editingShotDialogue?.shotId !== shot.id && shot.audioUrl && (
+                          <div className="flex-1 bg-slate-900/50 rounded-lg pr-3 pl-3 min-w-0">
+                            <audio
+                              controls
+                              className="w-full h-6"
+                              src={shot.audioUrl}
+                            />
+                          </div>
+                        )}
+                            {editingShotDialogue?.shotId !== shot.id && shot.dialogue && (
+                            <button
+                              onClick={() => handleGenerateAudio(shot.id, shot.dialogue || '')}
+                              disabled={generatingAudio?.shotId === shot.id}
+                              className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-[11px] font-bold uppercase tracking-wide rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                            >
+                              {generatingAudio?.shotId === shot.id ? (
+                                <>
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                  生成中...
+                                </>
+                              ) : (
+                                <>
+                                  <Sparkles className="w-3 h-3" />
+                                  生成语音
+                                </>
+                              )}
+                            </button>)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
       {/* File Upload Modal */}

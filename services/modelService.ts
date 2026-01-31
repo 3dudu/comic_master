@@ -89,6 +89,14 @@ import {
   setModel as setKlingModel
 } from "./klingService";
 
+// Baidu TTS 方法
+import {
+  blobToBase64,
+  setApiKey as setBaiduApiKey,
+  setApiUrl as setBaiduApiUrl,
+  textToSpeech as textToSpeechBaidu
+} from "./baiduTtsService";
+
 const IMAGE_X = [
   '1','1x1','1x2','1x3','2x2','2x3','2x3','3x3','3x3','3x3'
 ];
@@ -237,6 +245,17 @@ export class ModelService {
           }
           console.log(`已更新 Kling ${config.modelType} 配置`);
           break;
+
+        case 'baidu':
+          if (config.modelType === 'tts') {
+            // 对于百度 TTS，apiKey 是 API Key，apiUrl 是 Secret Key
+            setBaiduApiKey(config.apiKey);
+          }
+          if (config.apiUrl) {
+            setBaiduApiUrl(config.apiUrl);
+          }
+          console.log(`已更新 Baidu ${config.modelType} 配置`);
+          break;
       }
     } catch (error) {
       console.error(`更新 ${config.provider} 配置失败:`, error);
@@ -319,6 +338,36 @@ export class ModelService {
     await this.updateServiceConfig(config);
 
     return config;
+  }
+
+  /**
+   * 获取当前启用的语音合成提供商
+   * @param projectModelProviders - 项目级别的模型供应商配置
+   */
+  private static async getEnabledAudioProvider(projectModelProviders?: { tts?: string }): Promise<'baidu'> {
+    let config;
+
+    // 优先使用项目级别的供应商配置
+    if (projectModelProviders?.tts) {
+      const allConfigs = await getAllModelConfigs();
+      config = allConfigs.find(c => c.id === projectModelProviders.tts);
+      console.log(`使用项目配置的语音合成供应商: ${config?.provider}`);
+    }
+
+    // 如果项目没有配置，使用系统默认的启用配置
+    if (!config) {
+      config = await getEnabledConfigByType('tts');
+    }
+
+    if (!config) {
+      console.warn('未找到语音合成配置，使用默认的 baidu');
+      return 'baidu';
+    }
+
+    // 立即更新对应服务的配置参数
+    await this.updateServiceConfig(config);
+
+    return config.provider as 'baidu';
   }
 
   /**
@@ -541,6 +590,9 @@ export class ModelService {
       case 'kling':
         setKlingApiKey(apiKey);
         break;
+      case 'baidu':
+        setBaiduApiKey(apiKey);
+        break;
       default:
         throw new Error(`暂不支持 ${provider} 提供商的 API 密钥设置`);
     }
@@ -575,9 +627,69 @@ export class ModelService {
       case 'kling':
         setKlingApiUrl(apiUrl);
         break;
+      case 'baidu':
+        // baidu 使用固定配置
+        break;
     }
   }
 
+  /**
+   * 文本转语音并返回音频 URL
+   * @param text - 要合成的文本
+   * @param options - 可选参数
+   * @param projectId - 项目 ID，用于文件上传
+   * @returns - 音频的 URL
+   */
+  static async generateSpeechUrl(
+    text: string,
+    shotprovider: any = null,
+    options: {
+      spd?: number; // 语速 0-15，默认5
+      pit?: number; // 音调 0-15，默认5
+      vol?: number; // 音量，基础音库0-9，精品音库0-15，默认5
+      per?: number; // 发音人，默认0（度小美）
+      aue?: number; // 音频格式，3=mp3(默认)，4=pcm-16k，5=pcm-8k，6=wav
+    } = {},
+    projectId: string = ""
+  ): Promise<string> {
+    try {
+      const provider = await this.getEnabledAudioProvider(shotprovider || this.currentProjectModelProviders);
+      console.log(`使用 ${provider} 合成语音`);
+
+      let audioBlob: Blob;
+
+      switch (provider) {
+        case 'baidu':
+          audioBlob = await textToSpeechBaidu(text, options);
+          break;
+        default:
+          throw new Error(`暂不支持 ${provider} 提供商的文生图`);
+    }
+
+      // 将 Blob 转换为 Base64 格式以便上传
+      const audioBase64 = await blobToBase64(audioBlob);
+      const audioDataUrl = `data:audio/mp3;base64,${audioBase64}`;
+      console.log('audioDataUrl:', audioDataUrl);
+      // 上传到文件服务器
+      const uploadResponse = await uploadFileToService({
+        fileType: projectId + '_audio_tts',
+        base64Data: audioBase64,
+        fileName: 's.mp3'
+      });
+
+      if (uploadResponse.success && uploadResponse.data?.fileUrl) {
+        console.log(`音频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        return uploadResponse.data.fileUrl;
+      } else {
+        console.error(`音频上传失败: ${uploadResponse.error}`);
+        // 上传失败时，返回 Base64 data URL
+        return audioDataUrl;
+      }
+    } catch (error) {
+      console.error('语音合成失败:', error);
+      throw error;
+    }
+  }
   /**
    * 获取当前使用的提供商信息
    */

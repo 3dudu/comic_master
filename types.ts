@@ -47,13 +47,14 @@ export interface Shot {
   id: string;
   sceneId: string;
   actionSummary: string;
-  dialogue?: string; 
+  dialogue?: string;
   cameraMovement: string;
-  shotSize?: string; 
+  shotSize?: string;
   characters: string[]; // Character IDs
   characterVariations?: { [characterId: string]: string }; // Added: Map char ID to variation ID for this shot
   keyframes: Keyframe[];
   interval?: VideoInterval;
+  audioUrl?: string; // 语音合成音频 URL
 
   // AI Model Providers configuration (stores config IDs)
   modelProviders?: {

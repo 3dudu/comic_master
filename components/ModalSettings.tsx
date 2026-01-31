@@ -19,7 +19,8 @@ const PROVIDER_OPTIONS = [
   { value: 'gemini', label: 'Gemini (Google)' },
   { value: 'yunwu', label: 'Yunwu (云雾)' },
   { value: 'minimax', label: 'Minimax (海螺)'},
-  { value: 'kling', label: 'Kling (可灵)'}
+  { value: 'kling', label: 'Kling (可灵)'},
+  { value: 'baidu', label: 'Baidu (百度)'},
 ] as const;
 
 const MODEL_TYPE_OPTIONS = [
@@ -32,13 +33,14 @@ const MODEL_TYPE_OPTIONS = [
 
 // 定义不同供应商支持的模型类型
 const PROVIDER_MODEL_TYPES: Record<string, readonly string[]> = {
-  doubao: ['llm', 'text2image', 'image2video', 'tts', 'stt'] as const,
+  doubao: ['llm', 'text2image', 'image2video'] as const,
   deepseek: ['llm'] as const,
   openai: ['llm', 'text2image', 'image2video'] as const,
   gemini: ['llm', 'text2image', 'image2video'] as const,
   yunwu: ['llm', 'text2image', 'image2video'] as const,
   minimax: ['image2video'] as const,
-  kling: ['image2video'] as const
+  kling: ['image2video'] as const,
+  baidu: ['tts'] as const,
 };
 
 // 根据供应商获取支持的模型类型选项

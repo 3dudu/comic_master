@@ -759,7 +759,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       )}
 
       {/* Toolbar */}
-      {!activeShotId && !isMobile && (
+      {!activeShotId && isMobile && (
       <div className="h-16 border-b border-slate-800 bg-[#101326] px-6 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-3">

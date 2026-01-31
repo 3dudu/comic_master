@@ -71,8 +71,8 @@ function App() {
       // 定义媒体查询
       mdQuery = window.matchMedia('(max-width: 768px)');
       lgQuery = window.matchMedia('(min-width: 1280px)');
-      console.log('md (mobile):', mdQuery.matches);
-      console.log('lg (desktop):', lgQuery.matches);
+      //console.log('md (mobile):', mdQuery.matches);
+      //console.log('lg (desktop):', lgQuery.matches);
       setIsMobile(mdQuery.matches);
       setIsMd(!lgQuery.matches);
     };

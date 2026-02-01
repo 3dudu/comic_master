@@ -396,7 +396,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
           </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-8 space-y-12">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* Characters Section */}
         <section>
           <div className="flex items-end justify-between mb-6 border-b border-slate-800 pb-4">
@@ -501,16 +501,16 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                 </div>
                 <div className="p-3 border-t border-slate-800 bg-[#0e1229]">
                   <div className="flex items-center justify-between mb-1">
-                    <div  className="flex items-center gap-2">
+                  <div  className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-bold text-slate-200 truncate text-sm">{char.name}</h3>
                   {char.gender!='未指定' && <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.gender}</span>}
                   {char.age!='未指定' && <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{char.age}</span>}
-                  </div>
                      {char.variations && char.variations.length > 0 && (
-                         <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+                         <span className="px-1.5 py-0.5 text-[11px] rounded border border-slate-800 uppercase text-slate-400 font-mono flex items-center gap-1">
                              <Shirt className="w-2.5 h-2.5" /> +{char.variations.length}
                          </span>
                      )}
+                  </div>
                   </div>
                   <p className="text-[12px] text-slate-500 line-clamp-1">{char.personality}</p>
                 </div>
@@ -617,7 +617,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                 </div>
                 <div className="p-3 border-t border-slate-800 bg-[#0e1229]">
                   <div className="flex justify-between items-center mb-1">
-                     <h3 className="font-bold text-slate-200 text-sm truncate">{scene.location}</h3>
+                     <h3 className="font-bold text-slate-200 text-sm truncate ">{scene.location}</h3>
                      <span className="px-1.5 py-0.5 bg-slate-900 text-slate-500 text-[11px] rounded border border-slate-800 uppercase font-mono">{scene.time}</span>
                   </div>
                   <p className="text-[12px] text-slate-500 line-clamp-1 mb-2">{scene.atmosphere}</p>
@@ -794,11 +794,6 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           {shot.sceneId && (
                             <span className="px-2 py-0.5 bg-slate-900/50 text-slate-400 text-[11px] rounded border border-slate-700/50">
                               {project.scriptData?.scenes.find(s => s.id === shot.sceneId)?.location || '未知场景'}
-                            </span>
-                          )}
-                          {shot.cameraMovement && (
-                            <span className="px-2 py-0.5 bg-slate-900/50 text-slate-400 text-[11px] rounded border border-slate-700/50">
-                              {shot.cameraMovement}
                             </span>
                           )}
                         </div>

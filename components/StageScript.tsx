@@ -1,4 +1,4 @@
-import { AlertCircle, Aperture, ArrowLeft, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, Film, Image, List, MapPin, Plus, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
+import { AlertCircle, Aperture, BookOpen, BrainCircuit, ChevronRight, Clock, Edit, Film, Image, List, MapPin, Plus, Sparkles, TextQuote, Trash, Users, Wand2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { getEnabledConfigByType } from '../services/modelConfigService';
 import { ModelService } from '../services/modelService';
@@ -584,7 +584,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
 )}
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {/* Title Input */}
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">项目标题</label>
@@ -862,7 +862,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                onClick={() => setActiveTab('script')}
                className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-xs font-bold text-slate-400 hover:text-white flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-lg transition-all"
              >
-               <ArrowLeft className="w-3 h-3" />
+               <List className="w-3 h-3" />
                分镜
             </button>
         </div>

@@ -1,4 +1,4 @@
-import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clapperboard, Clock, Edit, Film, Image as ImageIcon, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
+import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clapperboard, Clock, Download, Edit, Film, Image as ImageIcon, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { modelConfigEventBus } from '../services/modelConfigEvents';
 import { ModelService } from '../services/modelService';
@@ -323,6 +323,52 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       await dialog.alert({ title: '错误', message: `视频生成失败: ${e.message}`, type: 'error' });
     } finally {
       setProcessingState(null);
+    }
+  };
+
+  const handleDownloadVideo = async (shot: Shot) => {
+    if (!shot.interval?.videoUrl) {
+      await dialog.alert({
+        title: '提示',
+        message: '视频尚未生成或不可用',
+        type: 'warning',
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(shot.interval.videoUrl);
+      if (!response.ok) {
+        throw new Error(`下载失败: ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      // 生成文件名：shot_id_序号_标题.mp4
+      const shotNumber = project.shots.findIndex(s => s.id === shot.id) + 1;
+      const safeTitle = shot.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
+      a.download = `shot_${shotNumber.toString().padStart(3, '0')}_${safeTitle}.mp4`;
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      await dialog.alert({
+        title: '成功',
+        message: '视频下载已开始',
+        type: 'success',
+      });
+    } catch (error: any) {
+      console.error('下载视频失败:', error);
+      await dialog.alert({
+        title: '错误',
+        message: `下载视频失败: ${error.message}`,
+        type: 'error',
+      });
     }
   };
 
@@ -820,22 +866,22 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                               `}
                           >
                               {/* Header */}
-                              <div className="px-2 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
-                                <div className="flex items-center gap-1">
+                              <div className="px-1.5 md:px-2 py-2 bg-[#060624] border-b border-slate-800 flex justify-between items-center">
+                                <div className="flex items-center gap-1 md:gap-1.5">
                                   <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-indigo-400' : 'text-slate-500'}`}>{String(idx + 1).padStart(2, '0')}</span>
-                                      <span className="text-[11px] px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement} {shot.interval?.duration}s</span>
+                                      <span className="text-[11px] px-1 md:px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement} {shot.interval?.duration}s</span>
                                  </div>
-                                  <div className="flex items-center gap-1">
+                                  <div className="flex items-center gap-0.5 md:gap-1">
                                       <button
                                         onClick={(e) => { e.stopPropagation(); startEditShot(shot); }}
-                                        className="p-1.5 hover:bg-slate-700 text-slate-500 hover:text-white rounded transition-colors"
+                                        className="p-1 md:p-1.5 hover:bg-slate-700 text-slate-500 hover:text-white rounded transition-colors"
                                         title="编辑镜头"
                                       >
                                         <Edit className="w-3 h-3" />
                                       </button>
                                       <button
                                         onClick={(e) => {e.stopPropagation();deleteShot(shot.id)}}
-                                        className="p-1.5 hover:bg-red-900/20 text-slate-600 group-hover:text-red-400 rounded transition-colors"
+                                        className="p-1 md:p-1.5 hover:bg-red-900/20 text-slate-600 group-hover:text-red-400 rounded transition-colors"
                                         title="删除"
                                       >
                                         <Trash className="w-3 h-3" />
@@ -947,7 +993,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                             <Edit className="w-3.5 h-3.5" />
                             </button>
                                </span>
-                               <p className="text-[12px] text-slate-500 uppercase tracking-widest">{activeShot.cameraMovement}</p>
+                               <p className="text-[12px] text-slate-500 uppercase tracking-widest">{activeShot.cameraMovement} {activeShot.interval?.duration}s</p>
                            </div>
                        </div>
                        
@@ -1321,7 +1367,16 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                   视频生成
                                </h4>
                                <div className="flex items-center gap-3">
-                                   {activeShot.interval?.status === 'completed' && <span className="text-[12px] text-green-500 font-mono flex items-center gap-1">● READY</span>}
+                                   {activeShot.interval?.status === 'completed' && (
+                                       <button
+                                           onClick={() => handleDownloadVideo(activeShot)}
+                                           className="text-[12px] text-green-500 font-mono flex items-center gap-1 hover:text-green-400 transition-colors cursor-pointer bg-transparent border-0 p-0"
+                                           title="点击下载视频"
+                                       >
+                                           <Download className="w-3 h-3" />
+                                           READY
+                                       </button>
+                                   )}
                                    {activeShot.interval?.duration && <span className="text-[12px] text-indigo-400 font-mono flex items-center gap-1">{activeShot.interval?.duration}s</span>}
                                </div>
                            </div>

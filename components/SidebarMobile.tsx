@@ -77,7 +77,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
       </div>
 
       {/* 导航 */}
-      <nav className="fixed bottom-0 left-0 right-0 h-14 z-50 flex border-t border-slate-800 items-center justify-around px-4 py-0 overflow-x-hidden select-none bg-[#0c1022] border-b border-slate-800">
+      <nav className="fixed bottom-0 left-0 right-0 h-14 z-50 flex border-t border-slate-800 items-center justify-around px-4 py-0 overflow-hidden select-none bg-[#0c1022] border-b border-slate-800">
         {navItems.map((item) => {
           const isActive = currentStage === item.id;
           return (

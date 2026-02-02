@@ -251,7 +251,7 @@ function App() {
         )}
 
       <main className={`transition-allduration-300 ease-in-out ${isMobile ? 'ml-0' : (sidebarCollapsed ? 'ml-20' : 'xl:ml-72 md:ml-20')} flex-1 h-screen overflow-hidden relative`}
-      style={ isMobile ? { paddingBottom: 'calc(100px + env(safe-area-inset-top))'} : {}}>
+      style={ isMobile ? { paddingBottom: 'calc(112px + env(safe-area-inset-top))'} : {}}>
         {renderStage()}
         {showSettings && (
           <>

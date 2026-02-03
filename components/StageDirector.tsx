@@ -293,10 +293,10 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
     }else{
         const sKf = shot.keyframes?.find(k => k.type === 'start');
         sImageiurl = sKf?.imageUrl;
-        prompt = prompt+"\n "+sKf?.visualPrompt;
+        prompt = prompt+"\n 画面开始："+sKf?.visualPrompt+",参考图1；";
         const eKf = shot.keyframes?.find(k => k.type === 'end');
         eImageiurl = eKf?.imageUrl;
-        prompt = prompt+"\n "+eKf?.visualPrompt;
+        prompt = prompt+"\n 画面结束："+eKf?.visualPrompt+",参考图2；";
     }
     prompt = prompt+"\n 按照上面描述生成视频！";
     // Fix: Remove logic that auto-grabs next shot's frame.

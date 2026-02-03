@@ -351,7 +351,6 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              </div>
 
              {/* Video Preview */}
-             {(project.mergedVideoUrl || isPlayingSelected) && (
                <div className="mb-4">
                  <div className="flex justify-between items-center mb-2 px-1">
                    <div className="flex items-center gap-2">
@@ -373,10 +372,10 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                      </button>
                    )}
                  </div>
-                 <div className="w-full bg-black rounded-lg overflow-hidden border border-slate-800">
+                 <div className="w-full bg-black rounded-lg aspect-video bg-black rounded-lg overflow-hidden border border-slate-800 relative">
                    <video
                      ref={videoRef}
-                     controls={!isPlayingSelected}
+                     controls
                      className="w-full h-full object-cover"
                      src={isPlayingSelected ? selectedShots[currentPlayingShotIndex]?.interval?.videoUrl : project.mergedVideoUrl}
                      onEnded={isPlayingSelected ? handleVideoEnded : undefined}
@@ -399,7 +398,6 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                    </div>
                  )}
                </div>
-             )}
 
              {/* Merge Error Message */}
              {mergeError && (

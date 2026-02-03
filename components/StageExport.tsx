@@ -14,6 +14,9 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   const [mergeError, setMergeError] = useState<string | null>(null);
   const [selectedShotIds, setSelectedShotIds] = useState<Set<string>>(new Set());
   const [focusedShot, setFocusedShot] = useState<{ shot: typeof project.shots[0], index: number } | null>(null);
+  const [isPlayingSelected, setIsPlayingSelected] = useState(false);
+  const [currentPlayingShotIndex, setCurrentPlayingShotIndex] = useState(0);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const completedShots = project.shots.filter(s => s.interval?.videoUrl);
   const totalShots = project.shots.length;
@@ -27,8 +30,50 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
     .filter(s => selectedShotIds.has(s.id))
     .reduce((acc, s) => acc + (s.interval?.duration || 5), 0);
 
+  // Get selected shots in order for playback
+  const selectedShots = project.shots.filter(s => selectedShotIds.has(s.id) && s.interval?.videoUrl);
+
+  // Handle video ended event - auto play next video
+  const handleVideoEnded = () => {
+    if (!isPlayingSelected) return;
+    if (currentPlayingShotIndex < selectedShots.length - 1) {
+      setCurrentPlayingShotIndex(prev => prev + 1);
+    } else {
+      // All videos played, stop at end
+      setIsPlayingSelected(false);
+    }
+  };
+
+  // Start playing selected shots sequentially
+  const handlePlaySelected = () => {
+    if (selectedShots.length === 0) return;
+    setIsPlayingSelected(true);
+    setCurrentPlayingShotIndex(0);
+  };
+
+  // Stop playing
+  const handleStopPlayback = () => {
+    setIsPlayingSelected(false);
+    setCurrentPlayingShotIndex(0);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  // Auto play when currentPlayingShotIndex changes
+  React.useEffect(() => {
+    if (isPlayingSelected && videoRef.current && selectedShots[currentPlayingShotIndex]) {
+      videoRef.current.play().catch(err => console.error('Failed to play video:', err));
+    }
+  }, [currentPlayingShotIndex, isPlayingSelected, selectedShots]);
+
   // Toggle shot selection
   const toggleShotSelection = (shotId: string) => {
+    // Stop playback when modifying selection
+    if (isPlayingSelected) {
+      handleStopPlayback();
+    }
     setSelectedShotIds(prev => {
       const newSet = new Set(prev);
       if (newSet.has(shotId)) {
@@ -306,21 +351,53 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              </div>
 
              {/* Video Preview */}
-             {project.mergedVideoUrl && (
+             {(project.mergedVideoUrl || isPlayingSelected) && (
                <div className="mb-4">
                  <div className="flex justify-between items-center mb-2 px-1">
-                   <span className="text-[12px] text-slate-600 font-bold uppercase tracking-widest">成片预览</span>
-                   <span className="text-[12px] text-slate-500 font-mono">准备导出</span>
+                   <div className="flex items-center gap-2">
+                     <span className="text-[12px] text-slate-600 font-bold uppercase tracking-widest">
+                       {isPlayingSelected ? '播放选中镜头' : '成片预览'}
+                     </span>
+                     {isPlayingSelected && (
+                       <span className="text-[11px] text-indigo-400 font-mono bg-indigo-500/10 px-2 py-0.5 rounded">
+                         {currentPlayingShotIndex + 1} / {selectedShots.length}
+                       </span>
+                     )}
+                   </div>
+                   {isPlayingSelected && (
+                     <button
+                       onClick={handleStopPlayback}
+                       className="text-[11px] text-red-400 hover:text-red-300 font-mono bg-red-500/10 px-2 py-1 rounded transition-colors"
+                     >
+                       停止播放
+                     </button>
+                   )}
                  </div>
                  <div className="w-full bg-black rounded-lg overflow-hidden border border-slate-800">
                    <video
-                     controls
+                     ref={videoRef}
+                     controls={!isPlayingSelected}
                      className="w-full"
-                     src={project.mergedVideoUrl}
+                     src={isPlayingSelected ? selectedShots[currentPlayingShotIndex]?.interval?.videoUrl : project.mergedVideoUrl}
+                     onEnded={isPlayingSelected ? handleVideoEnded : undefined}
+                     key={isPlayingSelected ? selectedShots[currentPlayingShotIndex]?.id : 'merged'}
                    >
                      您的浏览器不支持视频播放。
                    </video>
                  </div>
+                 {isPlayingSelected && selectedShots[currentPlayingShotIndex] && (
+                   <div className="mt-2 bg-[#0f0f23] border border-slate-800 rounded-lg p-3">
+                     <div className="flex items-center gap-2 mb-1">
+                       <Film className="w-3 h-3 text-indigo-400" />
+                       <span className="text-xs font-bold text-indigo-400 font-mono uppercase tracking-widest">
+                         镜头 {project.shots.indexOf(selectedShots[currentPlayingShotIndex]) + 1}
+                       </span>
+                     </div>
+                     <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                       {selectedShots[currentPlayingShotIndex].actionSummary}
+                     </p>
+                   </div>
+                 )}
                </div>
              )}
 
@@ -333,7 +410,28 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              )}
 
              {/* Action Buttons */}
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+               <button
+                  onClick={handlePlaySelected}
+                  disabled={selectedShotIds.size === 0 || isPlayingSelected}
+                  className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
+                    selectedShotIds.size > 0 && !isPlayingSelected
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-500 border-indigo-500 shadow-lg shadow-indigo-600/20'
+                      : 'bg-slate-900 text-slate-600 border-slate-800 cursor-not-allowed'
+                  }`}>
+                 {isPlayingSelected ? (
+                   <>
+                     <Loader2 className="w-4 h-4 animate-spin" />
+                     播放中...
+                   </>
+                 ) : (
+                   <>
+                     <Film className="w-4 h-4" />
+                     播放选中视频 ({selectedShotIds.size})
+                   </>
+                 )}
+               </button>
+
                <button
                   onClick={handleMerge}
                   disabled={selectedShotIds.size === 0 || isMerging}
@@ -355,7 +453,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                  ) : (
                    <>
                      <Film className="w-4 h-4" />
-                     合并选中视频 ({selectedShotIds.size})
+                     合并视频
                    </>
                  )}
                </button>
@@ -367,7 +465,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                     !project.mergedVideoUrl ? 'cursor-not-allowed opacity-50' : ''
                   }`}>
                  <Download className="w-4 h-4" />
-                 下载视频 (.mp4)
+                 下载视频
                </button>
              </div>
           </div>

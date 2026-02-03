@@ -1236,7 +1236,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
   
            {/* Main: Script & Shots */}
            <div className="flex-1 overflow-y-auto bg-[#0e1229] p-0">
-              <div className="max-w-5xl mx-auto pb-20">
+              <div className="max-w-5xl mx-auto pb-2">
                  {project.scriptData?.scenes.map((scene, index) => {
                    const sceneShots = project.shots.filter(s => s.sceneId === scene.id);
                    //if (sceneShots.length === 0) return null;
@@ -1245,24 +1245,24 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                      <div key={scene.id} className="border-b border-slate-800">
                         {/* Scene Header strip */}
                         <div className="sticky top-0 z-10 bg-[#131c36]/95 backdrop-blur border-y border-slate-800 shadow-lg shadow-black/20">
-                           <div className="px-8 py-5 flex items-center justify-between">
-                              <div className="flex items-center gap-6">
-                                 <div className="flex items-baseline gap-4">
+                           <div className="px-4 md:px-8 py-5 flex flex-col md:flex-row items-baseline justify-between">
+                              <div className="flex items-center justify-between gap-6">
+                                 <div className="flex items-center justify-between md:items-baseline gap-4">
                                     <span className="text-3xl font-bold text-white/10 font-mono">{(index + 1).toString().padStart(2, '0')}</span>
-                                    <h3 className="text-lg font-bold text-white uppercase tracking-wider">
+                                    <h3 className="text-lg font-bold text-white uppercase tracking-wider line-clamp-1">
                                        {scene.location}
                                     </h3>
                                  </div>
                               </div>
-                              <div className="flex gap-4 text-[12px] font-mono uppercase tracking-widest text-slate-500">
-                                 <span className="flex items-center gap-1.5"><Clock className="w-3 h-3"/> {scene.time}</span>
+                              <div className="flex items-center justify-between md:gap-4 gap-1 text-[12px] font-mono uppercase tracking-widest text-slate-500">
+                                 <span className="flex items-center gap-1.5 whitespace-nowrap"><Clock className="w-3 h-3"/> {scene.time}</span>
                                  <span className="text-slate-700">|</span>
                                  <span>{scene.atmosphere}</span>
                               </div>
                            </div>
 
                            {/* Action Buttons - Compact */}
-                           <div className="px-8 pb-4 border-b border-slate-800">
+                           <div className="px-4 md:px-8 pb-4 border-b border-slate-800">
                               <div className="flex gap-2">
                                  <button
                                     onClick={() => setEditingSceneInMain(scene)}
@@ -1304,14 +1304,14 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                         {/* Shot Rows */}
                         <div className="divide-y divide-slate-800/50">
                            {sceneShots.map((shot) => (
-                             <div key={shot.id} className="group bg-[#13172b] hover:bg-[#1a2648] transition-colors p-8 flex gap-8">
+                             <div key={shot.id} className="group bg-[#13172b] hover:bg-[#1a2648] transition-colors p-6 py-4 gap-4 md:p-8 flex md:gap-8">
 
                                 {/* Shot ID & Tech Data */}
-                                <div className="w-32 flex-shrink-0 flex flex-col gap-4">
-                                   <div className="flex items-center justify-between">
-                                     <div className="flex flex-col gap-1">
+                                <div className="lg:w-32 flex-shrink-0 flex flex-col">
+                                   <div className="flex py-1 items-center justify-between flex-col pb-4">
+                                     <div className="flex gap-1 items-center justify-between w-full">
                                        <div className="text-xs font-mono text-slate-500 group-hover:text-white transition-colors">
-                                         分镜 {(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
+                                         分镜-{(project.shots.indexOf(shot) + 1).toString().padStart(3, '0')}
                                        </div>
                                        {shot.interval?.duration && (
                                          <div className="text-xs font-mono text-indigo-400">
@@ -1319,6 +1319,20 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                          </div>
                                        )}
                                      </div>
+                                   </div>
+
+                                   <div className="flex flex-col gap-2">
+                                     <div className="px-2 py-1 bg-slate-900 border border-slate-800 text-[12px] font-mono text-slate-400 uppercase text-center rounded">
+                                       {shot.shotSize || 'MED'}
+                                     </div>
+                                     <div className="px-2 py-1 bg-slate-900 border border-slate-800 text-[12px] font-mono text-slate-400 uppercase text-center rounded">
+                                       {shot.cameraMovement}
+                                     </div>
+                                   </div>
+                                </div>
+
+                                {/* Main Action */}
+                                <div className="flex-1 space-y-0">
                                      <div className="flex gap-1 group-hover:opacity-100 transition-opacity">
                                        <button
                                          onClick={() => startEditShot(shot)}
@@ -1335,24 +1349,9 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                          <Trash className="w-3.5 h-3.5" />
                                        </button>
                                      </div>
-                                   </div>
-
-                                   <div className="flex flex-col gap-2">
-                                     <div className="px-2 py-1 bg-slate-900 border border-slate-800 text-[12px] font-mono text-slate-400 uppercase text-center rounded">
-                                       {shot.shotSize || 'MED'}
-                                     </div>
-                                     <div className="px-2 py-1 bg-slate-900 border border-slate-800 text-[12px] font-mono text-slate-400 uppercase text-center rounded">
-                                       {shot.cameraMovement}
-                                     </div>
-                                   </div>
-                                </div>
-
-                                {/* Main Action */}
-                                <div className="flex-1 space-y-4">
                                    <p className="text-slate-200 text-sm leading-7 font-medium max-w-2xl">
                                      {shot.actionSummary}
                                    </p>
-
                                    {shot.dialogue && (
                                       <div className="pl-6 border-l-2 border-slate-800 group-hover:border-slate-600 transition-colors py-1">
                                          <p className="text-slate-400 font-serif italic text-sm">"{shot.dialogue}"</p>

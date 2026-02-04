@@ -16,6 +16,9 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   const [focusedShot, setFocusedShot] = useState<{ shot: typeof project.shots[0], index: number } | null>(null);
   const [isPlayingSelected, setIsPlayingSelected] = useState(false);
   const [currentPlayingShotIndex, setCurrentPlayingShotIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const videoRef = React.useRef<HTMLVideoElement>(null);
 
   const completedShots = project.shots.filter(s => s.interval?.videoUrl);
@@ -33,6 +36,84 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   // Get selected shots in order for playback
   const selectedShots = project.shots.filter(s => selectedShotIds.has(s.id) && s.interval?.videoUrl);
 
+  // Calculate total duration of all selected videos
+  const totalDuration = selectedShots.reduce((acc, shot) => acc + (shot.interval?.duration || 5), 0);
+
+  // Calculate current position in total timeline
+  const calculateTotalCurrentTime = () => {
+    let time = 0;
+    for (let i = 0; i < currentPlayingShotIndex; i++) {
+      time += (selectedShots[i]?.interval?.duration || 5);
+    }
+    time += currentTime;
+    return time;
+  };
+
+  const totalCurrentTime = calculateTotalCurrentTime();
+
+  // Handle video time update
+  const handleTimeUpdate = () => {
+    if (videoRef.current) {
+      setCurrentTime(videoRef.current.currentTime);
+    }
+  };
+
+  // Handle video loaded
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  };
+
+  // Toggle play/pause
+  const handleTogglePlayPause = () => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPaused(false);
+    } else {
+      videoRef.current.pause();
+      setIsPaused(true);
+    }
+  };
+
+  // Jump to previous video
+  const handlePrevious = () => {
+    if (currentPlayingShotIndex > 0) {
+      setCurrentPlayingShotIndex(currentPlayingShotIndex - 1);
+    }
+  };
+
+  // Jump to next video
+  const handleNext = () => {
+    if (currentPlayingShotIndex < selectedShots.length - 1) {
+      setCurrentPlayingShotIndex(currentPlayingShotIndex + 1);
+    }
+  };
+
+  // Handle progress bar click
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!videoRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+
+    // Find which video should play based on percentage
+    const targetTime = percentage * totalDuration;
+    let accumulatedTime = 0;
+
+    for (let i = 0; i < selectedShots.length; i++) {
+      const shotDuration = selectedShots[i]?.interval?.duration || 5;
+      if (accumulatedTime + shotDuration >= targetTime) {
+        setCurrentPlayingShotIndex(i);
+        const timeInVideo = targetTime - accumulatedTime;
+        videoRef.current.currentTime = timeInVideo;
+        return;
+      }
+      accumulatedTime += shotDuration;
+    }
+  };
+
   // Handle video ended event - auto play next video
   const handleVideoEnded = () => {
     if (!isPlayingSelected) return;
@@ -40,7 +121,8 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
       setCurrentPlayingShotIndex(prev => prev + 1);
     } else {
       // All videos played, stop at end
-      setIsPlayingSelected(false);
+      //setIsPlayingSelected(false);
+      setCurrentPlayingShotIndex(0);
     }
   };
 
@@ -49,12 +131,16 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
     if (selectedShots.length === 0) return;
     setIsPlayingSelected(true);
     setCurrentPlayingShotIndex(0);
+    setCurrentTime(0);
+    setIsPaused(false);
   };
 
   // Stop playing
   const handleStopPlayback = () => {
-    setIsPlayingSelected(false);
+    //setIsPlayingSelected(false);
     setCurrentPlayingShotIndex(0);
+    setCurrentTime(0);
+    setIsPaused(false);
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0;
@@ -64,9 +150,11 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
   // Auto play when currentPlayingShotIndex changes
   React.useEffect(() => {
     if (isPlayingSelected && videoRef.current && selectedShots[currentPlayingShotIndex]) {
-      videoRef.current.play().catch(err => console.error('Failed to play video:', err));
+      setIsPaused(false);
+      //setCurrentTime(0);
     }
   }, [currentPlayingShotIndex, isPlayingSelected, selectedShots]);
+
 
   // Toggle shot selection
   const toggleShotSelection = (shotId: string) => {
@@ -376,22 +464,74 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                    <video
                      ref={videoRef}
                      controls
+                     autoPlay
                      className="w-full h-full object-cover"
                      src={isPlayingSelected ? selectedShots[currentPlayingShotIndex]?.interval?.videoUrl : project.mergedVideoUrl}
                      onEnded={isPlayingSelected ? handleVideoEnded : undefined}
+                     onTimeUpdate={isPlayingSelected ? handleTimeUpdate : undefined}
                      key={isPlayingSelected ? selectedShots[currentPlayingShotIndex]?.id : 'merged'}
                    >
                      您的浏览器不支持视频播放。
                    </video>
+
+                   {/* Custom Playback Control Bar for Selected Videos */}
+                   {isPlayingSelected && (
+                     <div className="absolute top-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent pt-2 pb-2 px-4">
+                       {/* Shot Indicator and Controls */}
+                       <div className="flex items-center justify-between mb-2">
+                         <div className="flex items-center gap-2">
+                           <Film className="w-3 h-3 text-indigo-400" />
+                           <span className="text-xs font-bold text-indigo-400 font-mono uppercase tracking-widest">
+                             镜头 {project.shots.indexOf(selectedShots[currentPlayingShotIndex]) + 1}
+                           </span>
+                         </div>
+                       </div>
+
+                       {/* Total Progress Bar */}
+                       <div className="space-y-1 relative">
+                         {/* Individual Video Markers */}
+                         <div className="h-1.5 bg-slate-700 rounded-full relative cursor-pointer overflow-hidden">
+                           {selectedShots.map((shot, idx) => {
+                             const startTime = selectedShots.slice(0, idx).reduce((acc, s) => acc + (s.interval?.duration || 5), 0);
+                             const shotDuration = shot.interval?.duration || 5;
+                             const widthPercent = (shotDuration / totalDuration) * 100;
+                             const leftPercent = (startTime / totalDuration) * 100;
+                             return (
+                               <div
+                                 key={shot.id}
+                                 className={`absolute h-full rounded-l-sm rounded-r-sm ${
+                                   idx < currentPlayingShotIndex
+                                     ? 'bg-indigo-500'
+                                     : idx === currentPlayingShotIndex
+                                       ? 'bg-indigo-600'
+                                       : 'bg-slate-600'
+                                 }`}
+                                 style={{
+                                   left: `${leftPercent}%`,
+                                   width: `${widthPercent}%`,
+                                 }}
+                               />
+                             );
+                           })}
+                         </div>
+                         {/* Clickable Progress Overlay */}
+                         <div
+                           onClick={handleProgressClick}
+                           className="h-6 absolute top-1/2 -translate-y-1/2 left-0 right-0 cursor-pointer"
+                           style={{ top: '0px' }}
+                         />
+
+                         {/* Time Display */}
+                         <div className="flex justify-between text-[10px] text-slate-400 font-mono mt-1">
+                           <span>{Math.floor(totalCurrentTime / 60)}:{(totalCurrentTime % 60).toFixed(0).padStart(2, '0')}</span>
+                           <span>{Math.floor(totalDuration / 60)}:{(totalDuration % 60).toFixed(0).padStart(2, '0')}</span>
+                         </div>
+                       </div>
+                     </div>
+                   )}
                  </div>
                  {isPlayingSelected && selectedShots[currentPlayingShotIndex] && (
                    <div className="mt-2 bg-[#0f0f23] border border-slate-800 rounded-lg p-3">
-                     <div className="flex items-center gap-2 mb-1">
-                       <Film className="w-3 h-3 text-indigo-400" />
-                       <span className="text-xs font-bold text-indigo-400 font-mono uppercase tracking-widest">
-                         镜头 {project.shots.indexOf(selectedShots[currentPlayingShotIndex]) + 1}
-                       </span>
-                     </div>
                      <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
                        {selectedShots[currentPlayingShotIndex].actionSummary}
                      </p>

@@ -108,7 +108,9 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
     try {
       // Find the item
       let prompt = "";
+      let imagesize = '2560x1440';
       if (type === 'character') {
+        imagesize = '1728x2304';
         const char = project.scriptData?.characters.find(c => String(c.id) === String(id));
         if (char) prompt = char.visualPrompt || await ModelService.generateVisualPrompts('character', char, project.scriptData?.genre || '剧情片');
       } else {
@@ -117,7 +119,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       }
 
       // Real API Call
-      const imageUrl = await ModelService.generateImage(prompt, [], type, localStyle, '2560x1440',1,{},project.id);
+      const imageUrl = await ModelService.generateImage(prompt, [], type, localStyle, imagesize,1,{},project.id);
 
       // Update state
       if (project.scriptData) {
@@ -435,12 +437,12 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       ) : (
                         <div className={`absolute inset-0 bg-black/60 opacity-0 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm ${batchProgress || processingState ? 'pointer-events-none opacity-50' : 'group-hover:opacity-80'}`}>
                           <button
-                            onClick={() => handleGenerateAsset('character', char.id)}
+                            onClick={() => { setPreviewImage(char.referenceImage); }}
                             disabled={!!batchProgress || !!processingState}
                             className="px-3 py-1.5 bg-black/50 text-white text-[12px] font-bold uppercase flex items-center gap-2 tracking-wider rounded border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <Sparkles className="w-3 h-3" />
-                            重新生成
+                            <Expand className="w-3 h-3" />
+                            全屏预览
                           </button>
                         </div>
                       )}
@@ -467,11 +469,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                     <>
                       {/* Preview Button */}
                       <button
-                        onClick={(e) => { setPreviewImage(char.referenceImage); }}
+                        onClick={(e) => handleGenerateAsset('character', char.id) }
                         className="p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-colors border border-white/10 backdrop-blur"
-                        title="全屏预览"
+                        title="重新生成"
                       >
-                        <Expand className="w-3 h-3" />
+                        <Sparkles className="w-3 h-3" />
                       </button>
                       {/* Download Button */}
                       <button
@@ -557,12 +559,12 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       ) : (
                         <div className={`absolute inset-0 bg-black/60 opacity-0 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm ${batchProgress || processingState ? 'pointer-events-none opacity-50' : 'group-hover:opacity-80'}`}>
                           <button
-                            onClick={(e) => {handleGenerateAsset('scene', scene.id); }}
+                            onClick={(e) => {setPreviewImage(scene.referenceImage); }}
                             disabled={!!batchProgress || !!processingState}
                             className="px-3 py-1.5 bg-black/50 text-white text-[12px] font-bold uppercase tracking-wider rounded flex items-center gap-2 border border-white/20 hover:bg-white hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            <Sparkles className="w-3 h-3" />
-                            重新生成
+                            <Expand className="w-3 h-3" />
+                            全屏预览
                           </button>
                         </div>
                       )}
@@ -588,11 +590,11 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       {scene.referenceImage && (
                           <>
                       <button
-                        onClick={(e) => {setPreviewImage(scene.referenceImage); }}
+                        onClick={(e) => {handleGenerateAsset('scene', scene.id); }}
                         className="p-2 bg-black/50 text-white rounded-full hover:bg-white hover:text-black transition-colors border border-white/10 backdrop-blur"
-                        title="全屏预览"
+                        title="重新生成"
                       >
-                        <Expand className="w-3 h-3" />
+                        <Sparkles className="w-3 h-3" />
                       </button>
                       {/* Download Button */}
                       <button

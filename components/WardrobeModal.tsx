@@ -71,18 +71,18 @@ const WardrobeModal: React.FC<Props> = ({
 
           // Enhance prompt to emphasize character consistency
           const enhancedPrompt = `
-            生成角色: ${character.name} 的新造型画面，画面风为：${localStyle}，符合下面描述。
-
-            描述：
+            生成角色：${character.name} 的新造型图，画面风为：${localStyle}，符合下面描述。
+            造型描述：
                 ${variation.visualPrompt}
-
             要求：
+                - 画面尺寸为：1728x2304
                 - 画面风为：${localStyle}
-                - 如果有参考图，请保持面部特征与参考图一致。
+                - 画面内容为角色的一张图
+                - 如果有参考图，参考图为角色的三视图加大头照，必须保持面部特征与参考图一致。
                 - 如果没有，角色原来是这样的：${prompt}
         `
 
-          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, "variation", localStyle, imageSize,1,{},project.id);
+          const imageUrl = await ModelService.generateImage(enhancedPrompt, refImages, "variation", localStyle, '1728x2304',1,{},project.id);
 
           const newData = { ...project.scriptData! };
           const c = newData.characters.find(c => c.id === character.id);

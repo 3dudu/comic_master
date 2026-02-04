@@ -110,6 +110,7 @@ export const PROMPT_TEMPLATES = {
   GENERATE_VISUAL_PROMPT: (type: "character" | "scene", data: any, genre: string) => `
     为${genre}视频生成高还原度视觉提示词。
     ${type=='character'?'角色':'场景'}: ${JSON.stringify(data)}
+    场景要描述时间、地点、景色、光线、氛围等，不要出现角色。
     中文输出提示词，以逗号分隔，聚焦视觉细节（光线、质感、外观）。
   `,
 

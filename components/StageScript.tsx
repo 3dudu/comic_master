@@ -1304,7 +1304,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                         {/* Shot Rows */}
                         <div className="divide-y divide-slate-800/50">
                            {sceneShots.map((shot) => (
-                             <div key={shot.id} className="group bg-[#13172b] hover:bg-[#1a2648] transition-colors p-6 py-4 gap-4 md:p-8 flex md:gap-8">
+                             <div key={shot.id} className="group bg-[#13172b] hover:bg-[#1a2648] transition-colors p-6 py-4 gap-4 md:p-8 flex md:gap-8" >
 
                                 {/* Shot ID & Tech Data */}
                                 <div className="lg:w-32 flex-shrink-0 flex flex-col">
@@ -1372,11 +1372,11 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
                                 </div>
 
                                 {/* Prompt Preview */}
-                                <div className="w-64 hidden xl:block pl-6 border-l border-slate-900">
-                                   <div className="text-[12px] font-bold text-slate-700 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <div className="w-64 xl:block pl-6 border-l border-slate-800 group-hover:border-slate-600">
+                                   <div className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                                       <Aperture className="w-3 h-3" /> 画面提示词
                                    </div>
-                                   <p className="text-[12px] text-slate-600 font-mono leading-relaxed line-clamp-4 hover:line-clamp-none hover:text-slate-400 transition-all cursor-text bg-slate-900/30 p-2 rounded">
+                                   <p className="text-[12px] text-slate-500 font-mono leading-relaxed line-clamp-4 hover:line-clamp-none hover:text-slate-400 transition-all cursor-text bg-slate-900/30 p-2 rounded">
                                      {shot.keyframes[0]?.visualPrompt}
                                    </p>
                                 </div>

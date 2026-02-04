@@ -1,7 +1,7 @@
 // services/modelService.ts
 // 模型调用包装类，根据启用的配置动态选择模型提供商
 
-import { ScriptData, Shot, AIModelConfig } from "../types";
+import { AIModelConfig, ScriptData, Shot } from "../types";
 import { uploadFileToService } from "../utils/fileUploadUtils";
 import { imageUrlToBase64 } from "../utils/imageUtils";
 import { getEnabledConfigByType } from "./modelConfigService";
@@ -743,10 +743,21 @@ export class ModelService {
 
     const image_rate = imageSize=="2560x1440" ? "16:9" : "9:16";
     let new_prompt = prompt;
-    if(imageType!='variation'){
+    if(imageType=='start' || imageType=='end' || imageType=='full' ){
       new_prompt = prompt + (imageCount > 1 ? " \n 连环画规格："+IMAGE_X[imageCount]+"连环画图，包含 "+imageCount+" 张连续且风格统一的图片，每张长宽比 "+image_rate+"，白色背景，铺满整张图。" : "");
       new_prompt = PROMPT_TEMPLATES.IMAGE_GENERATION_WITH_REFERENCE(new_prompt,localStyle);
     }
+
+    if(imageType=='character'){
+      new_prompt = "生成符合下面要求的角色图片。\n" + new_prompt;
+      new_prompt = new_prompt + "\n 生成三视图加大头照，在同一张图中生成丰富细节的角色展示风格图片，图片比例3:4，具体要求：排版布局左上1/4为从头部到肩膀的清晰正面大头照，右上和下部3/4为人物的站立全身三视图（正视、侧视、背视）；所有视图必须为同一角色，五官、发型、服装、体型、风格、比例与细节完全一致，不改变人物特征；三视图比例统一、姿态自然；纯白色背景、无阴影、无道具、无文字。"
+    }
+
+    if(imageType=='scene'){
+      new_prompt = "生成符合下面要求的场景图片。\n" + new_prompt;
+      new_prompt += "\n 图片比例16:9，具体要求：图中无角色、无文字";
+    }
+
     let imageUrlOrBase64: string;
 
     // 调用各个模型服务生成图片

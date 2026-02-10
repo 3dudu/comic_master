@@ -8,7 +8,6 @@ import StageAssets from './components/StageAssets';
 import StageDirector from './components/StageDirector';
 import StageExport from './components/StageExport';
 import StageScript from './components/StageScript';
-import { ThemeToggle } from './components/ThemeToggle';
 import { DialogProvider } from './components/dialog';
 
 import { initializeCozeConfig } from './services/cozeService';
@@ -135,13 +134,6 @@ function App() {
     }
   };
 
-  const handleClearKey = () => {
-      localStorage.removeItem('cinegen_api_key');
-      setApiKey('');
-      setGlobalApiKey('');
-      setProject(null);
-  };
-
   const updateProject = (updates: Partial<ProjectState>) => {
     if (!project) return;
     setProject(prev => prev ? ({ ...prev, ...updates }) : null);
@@ -211,17 +203,7 @@ function App() {
   if (!project) {
     return (
       <DialogProvider>
-        <>
-        {!isMobile && (
-          <>
-            <button onClick={handleClearKey} className="fixed top-4 right-16 z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest">
-              退出
-            </button>
-            <ThemeToggle size="sm" className="fixed top-2 right-24 z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest"/>
-          </>
-        )}
-          <Dashboard onOpenProject={handleOpenProject} isMobile={isMobile} />
-        </>
+        <Dashboard onOpenProject={handleOpenProject} isMobile={isMobile} />
       </DialogProvider>
     );
   }

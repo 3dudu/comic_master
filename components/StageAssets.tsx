@@ -1,4 +1,4 @@
-import { AlertCircle, AudioLines, Check, Download, Expand, FileMusic, Group, Loader2, MapPin, Mic, RefreshCw, Shirt, Sparkles, Speaker, Speech, Upload, User, Waves, X } from 'lucide-react';
+import { AlertCircle, AudioLines, AudioWaveform, Check, Download, Expand, FileMusic, Group, Loader2, MapPin, Mic, RefreshCw, Shirt, Sparkles, Speaker, Speech, Upload, User, Waves, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VOICE_LIBRARY } from '../config/voiceLibrary';
 import { ModelService } from '../services/modelService';
@@ -446,7 +446,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           </button>
                         </div>
                       )}
-                      <div className="absolute top-2 right-2 p-1 bg-indigo-500 text-slate-50 rounded shadow-lg backdrop-blur">
+                      <div className="absolute top-2 right-2 p-1 bg-green-500 text-slate-50 rounded shadow-lg backdrop-blur">
                         <Check className="w-3 h-3" />
                       </div>
                     </>
@@ -568,7 +568,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           </button>
                         </div>
                       )}
-                      <div className="absolute top-2 right-2 p-1 bg-indigo-300 text-slate-50 rounded shadow-lg backdrop-blur">
+                      <div className="absolute top-2 right-2 p-1 bg-green-300 text-slate-50 rounded shadow-lg backdrop-blur">
                         <Check className="w-3 h-3" />
                       </div>
                     </>
@@ -866,7 +866,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                             <button
                               onClick={() => handleGenerateAudio(shot.id, shot.dialogue || '')}
                               disabled={generatingAudio?.shotId === shot.id}
-                              className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-slate-50 text-[11px] font-bold uppercase tracking-wide rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                              className="px-3 py-1.5 bg-slate-600 hover:bg-blue-400 text-slate-50 text-[11px] font-bold uppercase tracking-wide rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                             >
                               {generatingAudio?.shotId === shot.id ? (
                                 <>
@@ -875,7 +875,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                                 </>
                               ) : (
                                 <>
-                                  <Sparkles className="w-3 h-3" />
+                                  <AudioWaveform className="w-3 h-3" />
                                   生成语音
                                 </>
                               )}

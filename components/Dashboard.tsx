@@ -1,11 +1,13 @@
 import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Settings, Sparkles, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { setGlobalApiKey } from '../services/doubaoService';
 import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
 import { ProjectState } from '../types';
 import ApiKeyModal from './ApiKeyModal';
 import { useDialog } from './dialog';
 import ModalSettings from './ModalSettings';
 import ProjectSettingsModal from './ProjectSettingsModal';
+import { ThemeToggle } from './ThemeToggle';
 
 interface Props {
   onOpenProject: (project: ProjectState) => void;
@@ -29,7 +31,8 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
   const [showModelSettings, setShowModelSettings] = useState(false);
   const [showProjectSettings, setShowProjectSettings] = useState(false);
   const [currentProject, setCurrentProject] = useState<ProjectState | null>(null);
-
+  const [project, setProject] = useState<ProjectState | null>(null);
+  const [apiKey, setApiKey] = useState<string>('');
   const loadProjects = async () => {
     setIsLoading(true);
     try {
@@ -142,6 +145,13 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
     } finally {
       setImporting(false);
     }
+  };
+  
+  const handleClearKey = () => {
+      localStorage.removeItem('cinegen_api_key');
+      setApiKey('');
+      setGlobalApiKey('');
+      setProject(null);
   };
 
   const handleDuplicate = async (e: React.MouseEvent, proj: ProjectState) => {
@@ -292,13 +302,19 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
   };
 
   return (
-    <div className="min-h-screen bg-bg-secondary text-slate-300 p-8 md:p-12 font-sans selection:bg-white/20">
+    <div className="min-h-screen bg-bg-secondary text-slate-300 p-8 pt-2 md:p-12 font-sans selection:bg-white/20">
       <div className="max-w-7xl mx-auto">
-        <header className={`border-b border-slate-900 pb-8 ${isMobile ? '' : 'mb-16 flex items-end'} justify-between`}>
-          <div>
-            <h1 className="text-3xl font-light text-slate-50 tracking-tight mb-2 flex items-center gap-3">
+        <header className={`border-b border-slate-900 pb-4 ${isMobile ? '' : 'mb-16 flex items-end'} justify-between`}>
+          <div className='flex items-center justify-between'>
+            <h1 className="text-3xl font-light text-slate-50 tracking-tight m-2 flex items-center gap-3">
               剧集库
             </h1>
+<div className='flex items-center justify-between gap-3'>
+            <ThemeToggle size="sm" className={` z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}/>
+            <button onClick={handleClearKey} className={`z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}>
+              退出
+            </button>
+</div>
           </div>
           <div className="flex gap-3 flex-end justify-end">
             <button

@@ -1,4 +1,4 @@
-import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Settings, Sparkles, Trash2, Upload } from 'lucide-react';
+import { AlertTriangle, Calendar, Check, ChevronRight, Copy, Download, Edit, Loader2, Plus, Power, Settings, Sparkles, Trash2, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { setGlobalApiKey } from '../services/doubaoService';
 import { createNewProjectState, deleteProjectFromDB, exportProjectToFile, getAllProjectsMetadata, importProjectFromFile, saveProjectToDB } from '../services/storageService';
@@ -310,9 +310,9 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false }) => {
               剧集库
             </h1>
 <div className='flex items-center justify-between gap-3'>
-            <ThemeToggle size="sm" className={` z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}/>
-            <button onClick={handleClearKey} className={`z-50 text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}>
-              退出
+            <ThemeToggle size="sm" className={`text-[12px] text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}/>
+            <button onClick={handleClearKey} className={`z-50 text-[12px] flex items-center justify-center text-text-secondary w-8 h-8 p-1.5 transition-all duration-200 ease-in-out bg-bg-button rounded-lg text-slate-600 hover:text-red-500 transition-colors uppercase font-mono tracking-widest`}>
+            <Power className="w-4 h-4" />
             </button>
 </div>
           </div>

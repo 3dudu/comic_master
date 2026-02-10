@@ -575,7 +575,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
 {isMobile && (
             <button
                onClick={() => setActiveTab('script')}
-               className="px-4 py-2 rounded-lg bg-indigo-600 text-slate-50 text-xs font-bold text-slate-400 hover:text-slate-50 flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-lg transition-all"
+               className="px-4 py-2 rounded-lg border border-slate-600 bg-slate-600 text-slate-50 text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
              >
                <List className="w-3 h-3" />
                分镜
@@ -823,10 +823,10 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
            <button
               onClick={handleAnalyze}
               disabled={isProcessing}
-              className={`w-full py-3.5 font-bold text-xs tracking-widest uppercase rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg ${
+              className={`w-full py-2 rounded-lg font-bold border border-slate-600 xt-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all  ${
                 isProcessing
                   ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                  : 'bg-white text-black hover:bg-slate-200 shadow-white/5'
+                  : 'bg-white text-black hover:bg-slate-700 shadow-white/5'
               }`}
             >
               {isProcessing ? (
@@ -859,7 +859,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
            </div>
            <button
                onClick={() => setActiveTab('script')}
-               className="px-4 py-2 rounded-lg bg-indigo-600 text-slate-50 text-xs font-bold text-slate-400 hover:text-slate-50 flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-lg transition-all"
+               className="px-4 py-2 rounded-lg border border-slate-600 bg-slate-600 text-slate-50 text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
              >
                <List className="w-3 h-3" />
                分镜
@@ -961,7 +961,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
            <div className="flex gap-2">
              <button
                onClick={() => setActiveTab('story')}
-               className="px-4 py-2 rounded-lg bg-indigo-600 text-slate-50 text-xs font-bold text-slate-400 hover:text-slate-50 flex items-center gap-2 px-4 py-2 hover:bg-slate-800 rounded-lg transition-all"
+               className="px-4 py-2 rounded-lg border border-slate-600 bg-slate-600 text-slate-50 text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
              >
                <BookOpen className="w-3 h-3" />
                剧本

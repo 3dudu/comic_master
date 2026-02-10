@@ -829,7 +829,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                   className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                       allStartFramesGenerated
                         ? 'bg-bg-input text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-500'
-                        : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
+                        : 'bg-white text-black hover:bg-slate-600 shadow-lg shadow-white/5 border border-slate-600'
                   }`}
               >
                   <Sparkles className="w-3 h-3" />
@@ -838,7 +838,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               <button
                   onClick={handleBatchGenerateVideos}
                   disabled={!!batchProgress || !!batchVideoProgress}
-                  className="px-4 py-2 rounded-lg bg-indigo-600 text-slate-50 text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                  className="px-4 py-2 rounded-lg border border-slate-600 bg-slate-600 text-slate-50 text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
               >
                   <Video className="w-3 h-3" />
                   {project.shots.every(s => s.interval?.videoUrl) ? '重新生成' : '批量视频'}
@@ -1015,7 +1015,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                   </div>
 
                   {/* Workbench Content */}
-                  <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                  <div className="flex-1 overflow-y-auto p-6 space-y-6 border-b border-slate-600">
                        {/* Section 1: Context */}
                        {renderSceneContext()}
                        {/* Section 2: Narrative */}
@@ -1152,7 +1152,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                <button
                                    onClick={() => handleOneClickProduction(activeShot)}
                                    disabled={!!processingState || !!batchProgress || oneClickProcessing?.shotId === activeShot.id}
-                                   className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-slate-50 text-[11px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                                   className="px-3 py-1.5 bg-slate-600 hover:bg-indigo-500 text-slate-50 text-[11px] font-bold uppercase tracking-wider rounded transition-all flex items-center gap-1.5 shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                                >
                                    {oneClickProcessing?.shotId === activeShot.id ? (
                                        <>
@@ -1394,13 +1394,21 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                </div>
                            )}
 
+                           
+                           {!endKf?.imageUrl && !startKf?.imageUrl && imageCount > 1 && (
+                               <div className="text-[11px] text-slate-500 text-center font-mono">
+                                  * 将使用连续图生成模式
+                               </div>
+                           )}
+                       </div>
+                  </div>
                            <button
                              onClick={() => handleGenerateVideo(activeShot)}
                              disabled={!!processingState || !!batchProgress}
-                             className={`w-full py-3 rounded-lg font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                             className={`mx-6 m-3 py-2 rounded-lg font-bold border border-slate-600 xt-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                                activeShot.interval?.videoUrl
-                                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                                 : 'bg-indigo-600 text-slate-50 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'
+                                 ? 'bg-slate-600 text-slate-300 hover:bg-slate-700'
+                                 : 'bg-slate-600 text-slate-50 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20'
                              } ${(!!processingState || !!batchProgress) ? 'opacity-50 cursor-not-allowed' : ''}`}
                            >
                              {processingState?.type === 'video' ? (
@@ -1414,14 +1422,6 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                 </>
                              )}
                            </button>
-                           
-                           {!endKf?.imageUrl && !startKf?.imageUrl && imageCount > 1 && (
-                               <div className="text-[11px] text-slate-500 text-center font-mono">
-                                  * 将使用连续图生成模式
-                               </div>
-                           )}
-                       </div>
-                  </div>
               </div>
           )}
 

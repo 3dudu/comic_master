@@ -414,7 +414,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               disabled={!!batchProgress}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allCharactersReady
-                    ? 'bg-bg-secondary text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-500'
+                    ? 'bg-bg-secondary text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-500 hover:bg-indigo-500'
                     : 'bg-white text-black hover:bg-slate-200 shadow-lg shadow-white/5'
               }`}
             >
@@ -536,7 +536,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               disabled={!!batchProgress}
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allScenesReady
-                    ? 'bg-bg-secondary text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-500'
+                    ? 'bg-bg-secondary text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-500 hover:bg-indigo-500'
                     : 'bg-white text-black hover:bg-slate-600 shadow-lg shadow-white/5'
               }`}
             >
@@ -568,7 +568,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           </button>
                         </div>
                       )}
-                      <div className="absolute top-2 right-2 p-1 bg-indigo-500 text-slate-50 rounded shadow-lg backdrop-blur">
+                      <div className="absolute top-2 right-2 p-1 bg-indigo-300 text-slate-50 rounded shadow-lg backdrop-blur">
                         <Check className="w-3 h-3" />
                       </div>
                     </>

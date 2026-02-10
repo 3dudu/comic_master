@@ -367,7 +367,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                             onMouseLeave={() => setFocusedShot(null)}
                             className={`h-14 min-w-[18px] flex-1 rounded-[2px] transition-all relative group flex flex-col justify-end overflow-hidden cursor-pointer ${
                               isSelected
-                                ? 'bg-indigo-600/60 border-2 border-indigo-400'
+                                ? 'bg-slate-600/60 border-2 border-indigo-400'
                                 : isDone
                                   ? 'bg-indigo-900/40 border border-indigo-500/30 hover:bg-indigo-500/40'
                                   : 'bg-slate-400 border border-slate-600 cursor-not-allowed opacity-50'
@@ -503,7 +503,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                                    idx < currentPlayingShotIndex
                                      ? 'bg-indigo-500'
                                      : idx === currentPlayingShotIndex
-                                       ? 'bg-indigo-600'
+                                       ? 'bg-slate-600'
                                        : 'bg-slate-600'
                                  }`}
                                  style={{
@@ -554,7 +554,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                   disabled={selectedShotIds.size === 0 || isPlayingSelected}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
                     selectedShotIds.size > 0 && !isPlayingSelected
-                      ? 'bg-indigo-600 text-slate-50 hover:bg-indigo-500 border-indigo-500 shadow-lg shadow-indigo-600/20'
+                      ? 'bg-slate-600 text-slate-50 hover:bg-indigo-500 border-indigo-500 shadow-lg shadow-indigo-600/20'
                       : 'bg-slate-900 text-slate-600 border-slate-600 cursor-not-allowed'
                   }`}>
                  {isPlayingSelected ? (

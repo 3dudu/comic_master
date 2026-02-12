@@ -39,7 +39,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-slate-800 text-black flex items-center justify-center flex-shrink-0">
+            <div className="w-7 h-7 bg-slate-800 text-slate-50 flex items-center justify-center flex-shrink-0">
               <Aperture className="w-4 h-4" />
             </div>
             <div className="overflow-hidden">

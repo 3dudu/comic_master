@@ -420,7 +420,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allCharactersReady
                     ? 'bg-slate-900 text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-300 hover:bg-slate-500'
-                    : 'bg-slate-800 text-black hover:bg-slate-400 shadow-lg shadow-white/5'
+                    : 'bg-slate-800 text-slate-50 hover:bg-slate-400 shadow-lg shadow-white/5'
               }`}
             >
               {allCharactersReady ? <RefreshCw className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
@@ -444,7 +444,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <button
                             onClick={() => { setPreviewImage(char.referenceImage); }}
                             disabled={!!batchProgress || !!processingState}
-                            className="px-3 py-1.5 bg-slate-700/50 text-slate-50 text-[12px] font-bold uppercase flex items-center gap-2 tracking-wider rounded border border-white/20 hover:bg-slate-800 hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1.5 bg-slate-700/50 text-slate-50 text-[12px] font-bold uppercase flex items-center gap-2 tracking-wider rounded border border-white/20 hover:bg-slate-800 hover:text-slate-50 transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Expand className="w-3 h-3" />
                             全屏预览
@@ -475,7 +475,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       {/* Preview Button */}
                       <button
                         onClick={(e) => handleGenerateAsset('character', char.id) }
-                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="重新生成"
                       >
                         <Sparkles className="w-3 h-3" />
@@ -483,7 +483,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       {/* Download Button */}
                       <button
                         onClick={(e) => { handleDownloadImage(char.referenceImage!, char.name); }}
-                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="下载图片"
                       >
                         <Download className="w-3 h-3" />
@@ -493,13 +493,13 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                   <button
                             onClick={(e) => { handleFileUploadClick(char.id, 'character'); }}
                             disabled={!!batchProgress || !!processingState}
-                            className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                            className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                           >
                             <Upload className="w-3 h-3" />
                   </button>
                   <button
                      onClick={(e) => { setSelectedCharId(char.id); }}
-                     className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                     className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                      title="管理造型"
                   >
                       <Shirt className="w-3 h-3" />
@@ -542,7 +542,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
               className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all flex items-center gap-2 ${
                   allScenesReady
                     ? 'bg-slate-900 text-slate-400 border border-slate-600 hover:text-slate-50 hover:border-slate-300 hover:bg-slate-500'
-                    : 'bg-slate-800 text-black hover:bg-slate-600 shadow-lg shadow-white/5'
+                    : 'bg-slate-800 text-slate-50 hover:bg-slate-600 shadow-lg shadow-white/5'
               }`}
             >
               {allScenesReady ? <RefreshCw className="w-3 h-3" /> : <Sparkles className="w-3 h-3" />}
@@ -566,7 +566,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <button
                             onClick={(e) => {setPreviewImage(scene.referenceImage); }}
                             disabled={!!batchProgress || !!processingState}
-                            className="px-3 py-1.5 bg-slate-700/50 text-slate-50 text-[12px] font-bold uppercase tracking-wider rounded flex items-center gap-2 border border-white/20 hover:bg-slate-800 hover:text-black transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-1.5 bg-slate-700/50 text-slate-50 text-[12px] font-bold uppercase tracking-wider rounded flex items-center gap-2 border border-white/20 hover:bg-slate-800 hover:text-slate-50 transition-colors backdrop-blur disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Expand className="w-3 h-3" />
                             全屏预览
@@ -596,7 +596,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           <>
                       <button
                         onClick={(e) => {handleGenerateAsset('scene', scene.id); }}
-                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="重新生成"
                       >
                         <Sparkles className="w-3 h-3" />
@@ -604,7 +604,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                       {/* Download Button */}
                       <button
                         onClick={(e) => { handleDownloadImage(scene.referenceImage!, scene.location); }}
-                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                        className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="下载图片"
                       >
                         <Download className="w-3 h-3" />
@@ -615,7 +615,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                     <button
                       onClick={(e) => { handleFileUploadClick(scene.id, 'scene'); }}
                       disabled={!!batchProgress || !!processingState}
-                      className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-black transition-colors border border-white/10 backdrop-blur"
+                      className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                       title="上传图片"
                       >
                       <Upload className="w-3 h-3" />

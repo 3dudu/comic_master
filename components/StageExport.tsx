@@ -554,7 +554,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                   disabled={selectedShotIds.size === 0 || isPlayingSelected}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
                     selectedShotIds.size > 0 && !isPlayingSelected
-                      ? 'bg-slate-600 text-slate-50 hover:bg-slate-500 border-slate-500 shadow-lg shadow-indigo-600/20'
+                      ? 'bg-slate-600 text-slate-50 hover:bg-slate-500 border-slate-500 shadow-lg shadow-slate-600/20'
                       : 'bg-slate-900 text-slate-600 border-slate-600 cursor-not-allowed'
                   }`}>
                  {isPlayingSelected ? (
@@ -575,7 +575,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                   disabled={selectedShotIds.size === 0 || isMerging}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
                  selectedShotIds.size > 0 && !isMerging
-                   ? 'bg-slate-800 text-black hover:bg-slate-400 border-white shadow-lg shadow-white/5'
+                   ? 'bg-slate-800 text-slate-50 hover:bg-slate-400 border-white shadow-lg shadow-white/5'
                    : 'bg-slate-900 text-slate-600 border-slate-600 cursor-not-allowed'
                }`}>
                  {isMerging ? (

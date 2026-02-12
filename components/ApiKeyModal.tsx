@@ -88,7 +88,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8 border-b border-slate-900 pb-6">
-           <div className="w-10 h-10 bg-slate-800 text-black flex items-center justify-center">
+           <div className="w-10 h-10 bg-slate-800 text-slate-50 flex items-center justify-center">
               <Key className="w-5 h-5" />
            </div>
            <div>
@@ -210,7 +210,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({
            <button
              onClick={handleSave}
              disabled={!inputKey.trim()}
-             className="w-full py-3 bg-slate-700 text-black font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-slate-400 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+             className="w-full py-3 bg-slate-700 text-slate-50 font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-slate-400 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
            >
              保存配置 <ArrowRight className="w-3 h-3" />
            </button>

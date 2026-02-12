@@ -244,7 +244,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
                     onClick={() => toggleCharacter(char.name)}
                     className={`relative px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 border flex items-center gap-1.5 ${
                       isSelected
-                        ? 'bg-slate-600 text-slate-50 border-slate-500 shadow-lg shadow-indigo-500/25 scale-105'
+                        ? 'bg-slate-600 text-slate-50 border-slate-500 shadow-lg shadow-slate-500/25 scale-105'
                         : 'bg-slate-900 text-slate-400 border-slate-600 hover:border-slate-300 hover:text-slate-300 hover:bg-slate-800'
                     }`}
                   >
@@ -430,7 +430,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-3 bg-slate-700 text-black hover:bg-slate-400 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
+            className="flex-1 py-3 bg-slate-700 text-slate-50 hover:bg-slate-400 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors"
           >
             保存
           </button>

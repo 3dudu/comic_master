@@ -278,7 +278,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
           <div className="flex gap-3 flex-end justify-end">
             <button
               onClick={handleCreate}
-              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 text-black hover:bg-slate-400 transition-colors"
+              className="group flex items-center gap-3 px-6 py-3 bg-slate-800 text-slate-50 hover:bg-slate-400 transition-colors"
             >
               <Plus className="w-4 h-4" />
               {!isMobile && <span className="font-bold text-xs tracking-widest uppercase">新建项目</span>}

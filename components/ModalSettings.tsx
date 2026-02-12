@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Plus, Sparkles, Trash2, Upload, X, Tags } from 'lucide-react';
+import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Link,Plus, Sparkles, Trash2, Upload, X, Tags } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { triggerModelConfigChanged } from '../services/modelConfigEvents';
 import { createDefaultModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
@@ -13,14 +13,14 @@ interface Props {
 }
 
 const PROVIDER_OPTIONS = [
-  { value: 'doubao', label: 'Doubao (火山引擎)' },
-  { value: 'deepseek', label: 'DeepSeek' },
-  { value: 'openai', label: 'OpenAI' },
-  { value: 'gemini', label: 'Gemini (Google)' },
-  { value: 'yunwu', label: 'Yunwu (云雾)' },
-  { value: 'minimax', label: 'Minimax (海螺)'},
-  { value: 'kling', label: 'Kling (可灵)'},
-  { value: 'baidu', label: 'Baidu (百度)'},
+  { value: 'doubao', label: 'Doubao (火山引擎)', apiUrl: 'https://www.volcengine.com/product/doubao' },
+  { value: 'deepseek', label: 'DeepSeek', apiUrl: 'https://platform.deepseek.com/' },
+  { value: 'openai', label: 'OpenAI', apiUrl: 'https://platform.openai.com/' },
+  { value: 'gemini', label: 'Gemini (Google)', apiUrl: 'https://ai.google.dev/' },
+  { value: 'yunwu', label: 'Yunwu (云雾)', apiUrl: 'https://yunwu.ai/' },
+  { value: 'minimax', label: 'Minimax (海螺)', apiUrl: 'https://www.minimaxi.com/' },
+  { value: 'kling', label: 'Kling (可灵)', apiUrl: 'https://klingai.com/' },
+  { value: 'baidu', label: 'Baidu (百度)', apiUrl: 'https://cloud.baidu.com/' },
 ] as const;
 
 const MODEL_TYPE_OPTIONS = [
@@ -382,6 +382,22 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                     <ChevronRight className="w-4 h-4 text-slate-600 rotate-90" />
                   </div>
                 </div>
+                {/* API Key 申请链接 */}
+                {(() => {
+                  const selectedProvider = PROVIDER_OPTIONS.find(p => p.value === formData.provider);
+                  return selectedProvider?.apiUrl ? (
+                    <a
+                      href={selectedProvider.apiUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-1"
+                    >
+                      <Globe className="w-3 h-3" />
+                      申请 {selectedProvider.label} API Key
+                      <Link className="w-3 h-3" />
+                    </a>
+                  ) : null;
+                })()}
               </div>
 
               {/* Model Type Selection */}
@@ -420,7 +436,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   type="password"
                   value={formData.apiKey}
                   onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
+                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入您的 API Key..."
                 />
               </div>
@@ -429,13 +445,13 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Sparkles className="w-3 h-3" />
-                  模型名称 <span className="text-slate-700 font-normal">(可选)</span>
+                  模型名称 <span className="text-slate-400 font-normal">(可选)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.model}
                   onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
+                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入具体的模型名称（如：gpt-4、claude-3-sonnet）"
                 />
               </div>
@@ -444,13 +460,13 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Globe className="w-3 h-3" />
-                  API URL <span className="text-slate-700 font-normal">(可选)</span>
+                  API URL <span className="text-slate-400 font-normal">(可选)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.apiUrl}
                   onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
+                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入 API 端点 URL（选填）..."
                 />
               </div>
@@ -459,13 +475,13 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
                   <Tags className="w-3 h-3" />
-                  备注 <span className="text-slate-700 font-normal">(可选)</span>
+                  备注 <span className="text-slate-400 font-normal">(可选)</span>
                 </label>
                 <input
                   type="text"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-700"
+                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入备注（选填）"
                 />
               </div>
@@ -503,7 +519,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                 </button>
                 <button
                   onClick={editingConfig ? handleUpdate : handleAdd}
-                  className="flex-1 py-3 bg-slate-100 text-black hover:bg-slate-200 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-indigo-600/20"
+                  className="flex-1 py-3 bg-slate-500 text-slate-50 hover:bg-slate-400 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-slate-600/20"
                 >
                   {editingConfig ? '更新配置' : '添加配置'}
                 </button>
@@ -528,7 +544,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   const typeColors = getModelTypeColorStyles(config.modelType);
 
                   return (
-                    <div key={config.id} className={`p-4 transition-colors ${config.enabled ? 'bg-bg-selected' : 'bg-slate-600'}`}>
+                    <div key={config.id} className={`p-4 transition-colors ${config.enabled ? 'bg-bg-selected' : 'bg-slate-700'}`}>
                       {/* 移动端：纵向布局；桌面端：横向布局 */}
                       <div className={`${isMobile ? 'flex-col' : 'flex-row'} flex items-start justify-between gap-4`}>
                         {/* 左侧：图标和配置信息 */}
@@ -639,7 +655,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
               </div>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="flex-1 py-3 bg-slate-100 text-black hover:bg-slate-200 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-white/5 flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-slate-500 text-slate-50 hover:bg-slate-400 text-[11px] font-bold uppercase tracking-wider rounded-lg transition-colors shadow-lg shadow-white/5 flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 添加新配置

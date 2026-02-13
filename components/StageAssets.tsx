@@ -871,7 +871,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                             <button
                               onClick={() => handleGenerateAudio(shot.id, shot.dialogue || '')}
                               disabled={generatingAudio?.shotId === shot.id}
-                              className="px-3 py-1.5 bg-slate-600 hover:bg-slate-400 text-slate-50 text-[11px] font-bold uppercase tracking-wide rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold uppercase tracking-wide rounded transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                             >
                               {generatingAudio?.shotId === shot.id ? (
                                 <>

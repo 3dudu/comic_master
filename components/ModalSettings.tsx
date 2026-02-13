@@ -1,4 +1,4 @@
-import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Music, Link,Plus, Sparkles, Trash2, Upload, X, Tags } from 'lucide-react';
+import { Check, ChevronRight, Download, Edit, Film, Globe, Image, Key, Link, Music, Plus, Sparkles, Tags, Trash2, Upload, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { triggerModelConfigChanged } from '../services/modelConfigEvents';
 import { createDefaultModelConfigs, saveModelConfigWithExclusiveEnabled, toggleConfigEnabled } from '../services/modelConfigService';
@@ -53,28 +53,28 @@ const getModelTypesForProvider = (provider: AIModelConfig['provider']) => {
 const getModelTypeColorStyles = (modelType: AIModelConfig['modelType']) => {
   const colorMap = {
     llm: {
-      text: 'text-green-400',
-      bg: 'bg-green-900/30',
+      text: 'text-green-300',
+      bg: 'bg-green-900/80',
       border: 'border-green-500/30'
     },
     text2image: {
       text: 'text-orange-400',
-      bg: 'bg-orange-900/30',
+      bg: 'bg-orange-900/80',
       border: 'border-orange-500/30'
     },
     image2video: {
       text: 'text-purple-400',
-      bg: 'bg-purple-900/30',
+      bg: 'bg-purple-900/80',
       border: 'border-purple-500/30'
     },
     tts: {
       text: 'text-blue-400',
-      bg: 'bg-blue-900/30',
+      bg: 'bg-blue-900/80',
       border: 'border-blue-500/30'
     },
     stt: {
       text: 'text-yellow-400',
-      bg: 'bg-yellow-900/30',
+      bg: 'bg-yellow-900/80',
       border: 'border-yellow-500/30'
     }
   };
@@ -564,22 +564,22 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                                 </span>
                               )}
                               {config.enabled && (
-                                <span className="text-[12px] text-yellow-500 bg-yellow-900/20 border border-yellow-500/30 px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex items-center gap-1">
+                                <span className="text-[12px] text-yellow-500 bg-yellow-900/70 border border-yellow-500/30 px-1.5 py-0.5 rounded-full font-mono uppercase tracking-wider flex items-center gap-1">
                                   <Check className="w-2.5 h-2.5" />
                                   系统默认
                                 </span>
                               )}
                             </div>
-                            <div className={`text-[12px] text-slate-600 font-mono flex items-center gap-2 ${isMobile ? 'flex-wrap' : ''}`}>
+                            <div className={`text-[12px] text-slate-500 font-mono flex items-center gap-2 ${isMobile ? 'flex-wrap' : ''}`}>
                               {config.apiKey && (
-                                <span className="text-green-500">● 已配置</span>
+                                <span className="text-green-700">● 已配置</span>
                               )}
                               {config.model && (
-                                <span className="text-[10px] text-green-400 bg-slate-900/20 border border-green-500/30 px-1.5 py-0.5 rounded font-mono">
+                                <span className="text-[10px] text-green-700 bg-slate-900/20 border border-green-600/30 px-1.5 py-0.5 rounded font-mono">
                                   {config.model}
                                 </span>
                               )}
-                              {!isMobile && <span className="truncate max-w-[300px]">
+                              {!isMobile && <span className="text-[10px] text-slate-400 truncate max-w-[300px]">
                                 {config.apiUrl}
                               </span>}
                             </div>
@@ -606,7 +606,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                           </button>
                           <button
                             onClick={() => handleEdit(config)}
-                            className="p-2 hover:bg-slate-950 bg-slate-900 text-slate-600 hover:text-text-primary transition-colors rounded-lg"
+                            className="p-2 hover:bg-slate-950 bg-slate-900 text-slate-600 hover:text-slate-300 transition-colors rounded-lg"
                             title="编辑"
                           >
                             <Edit className="w-4 h-4" />

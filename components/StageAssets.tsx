@@ -1,4 +1,4 @@
-import { AlertCircle, AudioLines, AudioWaveform, Check, Download, Expand, FileMusic, Group, Loader2, MapPin, Mic, RefreshCw, Shirt, Sparkles, Speaker, Speech, Upload, User, Waves, X } from 'lucide-react';
+import { AlertCircle, AudioLines, AudioWaveform, Check, Download, Expand, FileMusic, Group, Image, Loader2, MapPin, Mic, RefreshCw, Shirt, Sparkles, Speaker, Speech, Upload, User, Waves, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { VOICE_LIBRARY } from '../config/voiceLibrary';
 import { ModelService } from '../services/modelService';
@@ -464,7 +464,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           disabled={processingState?.type === 'character' && processingState?.id === char.id || !!batchProgress || !!processingState}
                           className="px-4 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded text-xs font-bold transition-all border border-slate-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                        >
-                         {processingState?.type === 'character' && processingState?.id === char.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                         {processingState?.type === 'character' && processingState?.id === char.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Image className="w-3 h-3" />}
                          {processingState?.type === 'character' && processingState?.id === char.id ? '生成中...' : '生成'}
                        </button>
                      </div>
@@ -479,7 +479,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                         className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="重新生成"
                       >
-                        <Sparkles className="w-3 h-3" />
+                        <Image className="w-3 h-3" />
                       </button>
                       {/* Download Button */}
                       <button
@@ -586,7 +586,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                           disabled={processingState?.type === 'scene' && processingState?.id === scene.id || !!batchProgress || !!processingState}
                           className="px-4 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 rounded text-xs font-bold transition-all border border-slate-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                        >
-                          {processingState?.type === 'scene' && processingState?.id === scene.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                          {processingState?.type === 'scene' && processingState?.id === scene.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Image className="w-3 h-3" />}
                           {processingState?.type === 'scene' && processingState?.id === scene.id ? '生成中...' : '生成'}
                        </button>
                      </div>
@@ -600,7 +600,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
                         className="p-2 bg-slate-700/50 text-slate-50 rounded-full hover:bg-slate-800 hover:text-slate-50 transition-colors border border-white/10 backdrop-blur"
                         title="重新生成"
                       >
-                        <Sparkles className="w-3 h-3" />
+                        <Image className="w-3 h-3" />
                       </button>
                       {/* Download Button */}
                       <button

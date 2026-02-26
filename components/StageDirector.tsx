@@ -1,4 +1,4 @@
-import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clapperboard, Clock, Download, Edit, Film, Image as ImageIcon, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
+import { AlertCircle, Aperture, ChevronLeft, ChevronRight, Clapperboard, Clock, Download, Edit, Film, Image, Image as ImageIcon, Loader2, MapPin, MessageSquare, RefreshCw, Shirt, Sparkles, Trash, Upload, Video, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { modelConfigEventBus } from '../services/modelConfigEvents';
 import { ModelService } from '../services/modelService';
@@ -685,6 +685,187 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
     }
   };
 
+  const handleSceneBatchGenerateImages = async (sceneId: string) => {
+    const sceneShots = project.shots.filter(s => String(s.sceneId) === String(sceneId));
+    if (sceneShots.length === 0) return;
+
+    const isRegenerate = sceneShots.every(s => s.keyframes?.find(k => k.type === 'start')?.imageUrl);
+
+    let shotsToProcess = [];
+    if (isRegenerate) {
+        const confirmed = await dialog.confirm({
+          title: '确认重新生成',
+          message: `确定要重新生成场景 "${sceneId}" 的所有镜头帧图片吗？这将覆盖现有图片。`,
+          type: 'warning',
+        });
+        if (!confirmed) return;
+        shotsToProcess = [...sceneShots];
+    } else {
+        shotsToProcess = sceneShots.filter(s => !s.keyframes?.find(k => k.type === 'start')?.imageUrl);
+    }
+
+    if (shotsToProcess.length === 0) return;
+
+    setBatchProgress({
+        current: 0,
+        total: shotsToProcess.length,
+        message: isRegenerate ? `正在重新生成场景 ${sceneId} 的帧图片...` : `正在生成场景 ${sceneId} 的帧图片...`
+    });
+
+    let currentShots = [...project.shots];
+
+    for (let i = 0; i < shotsToProcess.length; i++) {
+        if (i > 0) await new Promise(r => setTimeout(r, 3000));
+
+        const shot = shotsToProcess[i];
+        setBatchProgress({
+            current: i + 1,
+            total: shotsToProcess.length,
+            message: `正在生成场景 ${sceneId} - 镜头 ${i+1}/${shotsToProcess.length}...`
+        });
+
+        try {
+            const referenceImages = getRefImagesForShot(shot);
+            const referencePrompt = getRefImagesDescForShot(shot);
+
+            if(imageCount > 1){
+                const existingFf = shot.keyframes?.find(k => k.type === 'full');
+                let full_prompt = existingFf?.visualPrompt || shot.actionSummary;
+                const ffId = existingFf?.id || `kf-${shot.id}-full-${Date.now()}`;
+                const full_url = await ModelService.generateImage(full_prompt + (referencePrompt?referencePrompt:""), referenceImages, "full", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                currentShots = currentShots.map(s => {
+                    if (s.id !== shot.id) return s;
+                    const newKeyframes = [...(s.keyframes || [])];
+                    const idx = newKeyframes.findIndex(k => k.type === 'full');
+                    const newKf: Keyframe = {
+                        id: ffId,
+                        type: 'full',
+                        visualPrompt: full_prompt,
+                        imageUrl: full_url,
+                        status: 'completed'
+                    };
+                    if (idx >= 0) newKeyframes[idx] = newKf;
+                    else newKeyframes.push(newKf);
+                    return { ...s, keyframes: newKeyframes };
+                });
+            }else{
+                const existingKf = shot.keyframes?.find(k => k.type === 'start');
+                let prompt = existingKf?.visualPrompt || shot.actionSummary;
+                const kfId = existingKf?.id || `kf-${shot.id}-start-${Date.now()}`;
+                const url = await ModelService.generateImage(prompt + (referencePrompt?referencePrompt:""), referenceImages, "start", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                currentShots = currentShots.map(s => {
+                    if (s.id !== shot.id) return s;
+                    const newKeyframes = [...(s.keyframes || [])];
+                    const idx = newKeyframes.findIndex(k => k.type === 'start');
+                    const newKf: Keyframe = {
+                        id: kfId,
+                        type: 'start',
+                        visualPrompt: prompt,
+                        imageUrl: url,
+                        status: 'completed'
+                    };
+                    if (idx >= 0) newKeyframes[idx] = newKf;
+                    else newKeyframes.push(newKf);
+                    return { ...s, keyframes: newKeyframes };
+                });
+
+                const existingEf = shot.keyframes?.find(k => k.type === 'end');
+                let end_prompt = existingEf?.visualPrompt || shot.actionSummary;
+                const efId = existingEf?.id || `kf-${shot.id}-end-${Date.now()}`;
+                const end_url = await ModelService.generateImage(end_prompt + (referencePrompt?referencePrompt:""), referenceImages, "end", localStyle, imageSize, 1, shot.modelProviders,project.id);
+                currentShots = currentShots.map(s => {
+                    if (s.id !== shot.id) return s;
+                    const newKeyframes = [...(s.keyframes || [])];
+                    const idx = newKeyframes.findIndex(k => k.type === 'end');
+                    const newEf: Keyframe = {
+                        id: efId,
+                        type: 'end',
+                        visualPrompt: end_prompt,
+                        imageUrl: end_url,
+                        status: 'completed'
+                    };
+                    if (idx >= 0) newKeyframes[idx] = newEf;
+                    else newKeyframes.push(newEf);
+                    return { ...s, keyframes: newKeyframes };
+                });
+            }
+
+             updateProject({ shots: currentShots });
+
+        } catch (e) {
+            if(e.message?.includes("enough")){
+                await dialog.alert({ title: '错误', message: '余额不足，请充值', type: 'error' });
+            }else{
+                await dialog.alert({ title: '错误', message: '生成失败，请重试', type: 'error' });
+            }
+            console.error(`Failed to generate for shot ${shot.id}`, e);
+        }
+    }
+
+    setBatchProgress(null);
+  };
+
+  const handleSceneBatchGenerateVideos = async (sceneId: string) => {
+    const sceneShots = project.shots.filter(s => String(s.sceneId) === String(sceneId));
+    if (sceneShots.length === 0) return;
+
+    const isRegenerate = sceneShots.every(s => s.interval?.videoUrl);
+    if (isRegenerate) {
+        const confirmed = await dialog.confirm({
+          title: '确认重新生成',
+          message: `确定要重新生成场景 "${sceneId}" 的所有视频吗？这将覆盖现有视频。`,
+          type: 'warning',
+        });
+        if (!confirmed) return;
+    }
+
+    const targetShots = isRegenerate ? sceneShots : sceneShots.filter(s => !s.interval?.videoUrl);
+    if (targetShots.length === 0) return;
+
+    setBatchVideoProgress({ current: 0, total: targetShots.length, currentShotName: sceneId });
+
+    for (let i = 0; i < targetShots.length; i++) {
+        const shot = targetShots[i];
+        setBatchVideoProgress({
+            current: i + 1,
+            total: targetShots.length,
+            currentShotName: `${sceneId} - 镜头 ${project.shots.findIndex(s => s.id === shot.id) + 1}`
+        });
+
+        try {
+            const currentStartKf = shot.keyframes?.find(k => k.type === 'start');
+            const currentEndKf = shot.keyframes?.find(k => k.type === 'end');
+            const currentFullKf = shot.keyframes?.find(k => k.type === 'full');
+
+            if (imageCount > 1 && !currentFullKf?.imageUrl) {
+                await handleGenerateKeyframe(shot, 'full');
+            } else if (imageCount <= 1 && (!currentStartKf?.imageUrl || !currentEndKf?.imageUrl)) {
+                if (!currentStartKf?.imageUrl) {
+                    await handleGenerateKeyframe(shot, 'start');
+                }
+                if (!currentEndKf?.imageUrl) {
+                    await handleGenerateKeyframe(shot, 'end');
+                }
+            }
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            const updatedShot = project.shots.find(s => s.id === shot.id);
+            if (!updatedShot) continue;
+
+            await handleGenerateVideo(updatedShot);
+        } catch (e) {
+            console.error(`Failed to generate video for shot ${shot.id}`, e);
+        }
+
+        if (i < targetShots.length - 1) {
+            await new Promise(r => setTimeout(r, 2000));
+        }
+    }
+
+    setBatchVideoProgress(null);
+  };
+
   const renderSceneContext = () => {
       if (!activeShot || !project.scriptData) return null;
       // String comparison for safety
@@ -838,7 +1019,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                         : 'bg-slate-700 text-slate-50 hover:bg-slate-600 shadow-lg shadow-white/5 border border-slate-600'
                   }`}
               >
-                  <Sparkles className="w-3 h-3" />
+                  <Image className="w-3 h-3" />
                   {allStartFramesGenerated ? '重新生图' : '批量生图'}
               </button>
               <button
@@ -865,13 +1046,33 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                     <MapPin className="w-4 h-4 text-slate-500" />
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景{scene.id}：{scene?.location || '未知场景'}
                     </span>
-                     <button
+                    <button
                     onClick={() => setEditingSceneInMain(scene!)}
                     className="text-[11px] font-medium text-slate-400 hover:text-slate-50 rounded transition-all"
                     title="编辑场景"
                  >
                     <Edit className="w-3.5 h-3.5" />
                  </button>
+                 <div className="flex-1 flex justify-end items-center gap-2">
+                    <button
+                        onClick={() => handleSceneBatchGenerateImages(scene.id)}
+                        disabled={!!batchProgress || !!batchVideoProgress}
+                        className="text-[11px] font-medium text-slate-400 hover:text-slate-50 rounded transition-all flex items-center gap-1"
+                        title="批量生成图片"
+                    >
+                        <Image className="w-3 h-3" />
+                        生图
+                    </button>
+                    <button
+                        onClick={() => handleSceneBatchGenerateVideos(scene.id)}
+                        disabled={!!batchProgress || !!batchVideoProgress}
+                        className="text-[11px] font-medium text-slate-400 hover:text-slate-50 rounded transition-all flex items-center gap-1"
+                        title="批量生成视频"
+                    >
+                        <Video className="w-3 h-3" />
+                        视频
+                    </button>
+                    </div>
                  </div>
                 <div className={`grid gap-4 pb-4 ${activeShotId ? 'grid-cols-2 md:grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4': 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5'}`}>
                     {sceneShots.map((shot, idx) => {

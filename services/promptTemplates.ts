@@ -63,13 +63,13 @@ export const PROMPT_TEMPLATES = {
 
     说明：
     1. 设计一组覆盖全部情节动作的镜头序列。
-    2. 重要提示：每场戏镜头数量上限为 2-8 个，避免出现 JSON 截断错误。
+    2. 重要提示：每场戏镜头数量上限为 2-8 个，每个镜头时长不超过12秒，避免出现 JSON 截断错误。
     3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
     4. 景别：明确取景范围（如：大特写、中景、全景）。
-    5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 语言描述）。
-    6. 视觉提示语：用于图像生成的详细英文描述，字数控制在 80 词以内。
+    5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 语言描述），遵循下面表述方式：主体+运动+环境（非必须）+运镜/切镜（非必须）+美学描述（非必须）+声音（非必须）。
+    6. 视觉提示语：用于图像生成的详细${lang}描述，字数控制在 120 词以内。
     7. 转场动画：包含起始帧，结束帧，时长，运动强度（取值为 0-100）。
-    8. 视频提示词：visualPrompt, 使用 ${lang} 语言描述。
+    8. 关键帧提示词：visualPrompt, 使用 ${lang} 语言描述，遵循下面表述方式： 主体+行为+环境，可补充： 风格、色彩、光影、构图 等美学元素。
 
     输出格式：JSON 数组，数组内对象包含以下字段：
     - id（字符串类型）
@@ -80,7 +80,7 @@ export const PROMPT_TEMPLATES = {
     - shotSize（字符串类型）
     - characters（字符串数组类型）
     - keyframes（对象数组类型，对象包含 id、type（取值为 ["start", "end"]）、visualPrompt（使用 ${lang} 语言描述） 字段）
-    - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration、motionStrength、status（取值为 ["pending", "completed"]） 字段）
+    - interval（对象类型，包含 id、startKeyframeId、endKeyframeId、duration(不超过12s)、motionStrength、status（取值为 ["pending", "completed"]） 字段）
   `,
 
   // ============ 剧本生成 ============

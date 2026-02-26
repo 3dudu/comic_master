@@ -540,9 +540,15 @@ export const generateVideo = async (
 ): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/contents/generations/tasks`;
 
+  let p_duration = duration;
+  if(duration<4){
+    p_duration = 4;
+  }else if(duration>12){
+    p_duration = 12;
+  }
   const requestBody: any = {
     model: runtimeVideoModel,
-    duration: duration>6?10:5,
+    duration: p_duration,
     watermark: false,
     content: [{
       type: "text",

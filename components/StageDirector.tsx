@@ -282,7 +282,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
     //console.log("Generating Video for Shot:", shot);
     if (!shot.interval) return;
     
-    let prompt = "景别："+shot.shotSize+"；镜头运动："+shot.cameraMovement+""+(shot.interval.motionStrength?"；运动强度："+shot.interval.motionStrength:"")+"；剧情描述："+shot.actionSummary+""+ (shot.characters?" 角色："+shot.characters:"") + (shot.dialogue?" 对白："+shot.dialogue:"");
+    let prompt = "景别："+shot.shotSize+"；镜头运动："+shot.cameraMovement+""+(shot.interval.motionStrength?"；运动强度："+shot.interval.motionStrength:"")+"；\n 剧情描述："+shot.actionSummary+""+ (shot.characters?" \n 角色："+shot.characters:"") + (shot.dialogue?" \n对白："+shot.dialogue:"");
     //console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
     let sImageiurl = null;
     let eImageiurl = null;
@@ -291,17 +291,17 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
         if(sKf){
           if(sKf.imageUrl){
             sImageiurl = sKf.imageUrl;
-            prompt = prompt+"\n参考图片包含"+imageCount+"个连续的子图，请结合下面描述生成完整视频。";
+            prompt = prompt+"\n 参考图：包含"+imageCount+"个连续的子图，图片内容如下：";
           }
           prompt = prompt+"\n"+sKf?.visualPrompt;
         }
     }else{
         const sKf = shot.keyframes?.find(k => k.type === 'start');
         sImageiurl = sKf?.imageUrl;
-        prompt = prompt+"\n 画面开始："+sKf?.visualPrompt+",参考图1；";
+        prompt = prompt+"\n 参考图1，画面开始："+sKf?.visualPrompt+"；";
         const eKf = shot.keyframes?.find(k => k.type === 'end');
         eImageiurl = eKf?.imageUrl;
-        prompt = prompt+"\n 画面结束："+eKf?.visualPrompt+",参考图2；";
+        prompt = prompt+"\n 参考图2，画面结束："+eKf?.visualPrompt+"；";
     }
     prompt = prompt+"\n 按照上面描述生成视频！";
     // Fix: Remove logic that auto-grabs next shot's frame.

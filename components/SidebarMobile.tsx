@@ -29,9 +29,9 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
   return (
     <aside className="top-0 z-50 left-0 right-0 z-50 select-none bg-slate-600 border-b border-slate-600 flex flex-col">
       {/* 顶部栏 */}
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="flex items-center justify-between px-2 py-2">
         {/* 左侧：Logo 和 返回按钮 */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">y
           <button
             onClick={onExit}
             className="text-slate-400 hover:text-slate-50 transition-colors"
@@ -89,7 +89,7 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
               className={`
                 flex flex-col items-center px-2 min-w-[60px] rounded-lg transition-all duration-200
                 ${isActive
-                  ? 'text-slate-50'
+                  ? 'text-slate-50 font-bold'
                   : 'text-slate-500 hover:text-slate-300'
                 }
               `}

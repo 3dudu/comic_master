@@ -293,6 +293,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
           localStyle={localStyle}
           imageSize={imageSize}
           processingState={processingState}
+          setProcessingState={setProcessingState}
           updateProject={updateProject}
           onClose={() => setSelectedCharId(null)}
           setPreviewImage={setPreviewImage}

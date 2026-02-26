@@ -1487,6 +1487,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               localStyle={localStyle}
               imageSize={imageSize}
               processingState={wardProcessingState}
+              setProcessingState={setWardProcessingState}
               updateProject={updateProject}
               onClose={() => setSelectedCharId(null)}
               setPreviewImage={setPreviewImageUrl}

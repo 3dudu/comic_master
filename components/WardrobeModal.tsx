@@ -11,6 +11,7 @@ interface Props {
   localStyle: string;
   imageSize: string;
   processingState: {id: string, type: 'character'|'scene'}|null;
+  setProcessingState: (state: {id: string, type: 'character'|'scene'}|null) => void;
   updateProject: (updates: Partial<ProjectState>) => void;
   onClose: () => void;
   setPreviewImage: (image:string)=>void;
@@ -22,6 +23,7 @@ const WardrobeModal: React.FC<Props> = ({
   localStyle,
   imageSize,
   processingState,
+  setProcessingState,
   updateProject,
   onClose,
   setPreviewImage
@@ -65,6 +67,8 @@ const WardrobeModal: React.FC<Props> = ({
       const variation = character?.variations?.find(v => v.id === varId);
       if (!character || !variation) return;
 
+      setProcessingState({ id: varId, type: 'character' });
+
       try {
           // IMPORTANT: Use Base Look as reference to maintain facial consistency
           const refImages = character.referenceImage ? [character.referenceImage] : [];
@@ -89,6 +93,8 @@ const WardrobeModal: React.FC<Props> = ({
       } catch (e) {
           console.error(e);
           await dialog.alert({ title: '错误', message: '造型图生成失败', type: 'error' });
+      } finally {
+          setProcessingState(null);
       }
   };
 

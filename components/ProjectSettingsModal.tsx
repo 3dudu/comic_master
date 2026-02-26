@@ -27,7 +27,7 @@ const STYLE_OPTIONS = [
   { label: '赛博朋克', value: '赛博朋克' },
   { label: '未来机甲', value: '未来机甲' },
   { label: '二次元', value: '二次元' },
-  { label: '写实', value: '写实' },
+  { label: '真人写实', value: '真人写实' },
   { label: '蜡笔画风格', value: '蜡笔画风格' },
   { label: '现代城市风', value: '现代城市风' }
 ];
@@ -56,7 +56,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
   const [localTitle, setLocalTitle] = useState(project?.title || '');
   const [localDuration, setLocalDuration] = useState(project?.targetDuration || '60s');
   const [localLanguage, setLocalLanguage] = useState(project?.language || '中文');
-  const [localStyle, setLocalStyle] = useState(project?.visualStyle || '写实');
+  const [localStyle, setLocalStyle] = useState(project?.visualStyle || '真人写实');
   const [localImageSize, setLocalImageSize] = useState(project?.imageSize || '1440x2560');
   const [localImageCount, setLocalImageCount] = useState(project?.imageCount || 1);
   const [customDurationInput, setCustomDurationInput] = useState('');
@@ -74,7 +74,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
       setLocalTitle(project.title);
       setLocalDuration(project.targetDuration || '60s');
       setLocalLanguage(project.language || '中文');
-      setLocalStyle(project.visualStyle || '写实');
+      setLocalStyle(project.visualStyle || '真人写实');
       setLocalImageSize(project.imageSize || '1440x2560');
       setLocalImageCount(project.imageCount || 1);
       setCustomDurationInput(project.targetDuration === 'custom' ? project.targetDuration : '');

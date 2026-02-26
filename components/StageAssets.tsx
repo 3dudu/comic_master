@@ -19,7 +19,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
   const [batchProgress, setBatchProgress] = useState<{current: number, total: number} | null>(null);
   const [selectedCharId, setSelectedCharId] = useState<string | null>(null);
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
-  const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
+  const [localStyle, setLocalStyle] = useState(project.visualStyle || '真人写实');
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [fileUploadModalOpen, setFileUploadModalOpen] = useState(false);
@@ -42,7 +42,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
 
   // Sync local state with project settings
   useEffect(() => {
-    setLocalStyle(project.visualStyle || '写实');
+    setLocalStyle(project.visualStyle || '真人写实');
     setImageSize(project.imageSize || '2560x1440');
   }, [project.visualStyle, project.imageSize]);
 

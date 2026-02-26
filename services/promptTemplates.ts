@@ -7,11 +7,11 @@ export const PROMPT_TEMPLATES = {
   // ============ 系统提示词 ============
   SYSTEM_SCRIPT_ANALYZER: "你是一名专业的剧本分析员。请始终以有效的 JSON 格式进行回复。",
 
-  SYSTEM_PHOTOGRAPHER: "你是一名专业的摄影师，请始终以有效的 JSON 数组格式进行回复。",
+  SYSTEM_PHOTOGRAPHER: "你是一名专业的摄影师。请始终以有效的 JSON 数组格式进行回复。",
 
-  SYSTEM_SCREENWRITER: "你是一名专业的编剧，擅长创作各种类型的影视剧本。",
+  SYSTEM_SCREENWRITER: "你是一名专业的编剧，擅长创作各种类型的广告，短剧，影视剧本。",
 
-  SYSTEM_VISUAL_DESIGNER: "你是一名专业的视觉设计师，擅长为电影角色和场景设计视觉提示词。",
+  SYSTEM_VISUAL_DESIGNER: "你是一名专业的影视美术设计师，擅长为影视角色和场景设计服装、造型、道具等，以专业词汇描述你设计的角色或场景。",
 
   // ============ 剧本解析 ============
   PARSE_SCRIPT: (rawText: string, language: string) => `
@@ -63,7 +63,7 @@ export const PROMPT_TEMPLATES = {
 
     说明：
     1. 设计一组覆盖全部情节动作的镜头序列。
-    2. 重要提示：每场戏镜头数量上限为 2-4 个，避免出现 JSON 截断错误。
+    2. 重要提示：每场戏镜头数量上限为 2-8 个，避免出现 JSON 截断错误。
     3. 镜头运动：请使用专业术语（如：前推、右摇、固定、手持、跟拍）。
     4. 景别：明确取景范围（如：大特写、中景、全景）。
     5. 镜头情节概述：详细描述该镜头内发生的情节（使用 ${lang} 指定语言）。
@@ -93,10 +93,10 @@ export const PROMPT_TEMPLATES = {
     你是一名专业的编剧。请根据以下提示词创作一个完整的影视剧本。
 
     创作要求：
-    1. 目标时长：${targetDuration}
+    1. 剧本时长：${targetDuration}
     2. 题材类型：${genre}
     3. 输出语言：${language}
-    4. 剧本结构清晰，包含场景标题、时间、地点、角色、动作描述、对白
+    4. 剧本结构清晰，包含剧本标题、场景标题、时间（大的时间，如：上午、下午、清晨、夜晚，或者某年某月，某个年代等）、地点、天气、角色、动作描述、对白
     5. 情节紧凑，画面感强
     6. 角色性格鲜明，对话自然
 
@@ -120,7 +120,7 @@ export const PROMPT_TEMPLATES = {
   `,
 
   // ============ 带参考图的图片生成 ============
-  IMAGE_GENERATION_WITH_REFERENCE: (prompt: string,localStyle: string="写实") => `
+  IMAGE_GENERATION_WITH_REFERENCE: (prompt: string,localStyle: string="真人写实") => `
     生成符合下面描述的电影级镜头，画面风格为：${localStyle}。
     任务描述：
       ${prompt}

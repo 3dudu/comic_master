@@ -24,7 +24,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
   const [editingSceneInMain, setEditingSceneInMain] = useState<Scene | null>(null);
   const [processingState, setProcessingState] = useState<{id: string, type: 'kf_start'|'kf_end'|'kf_full'|'video'|'character'}|null>(null);
   const [batchProgress, setBatchProgress] = useState<{current: number, total: number, message: string} | null>(null);
-  const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
+  const [localStyle, setLocalStyle] = useState(project.visualStyle || '真人写实');
   const [imageSize, setImageSize] = useState(project.imageSize || '2560x1440');
   const [imageCount, setImageCount] = useState(project.imageCount || 0);
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
@@ -35,7 +35,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
 
   // Sync local state with project settings
   useEffect(() => {
-    setLocalStyle(project.visualStyle || '写实');
+    setLocalStyle(project.visualStyle || '真人写实');
     setImageSize(project.imageSize || '2560x1440');
     setImageCount(project.imageCount || 0);
   }, [project.visualStyle, project.imageSize, project.imageCount]);
@@ -861,7 +861,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                     const sceneShots = project.shots.filter(s => s.sceneId === scene.id);
                 return (
                   <>
- <div className="flex items-center gap-2 pb-2">
+ <div className="flex items-center gap-2 pb-2 border-b border-slate-600 mb-2">
                     <MapPin className="w-4 h-4 text-slate-500" />
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">场景{scene.id}：{scene?.location || '未知场景'}
                     </span>

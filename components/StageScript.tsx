@@ -39,7 +39,7 @@ const STYLE_OPTIONS = [
   { label: '赛博朋克', value: '赛博朋克' },
   { label: '未来机甲', value: '未来机甲' },
   { label: '二次元', value: '二次元' },
-  { label: '写实', value: '写实' },
+  { label: '真人写实', value: '真人写实' },
   { label: '蜡笔画风格', value: '蜡笔画风格' },
   { label: '现代城市风', value: '现代城市风' }
 ];
@@ -84,7 +84,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
   const [localTitle, setLocalTitle] = useState(project.title);
   const [localDuration, setLocalDuration] = useState(project.targetDuration || '60s');
   const [localLanguage, setLocalLanguage] = useState(project.language || '中文');
-  const [localStyle, setLocalStyle] = useState(project.visualStyle || '写实');
+  const [localStyle, setLocalStyle] = useState(project.visualStyle || '真人写实');
   const [localImageSize, setLocalImageSize] = useState(project.imageSize || '1440x2560');
   const [localImageCount, setLocalImageCount] = useState(project.imageCount || 1);
   const [customDurationInput, setCustomDurationInput] = useState('');
@@ -124,7 +124,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
     setLocalTitle(project.title);
     setLocalDuration(project.targetDuration || '60s');
     setLocalLanguage(project.language || '中文');
-    setLocalStyle(project.visualStyle || '写实');
+    setLocalStyle(project.visualStyle || '真人写实');
     setLocalImageSize(project.imageSize || '1440x2560');
     setLocalImageCount(project.imageCount || 1);
 
@@ -819,7 +819,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
         </div>
 
         {/* Footer Action */}
-        <div className="p-6 border-t border-slate-600 bg-slate-900">
+        <div className="p-4 border-t border-slate-600 bg-slate-900">
            <button
               onClick={handleAnalyze}
               disabled={isProcessing}
@@ -899,7 +899,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
            </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-4 pb-0">
            <div className={`mx-auto ${isMobile ? 'h-[600px]' : 'h-full'} flex flex-col py-2`}>
               <textarea
                   value={localScript}

@@ -7,7 +7,7 @@ import { PROMPT_TEMPLATES } from "./promptTemplates";
 // 火山引擎配置
 const DOUBAO_CONFIG = {
   // 文本生成模型（替代 gemini-2.5-flash）
-  TEXT_MODEL: "doubao-1-5-pro-32k-250115", // 或 "doubao-pro-128k"
+  TEXT_MODEL: "doubao-seed-1-8-251228", // 或 "doubao-pro-128k"
 
   // 图片生成模型（替代 gemini-2.5-flash-image）
   IMAGE_MODEL: "doubao-seedream-4-5-251128", // 火山引擎的图片生成模型
@@ -15,7 +15,7 @@ const DOUBAO_CONFIG = {
   // 视频生成模型（替代 veo-3.1-fast-generate-preview）
   //VIDEO_MODEL: "doubao-seedance-1-5-pro-251215", // 火山引擎的视频生成模型
   //VIDEO_MODEL: "doubao-seedance-1-0-pro-250528", // 火山引擎的视频生成模型
-  VIDEO_MODEL: "doubao-seedance-1-0-lite-i2v-250428", // 火山引擎的视频生成模型
+  VIDEO_MODEL: "doubao-seedance-1-0-pro-250528", // 火山引擎的视频生成模型
 
   // API 端点
   API_ENDPOINT: "https://ark.cn-beijing.volces.com/api/v3",
@@ -415,7 +415,7 @@ export const generateImage = async (
   prompt: string,
   referenceImages: string[] = [],
   imageType: string = "character",
-  localStyle: string = "写实",
+  localStyle: string = "真人写实",
   imageSize: string = "2560x1440",
   imageCount: number = 1
 ): Promise<string> => {

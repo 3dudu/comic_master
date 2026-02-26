@@ -718,7 +718,7 @@ export class ModelService {
     prompt: string,
     referenceImages: string[] = [],
     imageType: string = "character",
-    localStyle: string = "写实",
+    localStyle: string = "真人写实",
     imageSize: string = "2560x1440",
     imageCount: number = 1,
     shotprovider: any = null,

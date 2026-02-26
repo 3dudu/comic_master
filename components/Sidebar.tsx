@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
               onClick={() => setStage(item.id as any)}
               className={`w-full flex items-center justify-between px-6 py-4 transition-all duration-200 group relative border-l-2 ${
                 isActive
-                  ? 'border-white bg-slate-700 text-slate-50'
+                  ? 'border-white bg-slate-700 text-slate-50 font-bold'
                   : 'border-transparent text-slate-500 hover:text-slate-300 hover:bg-slate-700/50'
               }`}
               title={collapsed ? item.label : ''}

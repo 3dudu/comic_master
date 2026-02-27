@@ -170,6 +170,7 @@ export const exportProjectToFile = (project: ProjectState): void => {
   const url = URL.createObjectURL(dataBlob);
   const link = document.createElement('a');
   link.href = url;
+  link.target = "_blank";
   link.download = `${project.title}_${project.id}.json`;
   document.body.appendChild(link);
   link.click();

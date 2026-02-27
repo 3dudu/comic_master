@@ -240,10 +240,37 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
     // 创建下载链接
     const link = document.createElement('a');
     link.href = project.mergedVideoUrl;
+    link.target = '_blank';
     link.download = `${project.scriptData?.title || 'merged-video'}.mp4`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadSelected = async () => {
+    if (selectedShotIds.size === 0) return;
+
+    const shotsToDownload = project.shots.filter(s => selectedShotIds.has(s.id) && s.interval?.videoUrl);
+
+    for (let i = 0; i < shotsToDownload.length; i++) {
+      const shot = shotsToDownload[i];
+      const videoUrl = shot.interval?.videoUrl;
+      if (!videoUrl) continue;
+
+      // 创建下载链接
+      const link = document.createElement('a');
+      link.href = videoUrl;
+      link.target = '_blank';
+      link.download = `${project.scriptData?.title || 'shot'}-${String(project.shots.indexOf(shot) + 1).padStart(3, '0')}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 添加小延迟避免浏览器阻塞
+      if (i < shotsToDownload.length - 1) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+    }
   };
 
     if (!project.shots.length) return (
@@ -548,7 +575,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
              )}
 
              {/* Action Buttons */}
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                <button
                   onClick={handlePlaySelected}
                   disabled={selectedShotIds.size === 0 || isPlayingSelected}
@@ -565,18 +592,28 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                  ) : (
                    <>
                      <Film className="w-4 h-4" />
-                     播放选中视频 ({selectedShotIds.size})
+                     播放选中 ({selectedShotIds.size})
                    </>
                  )}
                </button>
-
+               <button
+                  onClick={handleDownloadSelected}
+                  disabled={selectedShotIds.size === 0}
+                  className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
+                    selectedShotIds.size > 0
+                      ? 'bg-slate-700 text-slate-50 hover:bg-slate-600 border-slate-500 shadow-lg shadow-slate-600/20'
+                      : 'bg-slate-900 text-slate-600 border-slate-600 cursor-not-allowed'
+                  }`}>
+                 <Download className="w-4 h-4" />
+                 下载选中 ({selectedShotIds.size})
+               </button>
                <button
                   onClick={handleMerge}
                   disabled={selectedShotIds.size === 0 || isMerging}
                   className={`h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all border ${
                  selectedShotIds.size > 0 && !isMerging
-                   ? 'bg-slate-800 text-slate-50 hover:bg-slate-400 border-white shadow-lg shadow-white/5'
-                   : 'bg-slate-900 text-slate-600 border-slate-600 cursor-not-allowed'
+                   ? 'bg-slate-600 text-slate-50 hover:bg-slate-500 border-white shadow-lg shadow-white/5'
+                   : 'bg-slate-700 text-slate-600 border-slate-600 cursor-not-allowed'
                }`}>
                  {isMerging ? (
                    <>
@@ -599,11 +636,11 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
                <button
                   onClick={handleDownload}
                   disabled={!project.mergedVideoUrl}
-                  className={`h-12 bg-slate-700 hover:bg-slate-800 text-slate-300 border border-slate-600 hover:border-slate-300 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
+                  className={`h-12 bg-slate-700 hover:bg-slate-500 text-slate-300 border border-slate-600 hover:border-slate-300 rounded-lg flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
                     !project.mergedVideoUrl ? 'cursor-not-allowed opacity-50' : ''
                   }`}>
                  <Download className="w-4 h-4" />
-                 下载视频
+                 下载成片
                </button>
              </div>
           </div>

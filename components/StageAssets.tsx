@@ -235,7 +235,7 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       const link = document.createElement('a');
       link.href = url;
       link.download = `${charName}.png`;
-
+      link.target = "_blank";
       // Trigger download
       document.body.appendChild(link);
       link.click();

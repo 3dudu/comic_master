@@ -363,7 +363,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-
+      a.target = '_blank';
       // 生成文件名：shot_id_序号_标题.mp4
       const shotNumber = project.shots.findIndex(s => s.id === shot.id) + 1;
       a.download = `shot_${shotNumber.toString().padStart(3, '0')}.mp4`;

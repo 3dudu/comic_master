@@ -226,6 +226,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
+      a.target = '_blank';
       a.download = `cinegen-model-configs-${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(a);
       a.click();

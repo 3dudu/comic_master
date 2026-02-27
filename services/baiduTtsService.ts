@@ -90,7 +90,7 @@ const fetchWithRetry = async (
       );
     }
 
-    return response.json();
+    return response;
   }, retries);
 };
 

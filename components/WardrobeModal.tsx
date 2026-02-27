@@ -72,7 +72,7 @@ const WardrobeModal: React.FC<Props> = ({
       try {
           // IMPORTANT: Use Base Look as reference to maintain facial consistency
           const refImages = character.referenceImage ? [character.referenceImage] : [];
-          const prompt = character.visualPrompt || await ModelService.generateVisualPrompts('character', character, project.scriptData?.genre || '剧情片');
+          const prompt = character.visualPrompt || await ModelService.generateVisualPrompts('character', character, project.scriptData?.genre || '剧情片',project.visualStyle);
 
           // Enhance prompt to emphasize character consistency
           const enhancedPrompt = PROMPT_TEMPLATES.GENERATE_CHARACTER_VARIATION(

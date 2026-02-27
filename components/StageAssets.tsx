@@ -113,10 +113,10 @@ const StageAssets: React.FC<Props> = ({ project, updateProject }) => {
       if (type === 'character') {
         imagesize = '1728x2304';
         const char = project.scriptData?.characters.find(c => String(c.id) === String(id));
-        if (char) prompt = char.visualPrompt || await ModelService.generateVisualPrompts('character', char, project.scriptData?.genre || '剧情片');
+        if (char) prompt = char.visualPrompt || await ModelService.generateVisualPrompts('character', char, project.scriptData?.genre || '剧情片',project.visualStyle);
       } else {
         const scene = project.scriptData?.scenes.find(s => String(s.id) === String(id));
-        if (scene) prompt = scene.visualPrompt || await ModelService.generateVisualPrompts('scene', scene, project.scriptData?.genre || '剧情片');
+        if (scene) prompt = scene.visualPrompt || await ModelService.generateVisualPrompts('scene', scene, project.scriptData?.genre || '剧情片',project.visualStyle);
       }
 
       // Real API Call

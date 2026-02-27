@@ -534,7 +534,8 @@ export class ModelService {
   static async generateVisualPrompts(
     type: "character" | "scene",
     data: any,
-    genre: string
+    genre: string,
+    visualStyle: string
   ): Promise<string> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
     console.log(`使用 ${provider} 生成视觉提示词`);
@@ -546,7 +547,7 @@ export class ModelService {
       data.variations=[];
     }
 
-    const prompt = PROMPT_TEMPLATES.GENERATE_VISUAL_PROMPT(type, data, genre);
+    const prompt = PROMPT_TEMPLATES.GENERATE_VISUAL_PROMPT(type, data, genre,visualStyle);
 
     switch (provider.provider) {
       case 'deepseek':
@@ -751,12 +752,12 @@ export class ModelService {
     }
 
     if(imageType=='character'){
-      new_prompt = "以"+localStyle+"的风格生成符合下面要求的角色图片。\n" + new_prompt;
-      new_prompt = new_prompt + "\n 生成角色三视图加大头照，在同一张图中生成丰富细节的角色展示风格图片，图片比例3:4，具体要求：排版布局左上1/4为从头部到肩膀的清晰正面大头照，右上1/4为人物站立的全身正视图， 下部左边人物的站立全身侧视图，右边人物的站立全身背视图；所有视图必须为同一角色，五官、发型、服装、体型、风格、比例与细节完全一致，不改变人物特征；三视图比例统一、姿态自然；纯白色背景、无阴影、无道具、无文字。"
+      new_prompt = "生成符合下面要求的角色图片，图片风格必须为："+localStyle+"。\n图片内容：" + new_prompt;
+      new_prompt = new_prompt + "\n 如果只有一个角色，则生成角色三视图加大头照，在同一张图中生成丰富细节的角色展示风格图片，图片比例3:4，具体要求：排版布局左上1/4为从头部到肩膀的清晰正面大头照，右上1/4为人物站立的全身正视图， 下部左边人物的站立全身侧视图，右边人物的站立全身背视图；所有视图必须为同一角色，五官、发型、服装、体型、风格、比例与细节完全一致，不改变人物特征；三视图比例统一、姿态自然；纯白色背景、无阴影、无道具、无文字。"
     }
 
     if(imageType=='scene'){
-      new_prompt = "以"+localStyle+"的风格生成符合下面要求的场景图片。\n" + new_prompt;
+      new_prompt = "生成符合下面要求的场景图片，图片风格必须为："+localStyle+"。\n图片内容：" + new_prompt;
       new_prompt += "\n 图片比例16:9，具体要求：图中无角色、无文字";
     }
 

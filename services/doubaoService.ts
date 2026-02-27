@@ -395,6 +395,10 @@ export const generateVisualPrompts = async (
       model: runtimeTextModel,
       messages: [
         {
+            role: "system",
+            content: PROMPT_TEMPLATES.SYSTEM_VISUAL_DESIGNER,
+        },
+        {
           role: "user",
           content: prompt,
         },

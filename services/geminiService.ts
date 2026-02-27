@@ -290,6 +290,10 @@ export const generateVisualPrompts = async (prompt: string): Promise<string> => 
    const response = await retryOperation<GenerateContentResponse>(() => ai.models.generateContent({
      model: 'gemini-2.5-flash',
      contents: prompt,
+     config: {
+      systemInstruction: PROMPT_TEMPLATES.SYSTEM_VISUAL_DESIGNER,
+      maxOutputTokens: 8192,
+     }
    }));
    return (response.text || "").trim();
 };

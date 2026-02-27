@@ -904,7 +904,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
               <textarea
                   value={localScript}
                   onChange={(e) => setLocalScript(e.target.value)}
-                  className="px-2 flex-1 bg-slate-800 text-slate-200 font-serif text-lg leading-loose focus:outline-none resize-none placeholder:text-slate-600 selection:bg-slate-700"
+                  className="px-2 flex-1 bg-slate-800 text-slate-200 font-serif text-lg leading-loose focus:outline-none resize-none placeholder:text-slate-600"
                   placeholder="在此输入故事大纲或直接粘贴剧本..."
                   spellCheck={false}
               />

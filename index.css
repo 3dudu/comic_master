@@ -2,6 +2,10 @@
 
 @theme {
   /* 定义Tailwind颜色变量 */
+  --color-bg-selected: var(--bg-selected);
+  --color-bg-button: var(--bg-button);
+  --color-bg-progress: var(--bg-progress);
+
   --color-dark-bg-selected: var(--color-slate-600);
   --color-dark-bg-button: var(--color-slate-900);
   --color-dark-bg-progress: var(--color-slate-900);
@@ -13,9 +17,6 @@
 }
 
 @layer base {
-  :root {
-
-  }
 
   /* 浅色主题下调整gray颜色 */
   :root[data-theme="light"] {
@@ -66,6 +67,17 @@
   @media (prefers-color-scheme: light) {
     :root[data-theme="system"] {
       /* 调整slate颜色 */
+      --color-slate-50: var(--color-gray-950);
+      --color-slate-100: var(--color-gray-900);
+      --color-slate-200: var(--color-gray-800);
+      --color-slate-300: var(--color-gray-700);
+      --color-slate-400: var(--color-gray-600);
+      --color-slate-500: var(--color-gray-500);
+      --color-slate-600: var(--color-gray-300);
+      --color-slate-700: var(--color-gray-200);
+      --color-slate-800: var(--color-gray-100);
+      --color-slate-900: var(--color-gray-100);
+      --color-slate-950: var(--color-gray-50);
 
       --bg-primary: var(--color-light-bg-primary);
       --bg-secondary: var(--color-light-bg-secondary);

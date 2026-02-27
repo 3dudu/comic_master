@@ -146,7 +146,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
           </button>
         </div>
 
-        <div className="p-6 space-y-5 flex-1 overflow-y-auto bg-slate-800">
+        <div className="p-6 space-y-5 flex-1 overflow-y-auto bg-slate-700">
           {/* Title Input */}
           <div className="space-y-2">
             <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">项目标题</label>

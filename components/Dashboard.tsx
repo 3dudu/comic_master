@@ -261,7 +261,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-300 p-8 pt-2 md:p-12 font-sans selection:bg-slate-800/20">
+    <div className="min-h-screen bg-slate-900 text-slate-300 p-8 pt-2 md:p-12 font-sans">
       <div className="max-w-7xl mx-auto">
         <header className={`border-b border-slate-900 pb-4 ${isMobile ? '' : 'mb-16 flex items-end'} justify-between`}>
           <div className='flex items-center justify-between'>
@@ -367,12 +367,13 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                   )}
 
                   {/* Normal Content */}
-                  <div className="flex-1 px-6 pt-6 relative flex flex-col">
+                  <div className="flex-1 px-6 pt-2 relative flex flex-col">
                      {/* Edit Button */}
+                     <div className='flex flex-row items-center justify-end gap-1'>
                      {editingProjectId !== proj.id ? (
                      <button
                         onClick={(e) => openProjectSettings(e, proj)}
-                        className="absolute top-4 right-20 group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
+                        className="group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
                         title="编辑项目"
                      >
                         <Edit className="w-4 h-4" />
@@ -383,7 +384,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => handleDuplicate(e, proj)}
-                        className="absolute top-4 right-28 group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
+                        className="group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
                         title="复制项目"
                      >
                         <Copy className="w-4 h-4" />
@@ -394,7 +395,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => handleExport(e, proj)}
-                        className="absolute top-4 right-12 group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
+                        className="group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-slate-400 transition-all rounded-sm z-10"
                         title="导出项目"
                      >
                         <Download className="w-4 h-4" />
@@ -405,13 +406,13 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                      {editingProjectId === null ? (
                      <button
                         onClick={(e) => requestDelete(e, proj.id)}
-                        className="absolute top-4 right-4 group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-red-400 transition-all rounded-sm z-10"
+                        className="group-hover:opacity-100 p-2 hover:bg-slate-700 text-slate-400 hover:text-red-400 transition-all rounded-sm z-10"
                         title="删除项目"
                      >
                         <Trash2 className="w-4 h-4" />
                      </button>
                       ) : null}
-                      
+                     </div> 
                      <div className="flex-1">
                         {editingProjectId === proj.id ? (
                           <div className="mb-2 flex items-center gap-2">
@@ -435,13 +436,7 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                         ) : (
                           <h3 className="text-sm font-bold text-slate-50 mb-2 line-clamp-1 tracking-wide">{proj.title}</h3>
                         )}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            <span className="text-[11px] font-mono text-blue-500 border border-green-800 px-1.5 py-0.5 uppercase tracking-wider">
-                              {proj.stage === 'script' ? '剧本阶段' :
-                               proj.stage === 'assets' ? '资产生成' :
-                               proj.stage === 'director' ? '导演工作台' : '导出阶段'}
-                            </span>
-                        </div>
+
                         <div className="flex flex-wrap gap-2 mb-3">
                             {proj.visualStyle && (
                               <span className="text-[11px] text-green-600 bg-slate-900/50 border border-green-800/50 px-1.5 py-0.5 rounded-full">
@@ -466,11 +461,11 @@ const Dashboard: React.FC<Props> = ({ onOpenProject, isMobile=false, onClearKey 
                         )}
 
                          {/* 图片预览 */}
-                  <div className="px-2 py-2 border-t border-slate-900 flex gap-2 items-center justify-center">
+                  <div className="px-2 py-4 border-t border-slate-900 flex gap-1 items-center justify-center">
                     {(() => {
                       const projectImages = getRandomImages(getProjectImages(proj), 4);
                       return (
-                        <div className="flex gap-2">
+                        <div className="flex gap-1">
                           {projectImages.map((imgUrl, idx) => (
                             <div
                               key={idx}

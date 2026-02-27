@@ -329,7 +329,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
         if (e.target === e.currentTarget && !showAddModal) onClose();
       }}
     >
-      <div className="bg-slate-600/80 border border-slate-800 rounded-lg w-[800px] max-w-[90vw] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+      <div className="bg-slate-600/80 bg-bg-input border border-slate-600 rounded-lg w-[800px] max-w-[90vw] max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <h3 className="text-sm font-bold text-text-primary tracking-wide flex items-center gap-2">
@@ -346,7 +346,8 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
 
         {/* Content */}
         {showAddModal ? (
-          <div className="flex-1 overflow-y-auto p-6 bg-slate-800">
+          <>
+          <div className="flex-1 overflow-y-auto p-6 bg-slate-700">
             <div className="space-y-6">
               <div className="text-center mb-6">
                 <h4 className="text-sm font-bold text-text-primary mb-2">
@@ -373,7 +374,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                         model: '' // 切换供应商时清空模型名称
                       });
                     }}
-                    className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     {PROVIDER_OPTIONS.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -415,7 +416,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                         setFormData(prev => ({ ...prev, model: '' }));
                       }
                     }}
-                    className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
+                    className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 text-sm rounded-md appearance-none focus:border-slate-600 focus:outline-none transition-all cursor-pointer"
                   >
                     {getModelTypesForProvider(formData.provider).map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -438,7 +439,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                     type={showApiKey ? "text" : "password"}
                     value={formData.apiKey}
                     onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
-                    className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 pr-10 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
+                    className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 pr-10 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                     placeholder="输入您的 API Key..."
                   />
                   <button
@@ -462,7 +463,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   type="text"
                   value={formData.model}
                   onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
+                  className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入具体的模型名称（如：gpt-4、claude-3-sonnet）"
                 />
               </div>
@@ -477,7 +478,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   type="text"
                   value={formData.apiUrl}
                   onChange={(e) => setFormData({ ...formData, apiUrl: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
+                  className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入 API 端点 URL（选填）..."
                 />
               </div>
@@ -492,7 +493,7 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   type="text"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full bg-bg-selected border border-slate-800 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
+                  className="w-full bg-bg-input border border-slate-600 text-text-primary px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all font-mono placeholder:text-slate-400"
                   placeholder="输入备注（选填）"
                 />
               </div>
@@ -519,8 +520,10 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   )}
                 </button>
               </div>
-
               {/* Action Buttons */}
+            </div>
+          </div>
+              <div className="p-6 border-t border-slate-800">
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleCancelAdd}
@@ -535,8 +538,8 @@ const ModalSettings: React.FC<Props> = ({ isOpen, onClose, isMobile=false }) => 
                   {editingConfig ? '更新配置' : '添加配置'}
                 </button>
               </div>
-            </div>
-          </div>
+              </div>
+              </>
         ) : (
           <div className="flex-1 overflow-y-auto bg-slate-800">
             {/* Config List */}

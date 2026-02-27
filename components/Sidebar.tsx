@@ -115,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
       </nav>
 
       {/* Footer */}
-      <div className="p-6 border-t border-slate-900 space-y-2">
+      <div className="p-4 border-t border-slate-900 space-y-2">
         {!collapsed ? (
           <>
             <button

@@ -1321,7 +1321,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                            <div className="grid grid-cols-2 gap-4">
                                {/* Text2Image Provider */}
                                <div className="space-y-2">
-                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">文生图</label>
+                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图像模型</label>
                                    <div className="relative">
                                        <select
                                            value={activeShot.modelProviders?.text2image || project.modelProviders?.text2image}
@@ -1354,7 +1354,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
 
                                {/* Image2Video Provider */}
                                <div className="space-y-2">
-                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图生视频</label>
+                                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">视频模型</label>
                                    <div className="relative">
                                        <select
                                            value={activeShot.modelProviders?.image2video || project.modelProviders?.image2video}
@@ -1394,6 +1394,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                    <Aperture className="w-4 h-4 text-slate-500" />
                                    <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">视觉制作</h4>
                                </div>
+                               {imageCount > 0 && (                                
                                <button
                                    onClick={() => handleOneClickProduction(activeShot)}
                                    disabled={!!processingState || !!batchProgress || oneClickProcessing?.shotId === activeShot.id}
@@ -1411,6 +1412,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                        </>
                                    )}
                                </button>
+                               )}
                            </div>
 
                            {imageCount>0 && (imageCount > 1 ? (
@@ -1698,6 +1700,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
               characters={project.scriptData?.characters || []}
               onSave={saveShot}
               onClose={() => setEditingShotId(null)}
+              imageCount={project.imageCount}
             />
           )}
 

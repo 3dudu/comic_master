@@ -584,7 +584,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
 )}
         </div>
 
-        <div className="flex-1 overflow-y-auto md:p-6 p-2 space-y-6">
+        <div className="flex-1 overflow-y-auto md:p-6 md:pt-2 p-2 space-y-6">
             {/* Title Input */}
             <div className="space-y-2">
               <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">项目标题</label>
@@ -868,7 +868,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
         </div>
 
         {/* AI Script Generation Input */}
-        <div className="border-b border-slate-600/50 bg-slate-900 p-2">
+        <div className="border-b border-slate-600/50 bg-slate-900 md:p-4 p-2">
            <div className="mx-auto">
               <div className="flex gap-2">
                  <input
@@ -905,7 +905,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
               <textarea
                   value={localScript}
                   onChange={(e) => setLocalScript(e.target.value)}
-                  className="px-2 flex-1 bg-slate-800 text-slate-200 font-serif text-lg leading-loose focus:outline-none resize-none placeholder:text-slate-600"
+                  className="px-2 flex-1 rounded-lg bg-slate-800 text-slate-200 font-serif text-lg leading-loose focus:outline-none resize-none placeholder:text-slate-600"
                   placeholder="在此输入故事大纲或直接粘贴剧本..."
                   spellCheck={false}
               />
@@ -1413,6 +1413,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
           onClose={() => {
             setEditingShotId(null);
           }}
+          imageCount={project.imageCount}
         />
       );
     }
@@ -1439,6 +1440,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
           onClose={() => {
             setAddingShotForSceneId(null);
           }}
+          imageCount={project.imageCount}
         />
       );
     }

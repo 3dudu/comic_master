@@ -40,9 +40,10 @@ interface Props {
   characters: Character[];
   onSave: (updatedShot: Partial<Shot>) => void;
   onClose: () => void;
+  imageCount: number;
 }
 
-const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) => {
+const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose, imageCount }) => {
   const [tempShot, setTempShot] = useState<Partial<Shot>>({ ...shot });
   const [modelConfigs, setModelConfigs] = useState<AIModelConfig[]>([]);
   const isNewShot = !shot.id;
@@ -278,6 +279,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
           </div>
 
           {/* Keyframes */}
+          {imageCount > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">关键帧</label>
@@ -335,6 +337,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
               </div>
             )}
           </div>
+          )}
 
           {/* Model Providers */}
           <div className="space-y-4 border-t border-slate-600 pt-4">
@@ -360,7 +363,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
             <div className="grid grid-cols-2 gap-4">
               {/* Text2Image Provider */}
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">文生图</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图像模型</label>
                 <div className="relative">
                   <select
                     value={tempShot.modelProviders?.text2image || ''}
@@ -390,7 +393,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose }) =
 
               {/* Image2Video Provider */}
               <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">图生视频</label>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">视频模型</label>
                 <div className="relative">
                   <select
                     value={tempShot.modelProviders?.image2video || ''}

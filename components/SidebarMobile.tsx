@@ -42,9 +42,9 @@ const SidebarMobile: React.FC<SidebarMobileProps> = ({ currentStage, setStage, o
             <div className="w-7 h-7 bg-slate-800 text-slate-50 flex items-center justify-center flex-shrink-0">
               <Aperture className="w-5 h-5" />
             </div>
-            <div className="overflow-hidden">
+            <div className="overflow-hidden pr-2">
               <div className="flex items-center gap-2">
-              <h1 className="text-xs font-bold text-slate-50 tracking-wider uppercase">{projectName || '未命名项目'}</h1>
+              <h1 className="text-xs font-bold text-slate-50 line-clamp-1 tracking-wide uppercase">{projectName || '未命名项目'}</h1>
           <button
             onClick={() => setShowProjectSettings(true)}
             className="text-[11px] font-medium font-bold text-slate-400 hover:text-slate-50 items-center"

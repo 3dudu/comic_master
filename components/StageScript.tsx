@@ -851,7 +851,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
       </div>
 
       {/* Right: Text Editor - Optimized */}
-      <div className="flex-1 flex flex-col bg-slate-900 relative">
+      <div className="flex-1 flex flex-col bg-slate-900 relative shadow-2xl animate-in slide-in-from-right-10 duration-300 transition-all ease-in-out">
         <div className="h-14 border-b border-slate-600 flex items-center justify-between md:px-6 px-2 bg-slate-700 shrink-0">
            <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-slate-500"></div>
@@ -867,9 +867,9 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
         </div>
 
         {/* AI Script Generation Input */}
-        <div className="border-b border-slate-600/50 bg-slate-900 p-4">
+        <div className="border-b border-slate-600/50 bg-slate-900 p-2">
            <div className="mx-auto">
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                  <input
                     type="text"
                     value={scriptPrompt}
@@ -1235,7 +1235,7 @@ const StageScript: React.FC<Props> = ({ project, updateProject, isMobile=false }
            </div>
   
            {/* Main: Script & Shots */}
-           <div className="flex-1 overflow-y-auto bg-slate-900 p-0">
+           <div className="flex-1 overflow-y-auto bg-slate-900 p-0 shadow-2xl animate-in slide-in-from-right-10 duration-300 transition-all ease-in-out">
               <div className="max-w-5xl mx-auto pb-2">
                  {project.scriptData?.scenes.map((scene, index) => {
                    const sceneShots = project.shots.filter(s => s.sceneId === scene.id);

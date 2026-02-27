@@ -35,7 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
 
   return (
     <aside className={`${collapsed ? 'w-20' : 'xl:w-72 md:w-20'} bg-slate-800 border-r border-slate-600 h-screen fixed left-0 top-0 flex flex-col z-50 select-none
-    shadow-2xl animate-in slide-in-from-right-10 duration-300 transition-all duration-300 ease-in-out`}>
+    shadow-2xl animate-in slide-in-from-right-10 duration-300 transition-all ease-in-out`}>
       {/* Header */}
       <div className="p-6 border-b border-slate-900">
         {!collapsed ? (
@@ -68,10 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentStage, setStage, onExit, onOpe
       {!collapsed ? (
         <div className="px-6 py-2 border-b border-slate-900">
            <div className="text-[12px] text-slate-500 uppercase tracking-widest mb-1">当前项目</div>
-           <div className="text-sm font-medium flex items-center  text-slate-200 truncate font-mono">{projectName || '未命名项目'}
+           <div className=" overflow-hidden pr-2 flex items-center">
+             <h1 className="text-xs font-bold text-slate-50 line-clamp-1 tracking-wide uppercase">{projectName || '未命名项目'}</h1>
            <button
                 onClick={() => setShowProjectSettings(true)}
-                className="text-xs font-bold  text-slate-400 hover:text-slate-50  items-center gap-2 px-2 py-2 "
+                className="text-xs font-bold  text-slate-400 hover:text-slate-50 items-center gap-2 px-2 py-2 "
                 >
                 <Edit className="w-4 h-4" />
            </button>

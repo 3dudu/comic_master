@@ -663,7 +663,11 @@ export class ModelService {
 
       switch (provider) {
         case 'baidu':
-          audioBlob = await textToSpeechBaidu(text, options);
+          let speek = text;
+          if(speek.includes(':')||speek.includes('：')){
+            speek = speek.split(':|：')[1];
+          }
+          audioBlob = await textToSpeechBaidu(speek, options);
           break;
         default:
           throw new Error(`暂不支持 ${provider} 提供商的文生图`);

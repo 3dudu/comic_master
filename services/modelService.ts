@@ -664,9 +664,6 @@ export class ModelService {
       switch (provider) {
         case 'baidu':
           let speek = text;
-          if(speek.includes(':')||speek.includes('：')){
-            speek = speek.split(':|：')[1];
-          }
           audioBlob = await textToSpeechBaidu(speek, options);
           break;
         default:

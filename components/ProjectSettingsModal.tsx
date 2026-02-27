@@ -38,6 +38,7 @@ const IMAGE_SIZE_OPTIONS = [
 ];
 
 const IMAGE_COUNT_OPTIONS = [
+  { label: '文生视频', value: 0 },
   { label: '首尾帧', value: 1 },
   { label: '4 张', value: 4 },
   { label: '6 张', value: 6 },

@@ -163,7 +163,7 @@ export const parseScriptToData = async (
   let parsed: any = {};
   try {
     const text = cleanJsonString(content);
-    console.log("Parsed JSON:", text);
+    //console.log("Parsed JSON:", text);
     parsed = JSON.parse(text);
   } catch (e) {
     console.error("Failed to parse script data JSON:", e);
@@ -449,7 +449,7 @@ export const generateVideo = async (
     console.warn("OpenAI Sora 当前可能不支持结束图片参数");
   }
 
-  console.log('调用 OpenAI Sora 视频生成:', requestBody);
+  //console.log('调用 OpenAI Sora 视频生成:', requestBody);
 
   try {
     const response = await fetchWithRetry(endpoint, {
@@ -496,14 +496,14 @@ const pollVideoTask = async (taskId: string): Promise<string> => {
       if (status === "succeeded" || status === "completed") {
         const videoUrl = response.video_url || response.url;
         if (videoUrl) {
-          console.log('OpenAI Sora 视频生成成功:', videoUrl);
+          //console.log('OpenAI Sora 视频生成成功:', videoUrl);
           return videoUrl;
         }
       } else if (status === "failed") {
         const errorMsg = response.error || "未知错误";
         throw new Error(`OpenAI Sora 视频生成失败: ${errorMsg}`);
       } else if (status === "processing" || status === "queued") {
-        console.log(`OpenAI Sora 视频生成中... (${i + 1}/${maxAttempts})`);
+        //console.log(`OpenAI Sora 视频生成中... (${i + 1}/${maxAttempts})`);
         continue;
       }
     } catch (error) {

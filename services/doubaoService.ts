@@ -67,21 +67,21 @@ export const initializeDoubaoConfig = async () => {
     const llmConfig = await getEnabledConfigByType('llm');
     if (llmConfig && llmConfig.provider === 'doubao' && llmConfig.model) {
       runtimeTextModel = llmConfig.model;
-      console.log('Doubao LLM 模型已加载:', runtimeTextModel);
+      //console.log('Doubao LLM 模型已加载:', runtimeTextModel);
     }
 
     // 加载图片生成配置
     const imageConfig = await getEnabledConfigByType('text2image');
     if (imageConfig && imageConfig.provider === 'doubao' && imageConfig.model) {
       runtimeImageModel = imageConfig.model;
-      console.log('Doubao Image 模型已加载:', runtimeImageModel);
+      //console.log('Doubao Image 模型已加载:', runtimeImageModel);
     }
 
     // 加载视频生成配置
     const videoConfig = await getEnabledConfigByType('image2video');
     if (videoConfig && videoConfig.provider === 'doubao' && videoConfig.model) {
       runtimeVideoModel = videoConfig.model;
-      console.log('Doubao Video 模型已加载:', runtimeVideoModel);
+      //console.log('Doubao Video 模型已加载:', runtimeVideoModel);
     }
   } catch (error) {
     console.error('加载 Doubao 配置失败:', error);
@@ -207,7 +207,7 @@ export const parseScriptToData = async (
   let parsed: any = {};
   try {
     const text = cleanJsonString(content);
-    console.log("Parsed JSON:", text);
+    //console.log("Parsed JSON:", text);
     parsed = JSON.parse(text);
   } catch (e) {
     console.error("Failed to parse script data JSON:", e);

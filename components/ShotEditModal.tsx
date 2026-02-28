@@ -66,7 +66,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose, ima
       try {
         const configs = await getAllModelConfigs();
         setModelConfigs(configs);
-        console.log('模型配置已自动刷新');
+        ////console.log('模型配置已自动刷新');
       } catch (error) {
         console.error('自动刷新模型配置失败:', error);
       }
@@ -348,7 +348,7 @@ const ShotEditModal: React.FC<Props> = ({ shot, characters, onSave, onClose, ima
                   try {
                     const configs = await getAllModelConfigs();
                     setModelConfigs(configs);
-                    console.log('模型配置已刷新');
+                    //console.log('模型配置已刷新');
                   } catch (error) {
                     console.error('刷新模型配置失败:', error);
                   }

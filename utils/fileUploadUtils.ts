@@ -94,7 +94,7 @@ export async function uploadFileToService(params: UploadFileParams): Promise<Upl
   // 检查是否配置了上传服务地址
   const uploadServiceUrl = getFileUploadServiceConfig();
   if (!uploadServiceUrl) {
-    console.log('未配置文件上传服务地址，跳过文件上传');
+    //console.log('未配置文件上传服务地址，跳过文件上传');
 
     // 如果是 Base64 数据，返回原始数据
     if (base64Data) {

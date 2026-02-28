@@ -62,7 +62,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       try {
         const configs = await getAllModelConfigs();
         setModelConfigs(configs);
-        console.log('模型配置已自动刷新');
+        //console.log('模型配置已自动刷新');
       } catch (error) {
         console.error('自动刷新模型配置失败:', error);
       }
@@ -285,11 +285,11 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
   };
 
   const handleGenerateVideo = async (shot: Shot) => {
-    //console.log("Generating Video for Shot:", shot);
+    ////console.log("Generating Video for Shot:", shot);
     if (!shot.interval) return;
     
     let prompt = "景别："+shot.shotSize+"；镜头运动："+shot.cameraMovement+""+(shot.interval.motionStrength?"；运动强度："+shot.interval.motionStrength:"")+"；\n 剧情描述："+shot.actionSummary+""+ (shot.characters?" \n 角色："+shot.characters:"") + (shot.dialogue?" \n对白："+shot.dialogue:"");
-    //console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
+    ////console.log("Generating Video for Shot:", shot, "with Prompt:", prompt);
     let sImageiurl = null;
     let eImageiurl = null;
     if(imageCount>0){
@@ -1162,7 +1162,8 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                         <>
                                           <img src={sKf!.imageUrl || fKf!.imageUrl} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                                           {/* Preload video in background */}
-                                          {hasVideo && !videoReadyShots.has(shot.id) && (
+                                          {
+                                            hasVideo && !videoReadyShots.has(shot.id) && (
                                             <video
                                               src={shot.interval?.videoUrl}
                                               className="hidden"
@@ -1172,13 +1173,13 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                                 }
                                               }}
                                             />
-                                          )}
+                                          ) }
                                         </>
                                     ) : hasVideo ? (
                                         <video
                                           data-shot-id={shot.id}
-                                          src={shot.interval?.videoUrl}
                                           className="w-full h-full object-cover"
+                                          src={shot.interval?.videoUrl}
                                           muted controls
                                           onMouseLeave={(e) => e.currentTarget.pause()}
                                           onCanPlay={() => {
@@ -1221,7 +1222,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
 
           {/* Right Workbench - Optimized Interaction */}
           {activeShotId && activeShot && (
-              <div className={`${isMobile ? 'w-full' : 'md:w-[480px] lg:w-[480px] 2xl:w-[640px]'} bg-slate-700/50 flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20`}>
+              <div className={`${isMobile ? 'w-full' : 'md:w-[480px] lg:w-[480px] 3xl:w-[640px]'} bg-slate-700/50 flex flex-col h-full shadow-2xl animate-in slide-in-from-right-10 duration-300 relative z-20`}>
                   
                   {/* Workbench Header */}
                   <div className="h-16 md:px-6 px-2 border-b border-slate-600 flex items-center justify-between bg-slate-600/50 shrink-0">
@@ -1304,7 +1305,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                        try {
                                            const configs = await getAllModelConfigs();
                                            setModelConfigs(configs);
-                                           console.log('模型配置已刷新');
+                                           //console.log('模型配置已刷新');
                                        } catch (error) {
                                            console.error('刷新模型配置失败:', error);
                                        }

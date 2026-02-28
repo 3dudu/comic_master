@@ -10,91 +10,91 @@ import { getAllModelConfigs } from "./storageService";
 
 // DeepSeek 方法
 import {
-  generateScript as generateScriptDeepseek,
-  generateShotList as generateShotListDeepseek,
-  generateShotListForScene as generateShotListDeepseekForScene,
-  generateVisualPrompts as generateVisualPromptsDeepseek,
-  parseScriptToData as parseScriptToDataDeepseek,
-  setApiKey as setDeepseekApiKey,
-  setApiUrl as setDeepseekApiUrl,
-  setModel as setDeepseekModel
+    generateScript as generateScriptDeepseek,
+    generateShotList as generateShotListDeepseek,
+    generateShotListForScene as generateShotListDeepseekForScene,
+    generateVisualPrompts as generateVisualPromptsDeepseek,
+    parseScriptToData as parseScriptToDataDeepseek,
+    setApiKey as setDeepseekApiKey,
+    setApiUrl as setDeepseekApiUrl,
+    setModel as setDeepseekModel
 } from "./deepseekService";
 
 // Gemini 方法
 import {
-  generateImage as generateImageGemini,
-  generateScript as generateScriptGemini,
-  generateShotListForScene as generateShotListForSceneGemini,
-  generateShotList as generateShotListGemini,
-  generateVideo as generateVideoGemini,
-  generateVisualPrompts as generateVisualPromptsGemini,
-  parseScriptToData as parseScriptToDataGemini,
-  setApiKey as setGeminiApiKey
+    generateImage as generateImageGemini,
+    generateScript as generateScriptGemini,
+    generateShotListForScene as generateShotListForSceneGemini,
+    generateShotList as generateShotListGemini,
+    generateVideo as generateVideoGemini,
+    generateVisualPrompts as generateVisualPromptsGemini,
+    parseScriptToData as parseScriptToDataGemini,
+    setApiKey as setGeminiApiKey
 } from "./geminiService";
 
 // Yunwu 方法
 import {
-  generateImage as generateImageYunwu,
-  generateScript as generateScriptYunwu,
-  generateShotListForScene as generateShotListForSceneYunwu,
-  generateShotList as generateShotListYunwu,
-  generateVideo as generateVideoYunwu,
-  generateVisualPrompts as generateVisualPromptsYunwu,
-  parseScriptToData as parseScriptToDataYunwu,
-  setApiKey as setYunwuApiKey,
-  setApiUrl as setYunwuApiUrl,
-  setModel as setYunwuModel
+    generateImage as generateImageYunwu,
+    generateScript as generateScriptYunwu,
+    generateShotListForScene as generateShotListForSceneYunwu,
+    generateShotList as generateShotListYunwu,
+    generateVideo as generateVideoYunwu,
+    generateVisualPrompts as generateVisualPromptsYunwu,
+    parseScriptToData as parseScriptToDataYunwu,
+    setApiKey as setYunwuApiKey,
+    setApiUrl as setYunwuApiUrl,
+    setModel as setYunwuModel
 } from "./yunwuService";
 
 // OpenAI 方法
 import {
-  generateImage as generateImageOpenai,
-  generateScript as generateScriptOpenai,
-  generateShotListForScene as generateShotListForSceneOpenai,
-  generateShotList as generateShotListOpenai,
-  generateVideo as generateVideoOpenai,
-  generateVisualPrompts as generateVisualPromptsOpenai,
-  parseScriptToData as parseScriptToDataOpenai,
-  setApiKey as setOpenaiApiKey,
-  setModel as setOpenaiModel
+    generateImage as generateImageOpenai,
+    generateScript as generateScriptOpenai,
+    generateShotListForScene as generateShotListForSceneOpenai,
+    generateShotList as generateShotListOpenai,
+    generateVideo as generateVideoOpenai,
+    generateVisualPrompts as generateVisualPromptsOpenai,
+    parseScriptToData as parseScriptToDataOpenai,
+    setApiKey as setOpenaiApiKey,
+    setModel as setOpenaiModel
 } from "./openaiService";
 
 // Doubao 方法
 import {
-  generateImage as generateImageDoubao,
-  generateScript as generateScriptDoubao,
-  generateShotList as generateShotListDoubao,
-  generateShotListForScene as generateShotListDoubaoForScene,
-  generateVideo as generateVideoDoubao,
-  generateVisualPrompts as generateVisualPromptsDoubao,
-  parseScriptToData as parseScriptToDataDoubao,
-  setApiKey as setDoubaoApiKey,
-  setApiUrl as setDoubaoApiUrl,
-  setModel as setDoubaoModel
+    generateImage as generateImageDoubao,
+    generateScript as generateScriptDoubao,
+    generateShotList as generateShotListDoubao,
+    generateShotListForScene as generateShotListDoubaoForScene,
+    generateVideo as generateVideoDoubao,
+    generateVisualPrompts as generateVisualPromptsDoubao,
+    parseScriptToData as parseScriptToDataDoubao,
+    setApiKey as setDoubaoApiKey,
+    setApiUrl as setDoubaoApiUrl,
+    setModel as setDoubaoModel
 } from "./doubaoService";
 
 // MiniMax 方法
 import {
-  generateVideo as generateVideoMinimax,
-  setApiKey as setMinimaxApiKey,
-  setApiUrl as setMinimaxApiUrl,
-  setModel as setMinimaxModel
+    generateVideo as generateVideoMinimax,
+    setApiKey as setMinimaxApiKey,
+    setApiUrl as setMinimaxApiUrl,
+    setModel as setMinimaxModel
 } from "./minimaxService";
 
 // Kling 方法
 import {
-  generateVideo as generateVideoKling,
-  setApiKey as setKlingApiKey,
-  setApiUrl as setKlingApiUrl,
-  setModel as setKlingModel
+    generateVideo as generateVideoKling,
+    setApiKey as setKlingApiKey,
+    setApiUrl as setKlingApiUrl,
+    setModel as setKlingModel
 } from "./klingService";
 
 // Baidu TTS 方法
 import {
-  blobToBase64,
-  setApiKey as setBaiduApiKey,
-  setApiUrl as setBaiduApiUrl,
-  textToSpeech as textToSpeechBaidu
+    blobToBase64,
+    setApiKey as setBaiduApiKey,
+    setApiUrl as setBaiduApiUrl,
+    textToSpeech as textToSpeechBaidu
 } from "./baiduTtsService";
 
 const IMAGE_X = [
@@ -115,7 +115,7 @@ export class ModelService {
    */
   static setCurrentProjectProviders(modelProviders: any) {
     this.currentProjectModelProviders = modelProviders;
-    console.log('已设置项目模型供应商:', modelProviders);
+    //console.log('已设置项目模型供应商:', modelProviders);
   }
 
   /**
@@ -135,7 +135,7 @@ export class ModelService {
       }
 
       this.initialized = true;
-      console.log('模型服务初始化完成，已加载配置:', enabledConfigs.map(c => c.provider + ':' + c.modelType));
+      //console.log('模型服务初始化完成，已加载配置:', enabledConfigs.map(c => c.provider + ':' + c.modelType));
     } catch (error) {
       console.error('模型服务初始化失败:', error);
     }
@@ -156,7 +156,7 @@ export class ModelService {
           if (config.model) {
             setDeepseekModel(config.model);
           }
-          console.log(`已更新 DeepSeek ${config.modelType} 配置`);
+          //console.log(`已更新 DeepSeek ${config.modelType} 配置`);
           break;
 
         case 'doubao':
@@ -177,7 +177,7 @@ export class ModelService {
                 break;
             }
           }
-          console.log(`已更新 Doubao ${config.modelType} 配置`);
+          //console.log(`已更新 Doubao ${config.modelType} 配置`);
           break;
 
         case 'openai':
@@ -195,12 +195,12 @@ export class ModelService {
                 break;
             }
           }
-          console.log(`已更新 OpenAI ${config.modelType} 配置`);
+          //console.log(`已更新 OpenAI ${config.modelType} 配置`);
           break;
 
         case 'gemini':
           setGeminiApiKey(config.apiKey);
-          console.log(`已更新 Gemini ${config.modelType} 配置`);
+          //console.log(`已更新 Gemini ${config.modelType} 配置`);
           break;
 
         case 'yunwu':
@@ -221,7 +221,7 @@ export class ModelService {
                 break;
             }
           }
-          console.log(`已更新 Yunwu ${config.modelType} 配置`);
+          //console.log(`已更新 Yunwu ${config.modelType} 配置`);
           break;
 
         case 'minimax':
@@ -232,7 +232,7 @@ export class ModelService {
           if (config.model) {
             setMinimaxModel(config.model);
           }
-          console.log(`已更新 MiniMax ${config.modelType} 配置`);
+          //console.log(`已更新 MiniMax ${config.modelType} 配置`);
           break;
 
         case 'kling':
@@ -243,7 +243,7 @@ export class ModelService {
           if (config.model) {
             setKlingModel(config.model);
           }
-          console.log(`已更新 Kling ${config.modelType} 配置`);
+          //console.log(`已更新 Kling ${config.modelType} 配置`);
           break;
 
         case 'baidu':
@@ -254,7 +254,7 @@ export class ModelService {
           if (config.apiUrl) {
             setBaiduApiUrl(config.apiUrl);
           }
-          console.log(`已更新 Baidu ${config.modelType} 配置`);
+          //console.log(`已更新 Baidu ${config.modelType} 配置`);
           break;
       }
     } catch (error) {
@@ -273,7 +273,7 @@ export class ModelService {
     if (projectModelProviders?.llm) {
       const allConfigs = await getAllModelConfigs();
       config = allConfigs.find(c => c.id === projectModelProviders.llm);
-      console.log(`使用项目配置的 LLM 供应商: ${config?.provider}`);
+      //console.log(`使用项目配置的 LLM 供应商: ${config?.provider}`);
     }
 
     // 如果项目没有配置，使用系统默认的启用配置
@@ -312,7 +312,7 @@ export class ModelService {
     if (projectModelProviders?.text2image) {
       const allConfigs = await getAllModelConfigs();
       config = allConfigs.find(c => c.id === projectModelProviders.text2image);
-      console.log(`使用项目配置的文生图供应商: ${config?.provider}`);
+      //console.log(`使用项目配置的文生图供应商: ${config?.provider}`);
     }
 
     // 如果项目没有配置，使用系统默认的启用配置
@@ -351,7 +351,7 @@ export class ModelService {
     if (projectModelProviders?.tts) {
       const allConfigs = await getAllModelConfigs();
       config = allConfigs.find(c => c.id === projectModelProviders.tts);
-      console.log(`使用项目配置的语音合成供应商: ${config?.provider}`);
+      //console.log(`使用项目配置的语音合成供应商: ${config?.provider}`);
     }
 
     // 如果项目没有配置，使用系统默认的启用配置
@@ -381,7 +381,7 @@ export class ModelService {
     if (projectModelProviders?.image2video) {
       const allConfigs = await getAllModelConfigs();
       config = allConfigs.find(c => c.id === projectModelProviders.image2video);
-      console.log(`使用项目配置的图生视频供应商: ${config?.provider}`);
+      //console.log(`使用项目配置的图生视频供应商: ${config?.provider}`);
     }
 
     // 如果项目没有配置，使用系统默认的启用配置
@@ -418,7 +418,7 @@ export class ModelService {
    */
   static async parseScriptToData(rawText: string, language: string = "中文"): Promise<ScriptData> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 进行剧本分析`);
+    //console.log(`使用 ${provider} 进行剧本分析`);
 
     switch (provider.provider) {
       case 'deepseek':
@@ -442,7 +442,7 @@ export class ModelService {
    */
   static async generateShotList(scriptData: ScriptData): Promise<Shot[]> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成镜头清单`);
+    //console.log(`使用 ${provider} 生成镜头清单`);
 
     switch (provider.provider) {
       case 'deepseek':
@@ -472,7 +472,7 @@ export class ModelService {
     sceneIndex: number
   ): Promise<Shot[]> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成场景 ${sceneIndex + 1} 的镜头清单`);
+    //console.log(`使用 ${provider} 生成场景 ${sceneIndex + 1} 的镜头清单`);
 
     if(scene.referenceImage){
       scene.referenceImage=null;
@@ -507,7 +507,7 @@ export class ModelService {
     language: string = "中文"
   ): Promise<string> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成剧本`);
+    //console.log(`使用 ${provider} 生成剧本`);
 
     switch (provider.provider) {
       case 'deepseek':
@@ -538,7 +538,7 @@ export class ModelService {
     visualStyle: string
   ): Promise<string> {
     const provider = await this.getEnabledLLMProvider(this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成视觉提示词`);
+    //console.log(`使用 ${provider} 生成视觉提示词`);
 
     if(data.referenceImage){
       data.referenceImage=null;
@@ -619,7 +619,7 @@ export class ModelService {
         break;
       case 'gemini':
         // Gemini 使用 GoogleGenAI 的默认端点，不支持自定义 apiUrl
-        console.log('Gemini 使用默认 API 端点');
+        //console.log('Gemini 使用默认 API 端点');
         break;
       case 'yunwu':
         setYunwuApiUrl(apiUrl);
@@ -657,7 +657,7 @@ export class ModelService {
   ): Promise<string> {
     try {
       const provider = await this.getEnabledAudioProvider(shotprovider || this.currentProjectModelProviders);
-      console.log(`使用 ${provider} 合成语音`);
+      //console.log(`使用 ${provider} 合成语音`);
 
       let audioBlob: Blob;
 
@@ -673,7 +673,7 @@ export class ModelService {
       // 将 Blob 转换为 Base64 格式以便上传
       const audioBase64 = await blobToBase64(audioBlob);
       const audioDataUrl = `data:audio/mp3;base64,${audioBase64}`;
-      console.log('audioDataUrl:', audioDataUrl);
+      //console.log('audioDataUrl:', audioDataUrl);
       // 上传到文件服务器
       const uploadResponse = await uploadFileToService({
         fileType: projectId + '/audio_tts',
@@ -682,7 +682,7 @@ export class ModelService {
       });
 
       if (uploadResponse.success && uploadResponse.data?.fileUrl) {
-        console.log(`音频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        //console.log(`音频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
         return uploadResponse.data.fileUrl;
       } else {
         console.error(`音频上传失败: ${uploadResponse.error}`);
@@ -727,7 +727,7 @@ export class ModelService {
     projectid: string = "",
   ): Promise<string> {
     const provider = await this.getEnabledImageProvider(shotprovider || this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成图片`);
+    //console.log(`使用 ${provider} 生成图片`);
 
     // 处理参考图片：将HTTP/HTTPS URL转换为Base64
     let processedReferenceImages = [];
@@ -794,7 +794,7 @@ export class ModelService {
       });
 
       if (uploadResponse.success && uploadResponse.data?.fileUrl) {
-        console.log(`图片已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        //console.log(`图片已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
         return uploadResponse.data.fileUrl;
       } else {
         console.error(`图片上传失败: ${uploadResponse.error}`);
@@ -825,13 +825,13 @@ export class ModelService {
     projectid: string = "",
   ): Promise<string> {
     const provider = await this.getEnabledVideoProvider(shotprovider || this.currentProjectModelProviders);
-    console.log(`使用 ${provider} 生成视频`);
+    //console.log(`使用 ${provider} 生成视频`);
 
     // 处理起始图片：如果是HTTP/HTTPS URL则转换为Base64
     let processedStartImageBase64 = startImageBase64;
     try {
       processedStartImageBase64 = await imageUrlToBase64(startImageBase64);
-      console.log('已将起始图片转换为Base64格式');
+      //console.log('已将起始图片转换为Base64格式');
     } catch (error) {
       console.error('转换起始图片为Base64失败:', error);
       // 转换失败时继续使用原始图片
@@ -842,7 +842,7 @@ export class ModelService {
     let processedEndImageBase64 = endImageBase64;
     try {
       processedEndImageBase64 = await imageUrlToBase64(endImageBase64);
-      console.log('已将结束图片转换为Base64格式');
+      //console.log('已将结束图片转换为Base64格式');
     } catch (error) {
       console.error('转换结束图片为Base64失败:', error);
       // 转换失败时继续使用原始图片
@@ -884,7 +884,7 @@ export class ModelService {
       });
 
       if (uploadResponse.success && uploadResponse.data?.fileUrl) {
-        console.log(`视频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+        //console.log(`视频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
         return uploadResponse.data.fileUrl;
       } else {
         console.error(`视频上传失败: ${uploadResponse.error}`);

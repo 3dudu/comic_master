@@ -38,9 +38,9 @@ export const initializeDeepseekConfig = async () => {
       runtimeApiUrl = enabledConfig.apiUrl || DEEPSEEK_CONFIG.API_ENDPOINT;
       if (enabledConfig.model) {
         runtimeTextModel = enabledConfig.model;
-        console.log('DeepSeek 模型已加载:', runtimeTextModel);
+        //console.log('DeepSeek 模型已加载:', runtimeTextModel);
       }
-      console.log('DeepSeek 配置已加载');
+      //console.log('DeepSeek 配置已加载');
     }
   } catch (error) {
     console.error('加载 DeepSeek 配置失败:', error);
@@ -161,7 +161,7 @@ export const parseScriptToData = async (
   let parsed: any = {};
   try {
     const text = cleanJsonString(content);
-    console.log("Parsed JSON:", text);
+    //console.log("Parsed JSON:", text);
     parsed = JSON.parse(text);
   } catch (e) {
     console.error("Failed to parse script data JSON:", e);

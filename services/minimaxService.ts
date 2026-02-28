@@ -97,7 +97,7 @@ export async function generateVideo(
     if (endImageBase64 && !fullFrame) {
       requestBody.last_frame_image = endImageBase64;
     }
-    console.log('调用 MiniMax 海螺视频生成:', requestBody);
+    //console.log('调用 MiniMax 海螺视频生成:', requestBody);
 
     // 发送生成请求
     const generateResponse = await fetch(runtimeApiUrl, {
@@ -121,7 +121,7 @@ export async function generateVideo(
       throw new Error('MiniMax 未返回任务ID');
     }
 
-    console.log('MiniMax 任务ID:', taskId);
+    //console.log('MiniMax 任务ID:', taskId);
 
     // 轮询任务状态
     return await pollTaskStatus(taskId);
@@ -173,7 +173,7 @@ async function pollTaskStatus(taskId: string): Promise<string> {
       if (status === 'Success') {
         // 任务完成
         if (taskData.data.data.file.download_url) {
-          console.log('MiniMax 视频生成成功:', taskData.data.data.file.download_url);
+          //console.log('MiniMax 视频生成成功:', taskData.data.data.file.download_url);
           return taskData.data.data.file.download_url;
         }
       } else if (status === 'Failed' || status === 'Cancelled' ) {
@@ -182,11 +182,11 @@ async function pollTaskStatus(taskId: string): Promise<string> {
         throw new Error(`MiniMax 视频生成失败: ${errorMsg}`);
       } else if (status === 'Running' || status === 'Waiting') {
         // 任务进行中，继续等待
-        console.log(`MiniMax 任务进行中... (${attempt + 1}/${maxAttempts})`);
+        //console.log(`MiniMax 任务进行中... (${attempt + 1}/${maxAttempts})`);
         await new Promise(resolve => setTimeout(resolve, pollInterval));
       } else {
         // 其他状态
-        console.log(`MiniMax 任务状态: ${status}`);
+        //console.log(`MiniMax 任务状态: ${status}`);
         await new Promise(resolve => setTimeout(resolve, pollInterval));
       }
     } catch (error) {

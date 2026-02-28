@@ -179,7 +179,7 @@ export async function textToSpeech(
     // 返回音频 Blob
     const audioBlob = await response.blob();
 
-    console.log('百度 TTS 语音合成成功，音频大小:', audioBlob.size, 'bytes');
+    //console.log('百度 TTS 语音合成成功，音频大小:', audioBlob.size, 'bytes');
     return audioBlob;
   } catch (error) {
     console.error('百度 TTS 语音合成失败:', error);

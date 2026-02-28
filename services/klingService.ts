@@ -114,7 +114,7 @@ export async function generateVideo(
       }
     }
 
-    console.log('调用 Kling 可灵视频生成:', requestBody);
+    //console.log('调用 Kling 可灵视频生成:', requestBody);
 
     // 发送生成请求
     const generateResponse = await fetch(runtimeApiUrl, {
@@ -138,7 +138,7 @@ export async function generateVideo(
       throw new Error('Kling 未返回任务ID');
     }
 
-    console.log('Kling 任务ID:', taskId);
+    //console.log('Kling 任务ID:', taskId);
 
     // 轮询任务状态
     return await pollTaskStatus(taskId);
@@ -193,7 +193,7 @@ async function pollTaskStatus(taskId: string): Promise<string> {
         // 任务完成
         const videoUrl = taskData.data?.data?.file?.download_url || taskData.data?.file?.download_url || taskData.data?.data?.video_url || taskData.data?.video_url;
         if (videoUrl) {
-          console.log('Kling 视频生成成功:', videoUrl);
+          //console.log('Kling 视频生成成功:', videoUrl);
           return videoUrl;
         }
       } else if (status === 'Failed' || status === 'Error') {
@@ -202,11 +202,11 @@ async function pollTaskStatus(taskId: string): Promise<string> {
         throw new Error(`Kling 视频生成失败: ${errorMsg}`);
       } else if (status === 'Processing' || status === 'Running' || status === 'Pending') {
         // 任务进行中，继续等待
-        console.log(`Kling 任务进行中... (${attempt + 1}/${maxAttempts})`);
+        //console.log(`Kling 任务进行中... (${attempt + 1}/${maxAttempts})`);
         await new Promise(resolve => setTimeout(resolve, pollInterval));
       } else {
         // 其他状态，继续等待
-        console.log(`Kling 任务状态: ${status}`);
+        //console.log(`Kling 任务状态: ${status}`);
         await new Promise(resolve => setTimeout(resolve, pollInterval));
       }
     } catch (error) {

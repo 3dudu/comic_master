@@ -174,7 +174,7 @@ export const parseScriptToData = async (
   let parsed: any = {};
   try {
     const text = cleanJsonString(content);
-    console.log("Parsed JSON:", text);
+    //console.log("Parsed JSON:", text);
     parsed = JSON.parse(text);
   } catch (e) {
     console.error("Failed to parse script data JSON:", e);
@@ -267,7 +267,7 @@ export const generateVideo = async (
     throw new Error("视频生成失败 (No task ID returned)");
   }
 
-  console.log(`视频任务已创建: ${taskId}, 状态: ${response.status}`);
+  //console.log(`视频任务已创建: ${taskId}, 状态: ${response.status}`);
 
   // 轮询任务状态直到完成
   const videoUrl = await pollVideoTask(taskId);
@@ -294,12 +294,12 @@ const pollVideoTask = async (taskId: string): Promise<string> => {
     const status = response.status;
 
     if (status === "completed" || status === "succeeded" || status === "video_upsampling" || status === "video_generation_completed") {
-      console.log(`视频生成完成: ${taskId}`);
+      //console.log(`视频生成完成: ${taskId}`);
       return response.video_url || response.content?.video_url || response.detail?.video_url || "";
     } else if (status === "failed") {
       throw new Error(`视频生成失败: ${response.error || "未知错误"}`);
     } else if (status === "pending" || status === "processing" || status === "video_generating" || status === "image_downloading" || status === "queued") {
-      console.log(`视频生成中... (${i + 1}/${maxAttempts})`);
+      //console.log(`视频生成中... (${i + 1}/${maxAttempts})`);
       continue;
     } else {
       throw new Error(`未知任务状态: ${status}`);

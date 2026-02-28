@@ -200,7 +200,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
         .map(shot => shot.interval?.videoUrl)
         .filter((url): url is string => !!url);
 
-      console.log("开始合并视频...", videoUrls.length, "个视频片段");
+      //console.log("开始合并视频...", videoUrls.length, "个视频片段");
 
       // 调用 Coze API 合并视频
       let mergedUrl = await submitWorkflow(videoUrls);
@@ -212,7 +212,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
         });
 
         if (uploadResponse.success && uploadResponse.data?.fileUrl) {
-          console.log(`视频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
+          //console.log(`视频已上传到本地服务器: ${uploadResponse.data.fileUrl}`);
           mergedUrl = uploadResponse.data.fileUrl;
         } else {
           console.error(`视频上传失败: ${uploadResponse.error}`);
@@ -221,7 +221,7 @@ const StageExport: React.FC<Props> = ({ project, updateProject }) => {
         console.error(`处理生成图片时出错:`, error);
       }
 
-      console.log("视频合并完成:", mergedUrl);
+      //console.log("视频合并完成:", mergedUrl);
 
       // 保存合并后的视频 URL 到 project
       updateProject({ mergedVideoUrl: mergedUrl });

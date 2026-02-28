@@ -27,11 +27,11 @@ export const initializeCozeConfig = async () => {
 
     if (storedWorkflowId) {
       runtimeWorkflowId = storedWorkflowId;
-      console.log('Coze 工作流 ID 已加载');
+      //console.log('Coze 工作流 ID 已加载');
     }
     if (storedApiKey) {
       runtimeApiKey = storedApiKey;
-      console.log('Coze API Key 已加载');
+      //console.log('Coze API Key 已加载');
     }
   } catch (error) {
     console.error('加载 Coze 配置失败:', error);
@@ -141,7 +141,7 @@ export const mergeVideos = async (videoUrls: string[]): Promise<string> => {
       body: JSON.stringify(requestBody),
     });
 
-    console.log("Coze workflow response:", JSON.stringify(response));
+    //console.log("Coze workflow response:", JSON.stringify(response));
 
     // Coze workflow 返回的数据结构：{code:0, data:"{\"output\":\"...\"}"}
     // data 字段是 JSON 字符串，需要解析后再获取 output
@@ -149,7 +149,7 @@ export const mergeVideos = async (videoUrls: string[]): Promise<string> => {
       try {
         const parsedData = JSON.parse(response.data);
         if (parsedData.output) {
-          console.log("视频合并成功:", parsedData.output);
+          //console.log("视频合并成功:", parsedData.output);
           return parsedData.output;
         }
       } catch (e) {
@@ -208,7 +208,7 @@ export const submitWorkflow = async (
     body: JSON.stringify(requestBody),
   });
 
-  console.log("工作流提交响应:", JSON.stringify(response));
+  //console.log("工作流提交响应:", JSON.stringify(response));
   // Coze API 返回格式: {code: 0, data: {id: "workflow_execution_id", ...}}
   const execute_id = response.execute_id;
   if (!execute_id) {
@@ -239,10 +239,10 @@ const pollVideoTask = async (executionId: string): Promise<string> => {
       if (response?.data[0].execute_status=='Success') {
         try {
           const parsedData = JSON.parse(response.data[0].output);
-          console.log("视频合并成功:", parsedData);
+          //console.log("视频合并成功:", parsedData);
           if (parsedData.Output) {
             const out = JSON.parse(parsedData.Output);
-            console.log("视频合并成功:", out.output);
+            //console.log("视频合并成功:", out.output);
             return out.output;
           }
         } catch (e) {

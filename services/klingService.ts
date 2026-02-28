@@ -78,21 +78,22 @@ export async function generateVideo(
     throw new Error('Kling API Key 未设置');
   }
 
-  if (!startImageBase64) {
-    throw new Error('Kling 可灵需要起始图片');
-  }
-
   try {
     // 构建请求参数
     const requestBody: any = {
       model_name: runtimeVideoModel,
-      image: startImageBase64,
       prompt: prompt,
       negative_prompt: '',
       cfg_scale: 0.5,
       mode: 'std',
       duration: duration>6?10:5
     };
+    if (startImageBase64){
+      requestBody.image = startImageBase64;
+    }
+    if (endImageBase64){
+      requestBody.image_tail = endImageBase64;
+    }
     if(runtimeVideoModel.indexOf("2-6")>0){
       requestBody.sound = 'on';
     }

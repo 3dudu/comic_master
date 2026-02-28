@@ -274,6 +274,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       });
     } catch (e: any) {
       console.error(e);
+      setProcessingState(null)
       if(e.message?.includes("enough")){
         await dialog.alert({ title: '错误', message: '余额不足，请充值', type: 'error' });
       }else{
@@ -333,6 +334,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
       }));
     } catch (e: any) {
       console.error(e);
+      setProcessingState(null);
       if(e.message?.includes("enough")){
         await dialog.alert({ title: '错误', message: '余额不足，请充值', type: 'error' });
       }else{
@@ -615,6 +617,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
           await handleGenerateVideo(finalShot);
       } catch (e: any) {
           console.error(e);
+          setOneClickProcessing(null);
           await dialog.alert({ title: '错误', message: `一键制作失败: ${e.message}`, type: 'error' });
       } finally {
           setOneClickProcessing(null);

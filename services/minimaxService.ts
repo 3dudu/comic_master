@@ -78,20 +78,18 @@ export async function generateVideo(
     throw new Error('MiniMax API Key 未设置');
   }
 
-  if (!startImageBase64) {
-    throw new Error('MiniMax 海螺需要起始图片');
-  }
-
   try {
     // 构建请求参数
     const requestBody:any = {
       model: runtimeVideoModel,
       prompt: prompt,
       duration: duration>7?10:6,
-      first_frame_image: startImageBase64,
       resolution: '768P',
       prompt_optimizer: true
     };
+    if(startImageBase64){
+      requestBody.first_frame_image = startImageBase64;
+    }
 
     // 处理结束图片（如果火山引擎支持）
     if (endImageBase64 && !fullFrame) {

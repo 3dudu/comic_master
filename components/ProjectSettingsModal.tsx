@@ -150,7 +150,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
         <div className="p-6 space-y-5 flex-1 overflow-y-auto bg-slate-700">
           {/* Title Input */}
           <div className="space-y-2">
-            <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">项目标题</label>
+            <label className="text-[12px] font-bold text-slate-500 tracking-widest">项目标题</label>
             <input
               type="text"
               value={localTitle}
@@ -158,6 +158,7 @@ const ProjectSettingsModal: React.FC<ProjectSettingsModalProps> = ({ isOpen, onC
               className="w-full bg-bg-input border border-slate-600 text-slate-50 px-3 py-2.5 text-sm rounded-md focus:border-slate-600 focus:outline-none transition-all"
               placeholder="输入项目名称..."
             />
+            <label className="text-[12px] font-bold text-slate-500 tracking-widest">id:{project.id}</label>
           </div>
 
           {/* Language and Visual Style in one row */}

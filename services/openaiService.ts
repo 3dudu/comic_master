@@ -481,7 +481,7 @@ export const generateVideo = async (
 const pollVideoTask = async (taskId: string): Promise<string> => {
   const endpoint = `${runtimeApiUrl}/videos/generations/${taskId}`;
   const maxAttempts = 120; // 最多轮询10分钟（每5秒）
-  const pollInterval = 5000; // 5秒
+  const pollInterval = 10000; // 5秒
 
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise((resolve) => setTimeout(resolve, pollInterval));

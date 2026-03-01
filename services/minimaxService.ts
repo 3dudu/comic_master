@@ -159,7 +159,7 @@ async function getTaskStatus(taskId: string): Promise<any> {
  */
 async function pollTaskStatus(taskId: string): Promise<string> {
   const maxAttempts = 120; // 最多等待2分钟（每次1秒）
-  const pollInterval = 1000; // 1秒
+  const pollInterval = 10000; // 1秒
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {

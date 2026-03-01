@@ -105,6 +105,14 @@ import {
   setModel as setWanModel
 } from "./wanService";
 
+// BigMore 方法
+import {
+  generateVideo as generateVideoBigmore,
+  setApiKey as setBigmoreApiKey,
+  setApiUrl as setBigmoreApiUrl,
+  setModel as setBigmoreModel
+} from "./bigmoreService";
+
 // Baidu TTS 方法
 import {
   blobToBase64,
@@ -282,6 +290,17 @@ export class ModelService {
           setWanModel(config.model);
         }
         //console.log(`已更新 Wan ${config.modelType} 配置`);
+        break;
+
+      case 'bigmore':
+        setBigmoreApiKey(config.apiKey);
+        if (config.apiUrl) {
+          setBigmoreApiUrl(config.apiUrl);
+        }
+        if (config.model) {
+          setBigmoreModel(config.model);
+        }
+        //console.log(`已更新 BigMore ${config.modelType} 配置`);
         break;
 
       case 'baidu':
@@ -608,7 +627,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiKey - API 密钥
    */
-  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu', apiKey: string): void {
+  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'bigmore' | 'baidu', apiKey: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiKey(apiKey);
@@ -637,6 +656,9 @@ export class ModelService {
       case 'wan':
         setWanApiKey(apiKey);
         break;
+      case 'bigmore':
+        setBigmoreApiKey(apiKey);
+        break;
       case 'baidu':
         setBaiduApiKey(apiKey);
         break;
@@ -650,7 +672,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiUrl - API 端点
    */
-  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu', apiUrl: string): void {
+  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'bigmore' | 'baidu', apiUrl: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiUrl(apiUrl);
@@ -679,6 +701,9 @@ export class ModelService {
         break;
       case 'wan':
         setWanApiUrl(apiUrl);
+        break;
+      case 'bigmore':
+        setBigmoreApiUrl(apiUrl);
         break;
       case 'baidu':
         // baidu 使用固定配置
@@ -748,7 +773,7 @@ export class ModelService {
    * 获取当前使用的提供商信息
    */
   static async getProviderInfo(): Promise<{
-    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu';
+    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'bigmore' | 'baidu';
     enabled: boolean;
   }> {
     const config = await getEnabledConfigByType('llm');
@@ -926,6 +951,9 @@ export class ModelService {
         break;
       case 'wan':
         videoUrl = await generateVideoWan(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);
+        break;
+      case 'bigmore':
+        videoUrl = await generateVideoBigmore(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame,imageSize);
         break;
       case 'openai':
         videoUrl = await generateVideoOpenai(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);

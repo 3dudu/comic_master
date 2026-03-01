@@ -97,6 +97,14 @@ import {
   setModel as setSoraModel
 } from "./soraService";
 
+// Wan 方法
+import {
+  generateVideo as generateVideoWan,
+  setApiKey as setWanApiKey,
+  setApiUrl as setWanApiUrl,
+  setModel as setWanModel
+} from "./wanService";
+
 // Baidu TTS 方法
 import {
   blobToBase64,
@@ -254,18 +262,29 @@ export class ModelService {
           //console.log(`已更新 Kling ${config.modelType} 配置`);
           break;
 
-        case 'sora':
-          setSoraApiKey(config.apiKey);
-          if (config.apiUrl) {
-            setSoraApiUrl(config.apiUrl);
-          }
-          if (config.model) {
-            setSoraModel(config.model);
-          }
-          //console.log(`已更新 Sora ${config.modelType} 配置`);
-          break;
+      case 'sora':
+        setSoraApiKey(config.apiKey);
+        if (config.apiUrl) {
+          setSoraApiUrl(config.apiUrl);
+        }
+        if (config.model) {
+          setSoraModel(config.model);
+        }
+        //console.log(`已更新 Sora ${config.modelType} 配置`);
+        break;
 
-        case 'baidu':
+      case 'wan':
+        setWanApiKey(config.apiKey);
+        if (config.apiUrl) {
+          setWanApiUrl(config.apiUrl);
+        }
+        if (config.model) {
+          setWanModel(config.model);
+        }
+        //console.log(`已更新 Wan ${config.modelType} 配置`);
+        break;
+
+      case 'baidu':
           if (config.modelType === 'tts') {
             // 对于百度 TTS，apiKey 是 API Key，apiUrl 是 Secret Key
             setBaiduApiKey(config.apiKey);
@@ -589,7 +608,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiKey - API 密钥
    */
-  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'baidu', apiKey: string): void {
+  static setApiKey(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu', apiKey: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiKey(apiKey);
@@ -615,6 +634,9 @@ export class ModelService {
       case 'sora':
         setSoraApiKey(apiKey);
         break;
+      case 'wan':
+        setWanApiKey(apiKey);
+        break;
       case 'baidu':
         setBaiduApiKey(apiKey);
         break;
@@ -628,7 +650,7 @@ export class ModelService {
    * @param provider - 提供商
    * @param apiUrl - API 端点
    */
-  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'baidu', apiUrl: string): void {
+  static setApiUrl(provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu', apiUrl: string): void {
     switch (provider) {
       case 'deepseek':
         setDeepseekApiUrl(apiUrl);
@@ -654,6 +676,9 @@ export class ModelService {
         break;
       case 'sora':
         setSoraApiUrl(apiUrl);
+        break;
+      case 'wan':
+        setWanApiUrl(apiUrl);
         break;
       case 'baidu':
         // baidu 使用固定配置
@@ -723,7 +748,7 @@ export class ModelService {
    * 获取当前使用的提供商信息
    */
   static async getProviderInfo(): Promise<{
-    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'baidu';
+    provider: 'doubao' | 'deepseek' | 'openai' | 'gemini' | 'yunwu' | 'minimax' | 'kling' | 'sora' | 'wan' | 'baidu';
     enabled: boolean;
   }> {
     const config = await getEnabledConfigByType('llm');
@@ -898,6 +923,9 @@ export class ModelService {
         break;
       case 'sora':
         videoUrl = await generateVideoSora(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame,imageSize,visualStyle);
+        break;
+      case 'wan':
+        videoUrl = await generateVideoWan(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);
         break;
       case 'openai':
         videoUrl = await generateVideoOpenai(prompt, processedStartImageBase64, processedEndImageBase64, duration, full_frame);

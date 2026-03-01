@@ -241,6 +241,9 @@ async function pollTaskStatus(taskId: string): Promise<string> {
       if (attempt === maxAttempts - 1) {
         throw error;
       }
+      if (error instanceof Error){
+        throw error;
+      }
       console.warn(`BigMore 查询任务状态失败 (尝试 ${attempt + 1}/${maxAttempts}):`, error);
       await new Promise(resolve => setTimeout(resolve, pollInterval));
     }

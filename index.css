@@ -48,7 +48,7 @@
   }
 
   /* 默认深色主题 */
-  :root {
+  :root[data-theme="dark"] {
     --bg-primary: var(--color-dark-bg-primary);
     --bg-secondary: var(--color-dark-bg-secondary);
     --bg-panel: var(--color-dark-bg-panel);
@@ -91,6 +91,24 @@
       --bg-card: var(--color-light-bg-card);
       --bg-button: var(--color-light-bg-button);
       --bg-progress: var(--color-light-bg-progress);
+    }
+  }
+
+    /* 跟随系统主题 */
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="system"] {
+      --bg-primary: var(--color-dark-bg-primary);
+      --bg-secondary: var(--color-dark-bg-secondary);
+      --bg-panel: var(--color-dark-bg-panel);
+      --bg-input: var(--color-dark-bg-input);
+      --bg-footer: var(--color-dark-bg-footer);
+      --bg-modal: var(--color-dark-bg-modal);
+      --bg-selected: var(--color-dark-bg-selected);
+      --bg-sidebar: var(--color-dark-bg-sidebar);
+      --bg-header: var(--color-dark-bg-header);
+      --bg-card: var(--color-dark-bg-card);
+      --bg-button: var(--color-dark-bg-button);
+      --bg-progress: var(--color-dark-bg-progress);
     }
   }
   

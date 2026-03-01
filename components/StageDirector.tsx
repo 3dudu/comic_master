@@ -1119,7 +1119,7 @@ const StageDirector: React.FC<Props> = ({ project, updateProject, isMobile=false
                                 <div className="px-1.5 md:px-2 py-2 bg-bg-button border-b border-slate-600 flex justify-between items-center">
                                   <div className="flex items-center gap-1 md:gap-1.5">
                                     <span className={`font-mono text-[12px] font-bold ${isActive ? 'text-slate-400' : 'text-slate-500'}`}>{String(idx + 1).padStart(2, '0')}</span>
-                                        <span className="text-[11px] px-1 md:px-1.5 py-0.5 bg-slate-800 text-slate-400 rounded uppercase">{shot.cameraMovement} {shot.interval?.duration}s</span>
+                                    <span className="line-clamp-1 tracking-wide text-[11px] px-1 md:px-1.5 py-0.5 bg-slate-700 text-slate-400 rounded uppercase">{shot.interval?.duration}s-{shot.cameraMovement}</span>
                                   </div>
                                     <div className="flex items-center gap-0.5 md:gap-1">
                                         <button

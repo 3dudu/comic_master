@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export type Theme = 'light' | 'dark' | 'system';
 
@@ -19,8 +19,8 @@ export function useTheme() {
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
       // 默认使用深色主题
-      setTheme('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
+      setTheme('system');
+      document.documentElement.setAttribute('data-theme', 'system');
     }
   }, []);
 
@@ -34,6 +34,7 @@ export function useTheme() {
         // CSS中的@media查询会自动处理
         // 但为了确保组件能正确获取actualTheme，我们触发一个重新渲染
         setTheme('system'); // 触发重新渲染但不改变localStorage
+        document.documentElement.setAttribute('data-theme', 'system');
       }
     };
 
